@@ -1,0 +1,162 @@
+_AWS_EC2_SECURITYGROUPINGRESS_MK_VERSION= $(_AWS_EC2_MK_VERSION)
+
+# EC2_SECURITYGROUPINGRESS_DESCRIPTION= "This is my security-group-ingress descriprion"
+# EC2_SECURITYGROUPINGRESS_RULE_CIDR?= 203.0.113.0/24
+# EC2_SECURITYGROUPINGRESS_RULE_PORT?= 80
+# EC2_SECURITYGROUPINGRESS_RULE_PORTRANGE?= 80-443
+# EC2_SECURITYGROUPINGRESS_RULE_PROTOCOL?= tcp
+# EC2_SECURITYGROUPINGRESS_RULE_SOURCEGROUP?=
+# EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID?= sg-12345678
+# EC2_SECURITYGROUPINGRESS_SECURITYGROUP_NAME?=
+# EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER?= 123456789012
+# EC2_SECURITYGROUPINGRESSES_RULES_CONFIGS?= [{'IpProtocol': 'icmp', 'FromPort': 3, 'ToPort': 4, 'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}] ...
+# EC2_SECURITYGROUPINGRESSES_RULES_DIRPATH?= ./in/
+# EC2_SECURITYGROUPINGRESSES_RULES_FILENAME?= rules.json
+# EC2_SECURITYGROUPINGRESSES_RULES_FILEPATH?= ./in/rules.json
+# EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID?= sg-12345678
+# EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_NAME?=
+# EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_OWNER?= 123456789012
+# EC2_SECURITYGROUPINGRESSES_SET_NAME?= my-security-groups-set
+
+# Derived parameters
+EC2_SECURITYGROUPINGRESS_NAME?= ingress@$(EC2_SECURITYGROUPINGRESS_SECURITYGROUPINGRESS_ID)@$(EC2_SECURITYGROUPINGRESS_RULE_PORT)
+EC2_SECURITYGROUPINGRESS_RULES_FILEPATH?= $(if $(EC2_SECURITYGROUPINGRESS_RULES_FILENAME),$(EC2_SECURITYGROUPINGRESS_RULES_DIRPATH)$(EC2_SECURITYGROUPINGRESS_RULES_FILENAME))
+EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID?= $(EC2_SECURITYGROUP_ID)
+EC2_SECURITYGROUPINGRESS_SECURITYGROUP_NAME?= $(EC2_SECURITYGROUP_NAME)
+EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER?= $(EC2_SECURITYGROUP_OWNER)
+EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID?= $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID)
+EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_NAME?= $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_NAME)
+EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_OWNER?= $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER)
+EC2_SECURITYGROUPINGRESSES_SET_NAME?= ingress@$(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID)
+
+
+# Options parameters
+__EC2_CIDR__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_RULE_CIDR),--cidr $(EC2_SECURITYGROUPINGRESS_RULE_CIDR))
+__EC2_DESCRIPTION__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_DESCRIPTION),--description $(EC2_SECURITYGROUPINGRESS_DESCRIPTION))
+__EC2_GROUP_ID__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID),--group-id $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID))
+__EC2_GROUP_ID__SECURITYGROUPINGRESSES= $(if $(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID),--group-id $(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID))
+__EC2_GROUP_IDS__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID),--group-ids $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID))
+__EC2_GROUP_IDS__SECURITYGROUPINGRESSES= $(if $(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID),--group-ids $(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID))
+__EC2_GROUP_OWNER__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER),--group-owner $(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER))
+__EC2_GROUP_OWNER__SECURITYGROUPINGRESSES= $(if $(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_OWNER),--group-owner $(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_OWNER))
+__EC2_IP_PERMISSIONS__SECURITYGROUPINGRESSES+= $(if $(EC2_SECURITYGROUPINGRESSES_RULES_CONFIGS),--ip-permissions $(EC2_SECURITYGROUPINGRESSES_RULES_CONFIGS))
+__EC2_IP_PERMISSIONS__SECURITYGROUPINGRESSES+= $(if $(EC2_SECURITYGROUPINGRESSES_RULES_FILEPATH),--ip-permissions file://$(EC2_SECURITYGROUPINGRESSES_RULES_FILEPATH))
+__EC2_PORT__SECURITYGROUPINGRESS+= $(if $(EC2_SECURITYGROUPINGRESS_RULE_PORT),--port $(EC2_SECURITYGROUPINGRESS_RULE_PORT))
+__EC2_PORT__SECURITYGROUPINGRESS+= $(if $(EC2_SECURITYGROUPINGRESS_RULE_PORTRANGE),--port $(EC2_SECURITYGROUPINGRESS_RULE_PORTRANGE))
+__EC2_PROTOCOL__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_RULE_PROTOCOL),--protocol $(EC2_SECURITYGROUPINGRESS_RULE_PROTOCOL))
+__EC2_SOURCE_GROUP__SECURITYGROUPINGRESS= $(if $(EC2_SECURITYGROUPINGRESS_RULE_SOURCEGROUP),--source-group $(EC2_SECURITYGROUPINGRESS_RULE_SOURCEGROUP))
+
+# UI parameters
+EC2_UI_SHOW_SECURITYGROUPINGRESS_FIELDS?= # .{FromPort:FromPort,ipProtocol:IpProtocol,ToPort:ToPort,ipRanges:IpRanges[*].CidrIp|join('  ',@),description:IpRanges[0].Description}
+EC2_UI_VIEW_SECURITYGROUPINGRESSES_FIELDS?= .IpPermissions[].{FromPort:FromPort,ipProtocol:IpProtocol,ToPort:ToPort,ipRanges:IpRanges[*].CidrIp|join('  ',@),description:IpRanges[0].Description}
+EC2_UI_VIEW_SECURITYGROUPINGRESSES_SET_FIELDS?= $(EC2_UI_VIEW_SECURITYGROUPINGRESSES_FIELDS)
+EC2_UI_VIEW_SECURITYGROUPINGRESSES_SET_QUERYFILTER?=
+
+#--- Macros
+
+_ec2_get_securitygroupingress_rule_cidr= $(shell echo $(shell curl -s http://ipecho.net/plain)/32)
+
+#----------------------------------------------------------------------
+# USAGE
+#
+
+_ec2_view_framework_macros ::
+	@echo 'AWS::EC2::SecurityGroupIngress ($(_AWS_EC2_SECURITYGROUPINGRESS_MK_VERSION)) macros:'
+	@echo '    _ec2_get_securitygroupingress_rule_cidr                - Get your public IP in CIDR format'
+	@echo
+
+_ec2_view_framework_parameters ::
+	@echo 'AWS::EC2::SecurityGroupIngress ($(_AWS_EC2_SECURITYGROUPINGRESS_MK_VERSION)) parameters:'
+	@echo '    EC2_SECURITYGROUPINGRESS_DESCRIPTION=$(EC2_SECURITYGROUPINGRESS_DESCRIPTION)'
+	@echo '    EC2_SECURITYGROUPINGRESS_NAME=$(EC2_SECURITYGROUPINGRESS_NAME)'
+	@echo '    EC2_SECURITYGROUPINGRESS_RULE_CIDR=$(EC2_SECURITYGROUPINGRESS_RULE_CIDR)'
+	@echo '    EC2_SECURITYGROUPINGRESS_RULE_PORT=$(EC2_SECURITYGROUPINGRESS_RULE_PORT)'
+	@echo '    EC2_SECURITYGROUPINGRESS_RULE_PORTS=$(EC2_SECURITYGROUPINGRESS_RULE_PORTS)'
+	@echo '    EC2_SECURITYGROUPINGRESS_RULE_PROTOCOL=$(EC2_SECURITYGROUPINGRESS_RULE_PROTOCOL)'
+	@echo '    EC2_SECURITYGROUPINGRESS_RULE_SOURCEGROUP=$(EC2_SECURITYGROUPINGRESS_RULE_SOURCEGROUP)'
+	@echo '    EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID=$(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_ID)'
+	@echo '    EC2_SECURITYGROUPINGRESS_SECURITYGROUP_NAME=$(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_NAME)'
+	@echo '    EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER=$(EC2_SECURITYGROUPINGRESS_SECURITYGROUP_OWNER)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_RULES_CONFIGS=$(EC2_SECURITYGROUPINGRESSES_RULES_CONFIGS)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_RULES_DIRPATH=$(EC2_SECURITYGROUPINGRESSES_RULES_DIRPATH)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_RULES_FILENAME=$(EC2_SECURITYGROUPINGRESSES_RULES_FILENAME)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_RULES_FILEPATH=$(EC2_SECURITYGROUPINGRESSES_RULES_FILEPATH)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID=$(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_ID)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_NAME=$(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_NAME)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_OWNER=$(EC2_SECURITYGROUPINGRESSES_SECURITYGROUP_OWNER)'
+	@echo '    EC2_SECURITYGROUPINGRESSES_SET_NAME=$(EC2_SECURITYGROUPINGRESSES_SET_NAME)'
+	@echo
+
+_ec2_view_framework_targets ::
+	@echo 'AWS::EC2::SecurityGroupIngress ($(_AWS_EC2_SECURITYGROUPINGRESS_MK_VERSION)) targets:'
+	@echo '    _ec2_create_securitygroupingress              - Create a security-group-ingress'
+	@echo '    _ec2_create_securitygroupingresses            - Create a set of security-group-ingresses'
+	@echo '    _ec2_delete_securitygroupingress              - Delete a security-group-ingress'
+	@echo '    _ec2_delete_securitygroupingressies           - Delete a set of security-group-ingresses'
+	@echo '    _ec2_show_securitygroupingress                - Show everything related to a security-group-ingress'
+	@echo '    _ec2_show_securitygroupingress_description    - Show description for a security-group-ingress'
+	@echo '    _ec2_show_securitygroupingress_securitygroup  - Show egress-rules for a security-group'
+	@echo '    _ec2_view_securitygroupingresses              - View all security-group-ingresses'
+	@echo '    _ec2_view_securitygroupingresses_set          - View a set of security-group-ingresses'
+	@echo '    _ec2_watch_securitygroupingresses             - Watch all security-group-ingresses'
+	@echo '    _ec2_watch_securitygroupingresses_set         - Watch a set of security-group-ingresses'
+	@echo 
+
+#----------------------------------------------------------------------
+# PRIVATE TARGETS
+#
+
+#----------------------------------------------------------------------
+# PUBLIC TARGETS
+#
+
+_ec2_create_securitygroupingress:
+	@$(INFO) '$(EC2_UI_LABEL)Creating security-group-ingress "$(EC2_SECURITYGROUPINGRESS_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation fails if the same rule already exists!'; $(NORMAL)
+	$(AWS) ec2 authorize-security-group-ingress $(__EC2_CIDR__SECURITYGROUPINGRESS) $(__EC2_GROUP_ID__SECURITYGROUPINGRESS) $(_X__EC2_GROUPINGRESS_NAME__SECURITYGROUPINGRESS) $(__EC2_GROUP_OWNER__SECURITYGROUPINGRESS) $(_X__EC2_IP_PERMISSIONS) $(__EC2_PORT__SECURITYGROUPINGRESS) $(__EC2_PROTOCOL__SECURITYGROUPINGRESS) $(__EC2_SOURCE_GROUP__SECURITYGROUPINGRESS)
+
+_ec2_create_securitygroupingresses:
+	@$(INFO) '$(EC2_UI_LABEL)Creating one-or-more security-group-ingresses ...'; $(NORMAL)
+	@$(WARN) 'This operation fails if the same rule already exists!'; $(NORMAL)
+	$(AWS) ec2 authorize-security-group-ingress $(_X__EC2_CIDR__SECURITYGROUPINGRESS) $(__EC2_GROUP_ID__SECURITYGROUPINGRESSES) $(_X__EC2_GROUP_NAME__SECURITYGROUPINGRESSES) $(__EC2_GROUP_OWNER__SECURITYGROUPINGRESSES) $(__EC2_IP_PERMISSIONS__SECURITYGROUPINGRESSES) $(_X_EC2_PORT__SECURITYGROUPINGRESSES) $(_X_EC2_PROTOCOL__SECURITYGROUPINGRESSES) $(_X_EC2_SOURCE_GROUP__SECURITYGROUPINGRESSES)
+
+_ec2_delete_securitygroupingress:
+	@$(INFO) '$(EC2_UI_LABEL)Deleting security-group-ingress "$(EC2_SECURITYGROUPINGRESS_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'You can revoke rules that do not exist!'; $(NORMAL)
+	$(AWS) ec2 revoke-security-group-ingress $(__EC2_CIDR__SECURITYGROUPINGRESS) $(__EC2_GROUP_ID__SECURITYGROUPINGRESS) $(_X__EC2_GROUP_NAME) $(__EC2_GROUP_OWNER__SECURITYGROUPINGRESS) $(_X__EC2_IP_PERMISSIONS__SECURITYGROUPINGRESS) $(__EC2_PORT__SECURITYGROUPINGRESS) $(__EC2_PROTOCOL__SECURITYGROUPINGRESS) $(__EC2_SOURCE_GROUP__SECURITYGROUPINGRESS)
+
+_ec2_delete_securitygroupingresses:
+	@$(INFO) '$(EC2_UI_LABEL)Deleting one-or-many security-group-ingresses ...'; $(NORMAL)
+	@$(WARN) 'You can revoke rules that do not exist!'; $(NORMAL)
+	$(AWS) ec2 revoke-security-group-ingress $(_X__EC2_CIDR__SECURITYGROUPINGRESSES) $(__EC2_GROUP_ID__SECURITYGROUPINGRESSES) $(_X__EC2_GROUP_NAME__SECURITYGROUPINGRESSES) $(__EC2_GROUP_OWNER__SECURITYGROUPINGRESSES) $(__EC2_IP_PERMISSIONS__SECURITYGROUPINGRESSES) $(_X__EC2_PORT__SECURITYGROUPINGRESSES) $(_X__EC2_PROTOCOL__SECURITYGROUPINGRESSES) $(_X__EC2_SOURCE_GROUP__SECURITYGROUPINGRESSES)
+
+_ec2_show_securitygroupingress: _ec2_show_securitygroupingress_securitygroup _ec2_show_securitygroupingress_description
+
+_ec2_show_securitygroupingress_description:
+	@$(INFO) '$(EC2_UI_LABEL)Showing description of security-group-ingress "$(EC2_SECURITYGROUPINGRESS_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'If IpProtocol is set to -1, all destination ports are allowed'; $(NORMAL)
+	@$(WARN) 'If IpRange is set to 0.0.0.0/0, the rule is applicable for all source IP addresses'; $(NORMAL)
+	@$(WARN) 'If UserIdGroupPairs is set, the rule applies to hosts in the UserId AWS account that belong to the GroupId security group'; $(NORMAL)
+	$(AWS) ec2 describe-security-groups $(__EC2_GROUPS_IDS__SECURITYGROUPINGRESS) --query "SecurityGroups[].IpPermissions[]$(EC2_UI_SHOW_SECURITYGROUPINGRESS_INGRESS_FIELDS)"
+
+_ec2_show_securitygroupingress_securitygroup:
+	@$(INFO) '$(EC2_UI_LABEL)Showing security-group of security-group-ingress "$(EC2_SECURITYGROUPINGRESS_NAME)" ...'; $(NORMAL)
+	$(AWS) ec2 describe-security-groups $(__EC2_GROUPS_IDS__SECURITYGROUPINGRESS)
+
+_ec2_view_securitygroupingresses:
+	@$(INFO) '$(EC2_UI_LABEL)Viewing ALL security-group-ingresses ...'; $(NORMAL)
+	@$(WARN) 'If IpProtocol is set to -1, all destination ports are allowed'; $(NORMAL)
+	@$(WARN) 'If IpRange is set to 0.0.0.0/0, the rule is applicable for all source IP addresses'; $(NORMAL)
+	@$(WARN) 'If UserIdGroupPairs is set, the rule applies to hosts in the UserId AWS account that belong to the GroupId security group'; $(NORMAL)
+	$(AWS) ec2 describe-security-groups $(__EC2_GROUP_IDS__SECURITYGROUPINGRESSES) --query "SecurityGroups[]$(EC2_UI_VIEW_SECURITYGROUPINGRESSES_FIELDS)"
+
+_ec2_view_securitygroupingresses_set:
+	@$(INFO) '$(EC2_UI_LABEL)Viewing security-group-ingresses-set "$(EC2_SECURITYGROUPINGRESSES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Security-group-ingresses are grouped based on the provided security-group and query-filter'; $(NORMAL)
+
+_ec2_watch_securitygroupingresses:
+	@$(INFO) '$(EC2_UI_LABEL)Watching ALL security-group-ingresses ...'; $(NORMAL)
+
+_ec2_watch_securitygroupingresses_set:
+	@$(INFO) '$(EC2_UI_LABEL)Watching security-group-ingresses-set "$(EC2_SECURITYGROUPINGRESSES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Security-group-ingresses are grouped based on the provided security-group and query-filter'; $(NORMAL)

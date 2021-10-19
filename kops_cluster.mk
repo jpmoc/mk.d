@@ -1,0 +1,266 @@
+_KOPS_CLUSTER_MK_VERSION= $(_KOP_MK_VERSION)
+
+KOPS_CLUSTER_ACK_ENABLE?= false
+# KOPS_CLUSTER_ACK_CREATE?= false
+# KOPS_CLUSTER_ACK_DELETE?= false
+# KOPS_CLUSTER_ACK_UPDATE?= false
+KOPS_CLUSTER_ADMINACCESS_IP?= 0.0.0.0/0
+# KOPS_CLUSTER_API_LOADBALANCER_TYPE?= public
+# KOPS_CLUSTER_API_SSL_CERTIFICATE?=
+KOPS_CLUSTER_ASSOCIATE_PUBLICIP?= true
+KOPS_CLUSTER_AUTHORIZATION?= RBAC
+# KOPS_CLUSTER_BASTION_ENABLE?= false
+KOPS_CLUSTER_CHANNEL?= stable
+KOPS_CLUSTER_CLOUD_PROVIDER?= aws
+# KOPS_CLUSTER_CLOUD_LABELS?= 'Owner=John Doe,Team=Some Team'
+KOPS_CLUSTER_DNS_TYPE?= public
+# KOPS_CLUSTER_DNS_ZONE?=
+KOPS_CLUSTER_DRY_RUN?= false
+# KOPS_CLUSTER_EXTERNAL?= false
+# KOPS_CLUSTER_ENCRYPT_ETCD_STORAGE?= true
+# KOPS_CLUSTER_IMAGE?=
+# KOPS_CLUSTER_KUBERNETES_VERSION?=
+KOPS_CLUSTER_MASTER_COUNT?= 1
+# KOPS_CLUSTER_MASTER_PUBLICNAME?= 1
+# KOPS_CLUSTER_MASTER_SECURITYGROUPS?=
+# KOPS_CLUSTER_MASTER_SIZE?= t2.micro
+# KOPS_CLUSTER_MASTER_TENANCY?= default
+# KOPS_CLUSTER_MASTER_VOLUMESIZE?= 10
+# KOPS_CLUSTER_MASTER_ZONES?= us-west-1a ...
+KOPS_CLUSTER_MODELS?= proto cloudup
+# KOPS_CLUSTER_NAME?= cluster.k8s.local
+# KOPS_CLUSTER_NETWORK_CIDR?=
+KOPS_CLUSTER_NETWORKING?= kubenet # calico, canal, flannel, kopeio-vxlan, kube-router, romana, weave
+KOPS_CLUSTER_NODE_COUNT?= 2
+# KOPS_CLUSTER_NODE_SECURITYGROUPS?=
+# KOPS_CLUSTER_NODE_SIZE?= t2.micro
+KOPS_CLUSTER_NODE_TENANCY?= default
+# KOPS_CLUSTER_NODE_VOLUMESIZE?= 10
+# KOPS_CLUSTER_OUTPUT_FORMAT?= yaml
+# KOPS_CLUSTER_PROJECT?= my-gcp-project
+# KOPS_CLUSTER_REGION?= us-west-2
+KOPS_CLUSTER_SSH_ACCESS?= 0.0.0.0/0
+# KOPS_CLUSTER_SSHPUBLICKEY?_FILEPATH= ~/.ssh/id_rsa
+# KOPS_CLUSTER_SUBNETS?=
+KOPS_CLUSTER_TARGET?= direct
+KOPS_CLUSTER_TOPOLOGY?= public
+# KOPS_CLUSTER_UTILITY_SUBNETS?=
+# KOPS_CLUSTER_VPC_ID?= vpc-12345678
+# KOPS_CLUSTER_ZONES?= us-west-2a ...
+
+# Derived parameters
+KOPS_CLUSTER_ACK_CREATE?= $(KOPS_CLUSTER_ACK_ENABLE)
+KOPS_CLUSTER_ACK_DELETE?= $(KOPS_CLUSTER_ACK_ENABLE)
+KOPS_CLUSTER_ACK_UPDATE?= $(KOPS_CLUSTER_ACK_ENABLE)
+KOPS_CLUSTER_BASTION_ELB?= $(if $(KOPS_CLUSTER_NAME), bastion.$(KOPS_CLUSTER_NAME))
+KOPS_CLUSTER_MASTER_SECURITYGROUPS?= $(KOPS_CLUSTER_NODE_SECURITYGROUPS)
+KOPS_CLUSTER_MASTER_SIZE?= $(KOPS_CLUSTER_NODE_SIZE)
+KOPS_CLUSTER_MASTER_TENANCY?= $(KOPS_CLUSTER_NODE_TENANCY)
+KOPS_CLUSTER_MASTER_ZONES?= $(KOPS_CLUSTER_ZONES)
+KOPS_CLUSTER_NODE_COUNT?= $(KOPS_CLUSTER_MASTER_COUNT)
+KOPS_CLUSTER_NODE_SIZE?= $(KOPS_CLUSTER_MASTER_SIZE)
+KOPS_CLUSTER_REGION?= $(AWS_REGION)
+KOPS_CLUSTER_ZONES?= $(KOPS_CLUSTER_REGION)a
+
+# Option parameters
+__KOPS_ADMIN_ACCESS= $(if $(KOPS_CLUSTER_ADMINACCESS_IP),--admin-access $(KOPS_CLUSTER_ADMINACCESS_IP))
+__KOPS_API_LOADBALANCER_TYPE= $(if $(KOPS_CLUSTER_API_LOADBALANCER_TYPE),--api-loadbalancer-type $(KOPS_CLUSTER_LOADBALANCER_TYPE))
+__KOPS_API_SSL_CERTIFACTE= $(if $(KOPS_CLUSTER_API_SSL_CERTIFICATE),--api-ssl-certificate $(KOPS_CLUSTER_API_SSL_CERTIFICATE))
+__KOPS_ASSOCIATE_PUBLIC_IP= $(if $(KOPS_CLUSTER_ASSOCIATE_PUBLICIP),--associate-public-ip=$(KOPS_CLUSTER_ASSOCIATE_PUBLICIP))
+__KOPS_AUTHORIZATION= $(if $(KOPS_CLUSTER_AUTHORIZATION),--authorization $(KOPS_CLUSTER_AUTHORIZATION))
+__KOPS_BASTION= $(if $(filter true, $(KOPS_CLUSTER_BASTION_ENABLE)),--bastion)
+__KOPS_CHANNEL= $(if $(KOPS_CLUSTER_CHANNEL),--channel $(KOPS_CLUSTER_CHANNEL))
+__KOPS_CLOUD= $(if $(KOPS_CLUSTER_CLOUD_PROVIDER),--cloud $(KOPS_CLUSTER_CLOUD_PROVIDER))
+__KOPS_CLOUD_LABELS= $(if $(KOPS_CLUSTER_CLOUD_LABELS),--cloud-labels "$(subst $(SPACE),$(COMMA),$(KOPS_CLUSTER_CLOUD_LABELS))")
+__KOPS_DNS= $(if $(KOPS_CLUSTER_DNS_TYPE),--dns $(KOPS_CLUSTER_DNS_TYPE))
+__KOPS_DNS_ZONE= $(if $(KOPS_CLUSTER_DNS_ZONE),--dns-zone $(KOPS_CLUSTER_DNS_ZONE))
+__KOPS_DRY_RUN= $(if $(filter true, $(KOPS_CLUSTER_DRY_RUN)),--dry-run)
+__KOPS_ENCRYPT_ETC_STORAGE= $(if $(filter true, $(KOPS_CLUSTER_ENCRYPT_ETC_STORAGE)),--encrypt-etc-storage)
+__KOPS_EXTERNAL= $(if $(filter true, $(KOPS_CLUSTER_EXTERNAL)),--external)
+__KOPS_IMAGE= $(if $(KOPS_CLUSTER_IMAGE),--image $(KOPS_CLUSTER_IMAGE))
+__KOPS_KUBENETES_VERSION= $(if $(KOPS_CLUSTER_KUBERNETES_VERSION),--kubenetes-version $(KOPS_CLUSTER_KUBERNETES_VESION))
+__KOPS_MASTER_COUNT= $(if $(KOPS_CLUSTER_MASTER_COUNT),--master-count $(KOPS_CLUSTER_MASTER_COUNT))
+__KOPS_MASTER_PUBLIC_NAME= $(if $(KOPS_CLUSTER_MASTER_PUBLICNAME),--master-public-name $(KOPS_CLUSTER_MASTER_PUBLICNAME))
+__KOPS_MASTER_SECURITY_GROUPS= $(if $(KOPS_CLUSTER_MASTER_SECURITYGROUPS),--master-security-groups $(KOPS_CLUSTER_MASTER_SECURITYGROUPS))
+__KOPS_MASTER_SIZE= $(if $(KOPS_CLUSTER_MASTER_SIZE),--master-size $(KOPS_CLUSTER_MASTER_SIZE))
+__KOPS_MASTER_TENANCY= $(if $(KOPS_CLUSTER_MASTER_TENANCY),--master-tenancy $(KOPS_CLUSTER_MASTER_TENANCY))
+__KOPS_MASTER_VOLUME_SIZE= $(if $(KOPS_CLUSTER_MASTER_VOLUMESIZE),--master-volume-size $(KOPS_CLUSTER_MASTER_VOLUMESIZE))
+__KOPS_MASTER_ZONES= $(if $(KOPS_CLUSTER_MASTER_ZONES),--master-zones $(subst $(SPACE),$(COMMA),$(KOPS_CLUSTER_MASTER_ZONES)))
+__KOPS_MODEL= $(if $(KOPS_CLUSTER_MODELS),--model $(subst $(SPACE),$(COMMA),$(KOPS_CLUSTER_MODELS)))
+__KOPS_NAME__CLUSTER= $(if $(KOPS_CLUSTER_NAME),--name $(KOPS_CLUSTER_NAME))
+__KOPS_NETWORK_CIDR= $(if $(KOPS_CLUSTER_NETWORK_CIDR),--network-cidr $(KOPS_CLUSTER_NETWORK_CIDR))
+__KOPS_NETWORKING= $(if $(KOPS_CLUSTER_NETWORKING),--networking $(KOPS_CLUSTER_NETWORKING))
+__KOPS_NODE_COUNT= $(if $(KOPS_CLUSTER_NODE_COUNT),--node-count $(KOPS_CLUSTER_NODE_COUNT))
+__KOPS_NODE_SECURITY_GROUPS= $(if $(KOPS_CLUSTER_NODE_SECURITYGROUPS),--node-security-groups $(KOPS_CLUSTER_NODE_SECURITYGROUPS))
+__KOPS_NODE_SIZE= $(if $(KOPS_CLUSTER_NODE_SIZE),--node-size $(KOPS_CLUSTER_NODE_SIZE))
+__KOPS_NODE_TENANCY= $(if $(KOPS_CLUSTER_NODE_TENANCY),--node-tenancy $(KOPS_CLUSTER_NODE_TENANCY))
+__KOPS_NODE_VOLUMESIZE= $(if $(KOPS_CLUSTER_NODE_VOLUMESIZE),--node-volume-size $(KOPS_CLUSTER_NODE_VOLUMESIZE))
+__KOPS_OUT= $(if $(KOPS_CLUSTER_STDOUT_FILEPATH),--out $(KOPS_CLUSTER_STDOUT_FILEPATH))
+__KOPS_OUTPUT__CLUSTER= $(if $(KOPS_CLUSTER_OUTPUT_FORMAT),--output $(KOPS_CLUSTER_OUTPUT_FORMAT))
+__KOPS_PROJECT= $(if $(KOPS_CLUSTER_PROJECT),--project $(KOPS_CLUSTER_PROJECT))
+__KOPS_REGION= $(if $(KOPS_CLUSTER_REGION),--region $(KOPS_CLUSTER_REGION))
+__KOPS_SSH_ACCESS= $(if $(KOPS_CLUSTER_SSH_ACCESS),--ssh-access $(KOPS_CLUSTER_SSH_ACCESS))
+__KOPS_SSH_PUBLIC_KEY= $(if $(KOPS_CLUSTER_SSHPUBLICKEY_FILEPATH),--ssh-public-key $(KOPS_CLUSTER_SSHPUBLICKEY_FILEPATH))
+__KOPS_SUBNETS= $(if $(KOPS_CLUSTER_SUBNETS),--subnets $(KOPS_CLUSTER_SUBNETS))
+__KOPS_TARGET= $(if $(KOPS_CLUSTER_TARGET),--target $(KOPS_CLUSTER_TARGET))
+__KOPS_TOPOLOGY= $(if $(KOPS_CLUSTER_TOPOLOGY),--topology $(KOPS_CLUSTER_TOPOLOGY))
+__KOPS_UTILITY_SUBNETS= $(if $(KOPS_CLUSTER_UTILITY_SUBNETS),--utility-subnets $(subst $(SPACE),$(COMMA),$(KOPS_CLUSTER_UTILITY_SUBNETS)))
+__KOPS_VPC= $(if $(KOPS_CLUSTER_VPC_ID),--vpc $(KOPS_CLUSTER_VPC_ID))
+__KOPS_YES_CREATE= $(if $(filter false, $(KOPS_CLUSTER_ACK_CREATE)),--yes)
+__KOPS_YES_DELETE= $(if $(filter false, $(KOPS_CLUSTER_ACK_DELETE)),--yes)
+__KOPS_YES_UPDATE= $(if $(filter false, $(KOPS_CLUSTER_ACK_UPDATE)),--yes)
+__KOPS_ZONES= $(if $(KOPS_CLUSTER_ZONES),--zones $(subst $(SPACE),$(COMMA),$(KOPS_CLUSTER_ZONES)))
+
+# UI parameters
+
+#--- Utilities
+
+#--- Macros
+
+#----------------------------------------------------------------------
+# USAGE
+#
+
+_kops_view_framework_macros ::
+	@echo 'KOPS::Cluster ($(_KOPS_CLUSTER_MK_VERSION)) macros:'
+	@echo
+
+_kops_view_framework_parameters ::
+	@echo 'KOPS::Cluster ($(_KOPS_CLUSTER_MK_VERSION)) parameters:'
+	@echo '    KOPS_CLUSTER_ACK_ENABLE=$(KOPS_CLUSTER_ACK_ENABLE)'
+	@echo '    KOPS_CLUSTER_ACK_CREATE=$(KOPS_CLUSTER_ACK_CREATE)'
+	@echo '    KOPS_CLUSTER_ACK_DELETE=$(KOPS_CLUSTER_ACK_DELETE)'
+	@echo '    KOPS_CLUSTER_ACK_UPDATE=$(KOPS_CLUSTER_ACK_UPDATE)'
+	@echo '    KOPS_CLUSTER_ADMINACCESS_IP=$(KOPS_CLUSTER_ADMINACCESS_IP)'
+	@echo '    KOPS_CLUSTER_API_LOADBALANCER_TYPE=$(KOPS_CLUSTER_API_LOADBALANCER_TYPE)'
+	@echo '    KOPS_CLUSTER_CHANNEL=$(KOPS_CLUSTER_CHANNEL)'
+	@echo '    KOPS_CLUSTER_SSL_CERTIFICATE=$(KOPS_CLUSTER_API_SSL_CERTIFICATE)'
+	@echo '    KOPS_CLUSTER_ASSOCIATE_PUBLICIP=$(KOPS_CLUSTER_ASSOCIATE_PUBLICIP)'
+	@echo '    KOPS_CLUSTER_AUTHORIZATION=$(KOPS_CLUSTER_AUTHORIZATION)'
+	@echo '    KOPS_CLUSTER_BASTION_ENABLE=$(KOPS_CLUSTER_BASTION_ENABLE)'
+	@echo '    KOPS_CLUSTER_BASTION_ELB=$(KOPS_CLUSTER_BASTION_ELB)'
+	@echo '    KOPS_CLUSTER_CLOUD_LABELS=$(KOPS_CLUSTER_CLOUD_LABELS)'
+	@echo '    KOPS_CLUSTER_CLOUD_PROVIDER=$(KOPS_CLUSTER_CLOUD_PROVIDER)'
+	@echo '    KOPS_CLUSTER_DNS_TYPE=$(KOPS_CLUSTER_DNS_TYPE)'
+	@echo '    KOPS_CLUSTER_DNS_ZONE=$(KOPS_CLUSTER_DNS_ZONE)'
+	@echo '    KOPS_CLUSTER_DRY_RUN=$(KOPS_CLUSTER_DRY_RUN)'
+	@echo '    KOPS_CLUSTER_EXTERNAL=$(KOPS_CLUSTER_EXTERNAL)'
+	@echo '    KOPS_CLUSTER_IMAGE=$(KOPS_CLUSTER_IMAGE)'
+	@echo '    KOPS_CLUSTER_KUBERNETES_VERSION=$(KOPS_CLUSTER_KUBERNETES_VERSION)'
+	@echo '    KOPS_CLUSTER_MASTER_COUNT=$(KOPS_CLUSTER_MASTER_COUNT)'
+	@echo '    KOPS_CLUSTER_MASTER_PUBLICNAME=$(KOPS_CLUSTER_MASTER_PUBLICNAME)'
+	@echo '    KOPS_CLUSTER_MASTER_SECURITYGROUPS=$(KOPS_CLUSTER_MASTER_SECURITYGROUPS)'
+	@echo '    KOPS_CLUSTER_MASTER_SIZE=$(KOPS_CLUSTER_MASTER_SIZE)'
+	@echo '    KOPS_CLUSTER_MASTER_TENANCY=$(KOPS_CLUSTER_MASTER_TENANCY)'
+	@echo '    KOPS_CLUSTER_MASTER_ZONES=$(KOPS_CLUSTER_MASTER_ZONES)'
+	@echo '    KOPS_CLUSTER_MODELS=$(KOPS_CLUSTER_MODELS)'
+	@echo '    KOPS_CLUSTER_NAME=$(KOPS_CLUSTER_NAME)'
+	@echo '    KOPS_CLUSTER_NETWORK_CIDR=$(KOPS_NETWORK_CIDR)'
+	@echo '    KOPS_CLUSTER_NETWORKING=$(KOPS_CLUSTER_NETWORKING)'
+	@echo '    KOPS_CLUSTER_NODE_COUNT=$(KOPS_CLUSTER_NODE_COUNT)'
+	@echo '    KOPS_CLUSTER_NODE_SECURITYGROUPS=$(KOPS_CLUSTER_NODE_SECURITYGROUPS)'
+	@echo '    KOPS_CLUSTER_NODE_SIZE=$(KOPS_CLUSTER_NODE_SIZE)'
+	@echo '    KOPS_CLUSTER_NODE_TENANCY=$(KOPS_CLUSTER_NODE_TENANCY)'
+	@echo '    KOPS_CLUSTER_NODE_VOLUMESIZE=$(KOPS_CLUSTER_NODE_VOLUMESIZE)'
+	@echo '    KOPS_CLUSTER_OUTPUT_FORMAT=$(KOPS_CLUSTER_OUTPUT_FORMAT)'
+	@echo '    KOPS_CLUSTER_PROJECT=$(KOPS_PROJECT)'
+	@echo '    KOPS_CLUSTER_SSH_ACCESS=$(KOPS_CLUSTER_SSH_ACCESS)'
+	@echo '    KOPS_CLUSTER_SSHPUBLICKEY_FILENAME=$(KOPS_CLUSTER_SSHPUBLICKEY_FILEPATH)'
+	@echo '    KOPS_CLUSTER_STDOUT_FILEPATH=$(KOPS_CLUSTER_STDOUT_FILEPATH)'
+	@echo '    KOPS_CLUSTER_SUBNETS=$(KOPS_CLUSTER_SUBNETS)'
+	@echo '    KOPS_CLUSTER_TARGET=$(KOPS_CLUSTER_TARGET)'
+	@echo '    KOPS_CLUSTER_TOPOLOGY=$(KOPS_CLUSTER_TOPOLOGY)'
+	@echo '    KOPS_CLUSTER_UTILITY_SUBNETS=$(KOPS_CLUSTER_UTILITY_SUBNETS)'
+	@echo '    KOPS_CLUSTER_VPC_ID=$(KOPS_CLUSTER_VPC_ID)'
+	@echo '    KOPS_CLUSTER_ZONES=$(KOPS_CLUSTER_ZONES)'
+	@echo
+
+_kops_view_framework_targets ::
+	@echo 'KOPS::Cluster ($(_KOPS_CLUSTER_MK_VERSION)) targets:'
+	@echo '    _kops_create_cluster               - Create a new cluster'
+	@echo '    _kops_delete_cluster               - Delete a cluster'
+	@echo '    _kops_edit_cluster                 - Edit cluster configuration'
+	@echo '    _kops_show_cluster                 - Show everything related to a cluster'
+	@echo '    _kops_show_cluster_resouces        - Show resources of a cluster'
+	@echo '    _kops_unregister_cluster           - Unregister cluster'
+	@echo '    _kops_update_cluster               - Update cluster'
+	@echo '    _kops_validate_cluster             - Validate cluster'
+	@echo '    _kops_view_clusters                - View clusters'
+	@echo '    _kops_wait_cluster                 - Wait for clusters'
+	@echo
+
+#----------------------------------------------------------------------
+# PUBLIC TARGETS
+#
+
+_kops_create_cluster:
+	@$(INFO) '$(KOPS_UI_LABEL)Creating the cluster '$(KOPS_CLUSTER_NAME)' ...'; $(NORMAL)
+	$(KOPS) create cluster $(strip $(__KOPS_ADMIN_ACCESS) $(__KOPS_API_LOADBALANCER_TYPE) $(__KOPS_API_SSL_CERTIFICATE) $(__KOPS_ASSOCIATE_PUBLIC_IP) $(__KOPS_AUTHORIZATION) $(__KOPS_BASTION) $(__KOPS_CHANNEL) $(__KOPS_CLOUD) $(__KOPS_CLOUD_LABELS) $(__KOPS_DNS) $(__KOPS_DNS_ZONE) $(__KOPS_DRY_RUN) $(__KOPS_ENCRYPT_ETCD_STORAGE) $(__KOPS_IMAGE) $(__KOPS_KUBERNETES_VERSION) $(__KOPS_MASTER_COUNT) $(__KOPS_MASTER_PUBLIC_NAME) $(__KOPS_MASTER_SECURITY_GROUPS) $(__KOPS_MASTER_SIZE) $(__KOPS_MASTER_TENANCY) $(__KOPS_MASTER_VOLUME_SIZE) $(__KOPS_MASTER_ZONES) $(__KOPS_MODEL) $(__KOPS_NETWORK_CIDR) $(__KOPS_NETWORKING) $(__KOPS_NODE_COUNT) $(__KOPS_NODE_SECURITY_GROUPS) $(__KOPS_NODE_SIZE) $(__KOPS_NODE_TENANCY) $(__KOPS_NODE_VOLUME_SIZE) $(__KOPS_OUT) $(__KOPS_OUTPUT__CLUSTER) $(__KOPS_PROJECT) $(__KOPS_SSH_ACCESS) $(__KOPS_SSH_PUBLIC_KEY) $(__KOPS_SUBNETS) $(__KOPS_TARGET) $(__KOPS_TOPOLOGY) $(__KOPS_UTILITY_SUBNETS) $(__KOPS_VPC) $(__KOPS_YES_CREATE) $(__KOPS_ZONES)  $(KOPS_CLUSTER_NAME) )
+	@$(WARN) 'The recommended next step is to validate the cluster'; $(NORMAL)
+
+_kops_delete_cluster:
+	@$(INFO) '$(KOPS_UI_LABEL)Deleting cluster '$(KOPS_CLUSTER_NAME)' ...'; $(NORMAL)
+	$(KOPS) delete cluster $(__KOPS_EXTERNAL) $(__KOPS_REGION) $(_X__KOPS_UNREGISTER) $(__KOPS_YES_DELETE) $(KOPS_CLUSTER_NAME)
+
+_kops_edit_cluster:
+	@$(INFO) '$(KOPS_UI_LABEL)Editing cluster configuration ...'; $(NORMAL)
+	$(KOPS) edit cluster $(KOPS_CLUSTER_NAME)
+
+_kops_show_cluster: _kops_show_cluster_resources _kops_show_cluster_description
+
+_kops_show_cluster_description:
+	@$(INFO) '$(KOPS_UI_LABEL)Show description of cluster "$(KOPS_CLUSTER_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation fails if the cluster is not fully deployed!'; $(NORMAL)
+	$(KOPS) validate cluster $(__KOPS_NAME__CLUSTER)
+
+_kops_show_cluster_resources:
+	@$(INFO) '$(KOPS_UI_LABEL)Show resources of cluster "$(KOPS_CLUSTER_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'All resources are tagged with "KubenetesCluster=$(KOPS_CLUSTER_NAME)"'; $(NORMAL)
+	@echo '    ELB_NAME=api-$(KOPS_CLUSTER_NAME)-k8s-... (Name can be truncated)'
+	@echo '    INTERNET_GATEWAY_NAME=$(KOPS_CLUSTER_NAME)'
+	@echo '    MASTER_INSTANCE_NAME=...'
+	@echo '                 master-<AWS_AVAILABILITY_ZONE>.masters.$(KOPS_CLUSTER_NAME)'
+	@echo '    MASTERS_ROLE_NAME=masters.$(KOPS_CLUSTER_NAME)'
+	@echo '    NAT_GATEWAY=<no name>, on public subnet, shows in private deployment only?'
+	@echo '    NODE_INSTANCE_NAME=nodes.$(KOPS_CLUSTER_NAME)'
+	@echo '          Tag: KubernetesCluster=$(KOPS_CLUSTER_NAME).k8s.local'
+	@echo '          Tag: aws:autoscaling:groupName=nodes.$(KOPS_CLUSTER_NAME).k8s.local'
+	@echo '          PrivateDNS: <as reported by validate, i.e. differentiator>'
+	@echo '    AUTOSCALING_GROUP_NAME=nodes.$(KOPS_CLUSTER_NAME)'
+	@echo '    NODE_ROLE_NAME=nodes.$(KOPS_CLUSTER_NAME)'
+	@echo '    ROUTE_TABLE_NAME=...'
+	@echo '                 private-<AWS_AVAILABILITY_ZONE>.$(KOPS_CLUSTER_NAME)'
+	@echo '    SUBNET_NAMES=...'
+	@echo '                 <AWS_AVAILABILITY_ZONE>.$(KOPS_CLUSTER_NAME)'
+	@echo '                 utility-<AWS_AVAILABILITY_ZONE>.$(KOPS_CLUSTER_NAME)'
+	@echo '    VPC_NAME=$(KOPS_CLUSTER_NAME)'
+	@echo
+
+_kops_unregister_cluster:
+	@$(INFO) '$(KOPS_UI_LABEL)Unregistering cluster "$(KOPS_CLUSTER_NAME)" from state store ...'; $(NORMAL)
+	$(KOPS) delete cluster $(__KOPS_EXTERNAL) $(__KOPS_REGION) $(_X__KOPS_UNREGISTER) --unregister $(__KOPS_YES_DELETE) $(KOPS_CLUSTER_NAME)
+
+_kops_update_cluster:
+	@$(INFO) '$(KOPS_UI_LABEL)Update cluster ...'; $(NORMAL)
+	$(KOPS) update cluster $(__KOPS_CREATE_KUBE_CONFIG) $(__KOPS_MODEL) $(__KOPS_OUT) $(__KOPS_PHASE) $(__KOPS_SSH_PUBLIC_KEY) $(__KOPS_TARGET) $(__KOPS_YES_UPDATE)
+
+_kops_validate_cluster:
+	@$(INFO) '$(KOPS_UI_LABEL)Validating cluster "$(KOPS_CLUSTER_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation fails if the cluster is not fully deployed!'; $(NORMAL)
+	$(KOPS) validate cluster $(__KOPS_NAME__CLUSTER)
+
+_kops_view_clusters:
+	@$(INFO) '$(KOPS_UI_LABEL)Viewing clusters managed in state-store ...'; $(NORMAL)
+	@$(WARN) 'This operations returns the list of clusters that are using the same state store bucket'; $(NORMAL)
+	@# This operation returns a non-zero error code if no clusters are found!
+	-$(KOPS) get clusters
+
+_kops_wait_cluster:
+	# wait for ec2 instances?
+	@$(WARN) -n 'This stack operation can take a few minutes ...'
+	@_MATCHED=0; while [ $${_MATCHED} -eq 0 ]; do \
+		_STACK_STATUS=`$(AWS) cloudformation describe-stacks --stack-name $(CFN_STACK_NAME) --query 'Stacks[].StackStatus' --output text 2>/dev/null`; \
+		if [ -z $${_STACK_STATUS} ]; then _STACK_STATUS=DELETE_COMPLETE; fi; \
+		_MATCHED=`expr match "$${_STACK_STATUS}" ".*_COMPLETE$$" + match "$${_STACK_STATUS}" ".*_FAILED$$"`; \
+		echo -n '.' ; sleep 1 ; \
+	done; $(INFO) "\n$(AWS_UI_LABEL)The stack operation on $(CFN_STACK_NAME) completed with status : $${_STACK_STATUS}"; $(NORMAL)

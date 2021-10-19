@@ -1,0 +1,126 @@
+_CONSUL_CERTIFICATE_MK_VERSION= $(_CONSUL_MK_VERSION)
+
+# CSL_CERTIFICATE_CACERT_FILEPATH?= ./in/cacert.pem
+# CSL_CERTIFICATE_CACERTPRIVATEKEY_FILEPATH?= ./in/cacert-key.pem
+CSL_CERTIFICATE_DATACENTER_NAME?= dc1
+CSL_CERTIFICATE_DAYS?= 365
+# CSL_CERTIFICATE_DIRPATH?= ./in/
+CSL_CERTIFICATE_DNSNAME?= localhost
+CSL_CERTIFICATE_DOMAIN_NAME?= consul
+# CSL_CERTIFICATE_FILENAME?= cert.pem
+# CSL_CERTIFICATE_FILEPATH?= ./in/cert.pem
+CSL_CERTIFICATE_INDEX?= 0
+CSL_CERTIFICATE_IPS?= 127.0.0.1
+# CSL_CERTIFICATE_PRIVATEKEY_FILEPATH?= ./in/agent-ca-key.pem
+# CSL_CERTIFICATE_NAME?= my-certificate
+# CSL_CERTIFICATE_TYPE?= server
+# CSL_CERTIFICATES_DIRPATH?= ./out/
+CSL_CERTIFICATES_REGEX?= *
+# CSL_CERTIFICATES_SET_NAME?=
+
+# Derived variables
+CSL_CERTIFICATE_CACERT_FILEPATH?= $(CSL_CACERT_FILEPATH)
+CSL_CERTIFICATE_CACERTPRIVATEKEY_FILEPATH?= $(CSL_CACERT_PRIVATEKEY_FILEPATH)
+CSL_CERTIFICATE_DIRPATH?= $(CSL_OUTPUTS_DIRPATH)
+CSL_CERTIFICATE_FILENAME?= $(CSL_CERTIFICATE_DATACENTER_NAME)-$(CSL_CERTIFICATE_TYPE)-$(CSL_CERTIFICATE_DOMAIN_NAME)-$(CSL_CERTIFICATE_INDEX).pem
+CSL_CERTIFICATE_FILEPATH?= $(CSL_CERTIFICATE_DIRPATH)$(CSL_CERTIFICATE_FILENAME))
+CSL_CERTIFICATE_NAME?= $(CSL_CERTIFICATE_DOMAIN_NAME)-$(CSL_CERTIFICATE_TYPE)
+CSL_CERTIFICATE_FILENAME?= $(CSL_CERTIFICATE_DATACENTER_NAME)-$(CSL_CERTIFICATE_TYPE)-$(CSL_CERTIFICATE_DOMAIN_NAME)-$(CSL_CERTIFICATE_INDEX).pem
+CSL_CERTIFICATE_PRIVATEKEY_DIRPATH?= $(CSL_CERTIFICATE_DIRPATH)
+CSL_CERTIFICATE_PRIVATEKEY_FILENAME?= $(CSL_CERTIFICATE_DATACENTER_NAME)-$(CSL_CERTIFICATE_TYPE)-$(CSL_CERTIFICATE_DOMAIN_NAME)-$(CSL_CERTIFICATE_INDEX)-key.pem 
+CSL_CERTIFICATE_PRIVATEKEY_FILEPATH?= $(CSL_CERTIFICATE_PRIVATEKEY_DIRPATH)$(CSL_CERTIFICATE_PRIVATEKEY_FILENAME)
+CSL_CERTIFICATES_DIRPATH?= $(CSL_CERTIFICATE_DIRPATH)
+CSL_CERTIFICATES_SET_NAME?= certificates@$(CSL_CERTIFICATES_DIRPATH)
+
+# Options variables
+__CSL_ADDITIONAL_DNSNAME= $(foreach D, $(CSL_CERTIFICATE_DNSNAME),-additional-dnsname=$(I))
+__CSL_ADDITIONAL_IPADDRESS= $(foreach I, $(CSL_CERTIFICATE_IPS),-additional-ipaddress=$(I))
+__CSL_CA= $(if $(CSL_CERTIFICATE_CACERT_FILEPATH),-ca $(CSL_CERTIFICATE_CACERT_FILEPATH))
+__CSL_CLI= $(if $(filter cli, $(CSL_CERTIFICATE_TYPE)),-cli)
+__CSL_CLIENT= $(if $(filter client, $(CSL_CERTIFICATE_TYPE)),-client)
+__CSL_DAYS__CERTIFICATE= $(if $(CSL_CERTIFICATE_DAYS),-days $(CSL_CERTIFICATE_DAYS))
+__CSL_DC= $(if $(CSL_CERTIFICATE_DATACENTER_NAME),-dc $(CSL_CERTIFICATE_DATACENTER_NAME))
+__CSL_DOMAIN__CERTIFICATE= $(if $(CSL_CERTIFICATE_DOMAIN_NAME),-domain $(CSL_CERTIFICATE_DOMAIN_NAME))
+__CSL_KEY= $(if $(CSL_CERTIFICATE_CACERTPRIVATEKEY_FILEPATH),-key $(CSL_CERTIFICATE_CACERTPRIVATEKEY_FILEPATH))
+__CSL_SERVER= $(if $(filter server, $(CSL_CERTIFICATE_TYPE)),-server)
+
+# Pipe
+
+# UI parameters
+
+# Utilities
+
+#--- MACROS
+
+#----------------------------------------------------------------------
+# USAGE
+#
+
+_tfm_view_framework_macros ::
+	@echo 'ConSuL::Certificate ($(_CONSUL_CERTIFICATE_MK_VERSION)) macros:'
+	@echo
+
+_csl_view_framework_parameters ::
+	@echo 'ConSuL::Certificate ($(_CONSUL_CERTIFICATE_MK_VERSION)) parameters:'
+	@echo '    CSL_CERTIFICATE_CACERT_FILEPATH=$(CSL_CERTIFICATE_CACERT_FILEPATH)'
+	@echo '    CSL_CERTIFICATE_CACERTPRIVATEKEY_FILEPATH=$(CSL_CERTIFICATE_CACERTPRIVATEKEY_FILEPATH)'
+	@echo '    CSL_CERTIFICATE_DATACENTER_NAME=$(CSL_CERTIFICATE_DATACENTER_NAME)'
+	@echo '    CSL_CERTIFICATE_DAYS=$(CSL_CERTIFICATE_DAYS)'
+	@echo '    CSL_CERTIFICATE_DIRPATH=$(CSL_CERTIFICATE_DIRPATH)'
+	@echo '    CSL_CERTIFICATE_DOMAIN_NAME=$(CSL_CERTIFICATE_DOMAIN_NAME)'
+	@echo '    CSL_CERTIFICATE_FILENAME=$(CSL_CERTIFICATE_FILENAME)'
+	@echo '    CSL_CERTIFICATE_FILEPATH=$(CSL_CERTIFICATE_FILEPATH)'
+	@echo '    CSL_CERTIFICATE_INDEX=$(CSL_CERTIFICATE_INDEX)'
+	@echo '    CSL_CERTIFICATE_IPS=$(CSL_CERTIFICATE_IPS)'
+	@echo '    CSL_CERTIFICATE_PRIVATEKEY_DIRPATH=$(CSL_CERTIFICATE_PRIVATEKEY_DIRPATH)'
+	@echo '    CSL_CERTIFICATE_PRIVATEKEY_FILENAME=$(CSL_CERTIFICATE_PRIVATEKEY_FILENAME)'
+	@echo '    CSL_CERTIFICATE_PRIVATEKEY_FILEPATH=$(CSL_CERTIFICATE_PRIVATEKEY_FILEPATH)'
+	@echo '    CSL_CERTIFICATE_NAME=$(CSL_CERTIFICATE_NAME)'
+	@echo '    CSL_CERTIFICATE_TYPE=$(CSL_CERTIFICATE_TYPE)'
+	@echo '    CSL_CERTIFICATES_DIRPATH=$(CSL_CERTIFICATES_DIRPATH)'
+	@echo '    CSL_CERTIFICATES_REGEX=$(CSL_CERTIFICATES_REGEX)'
+	@echo '    CSL_CERTIFICATES_SET_NAME=$(CSL_CERTIFICATES_SET_NAME)'
+	@echo
+
+_csl_view_framework_targets ::
+	@echo 'ConSuL::Certificate ($(_CONSUL_CERTIFICATE_MK_VERSION)) targets:'
+	@echo '    _csl_create_certificate             - Create a certificate'
+	@echo '    _csl_delete_certificate             - Delete a certificate'
+	@echo '    _csl_show_certificate               - Show everything related to a certificate'
+	@echo '    _csl_show_certificate_description   - Show description of a certificate'
+	@echo '    _csl_view_certificates              - View all certificates' 
+	@echo '    _csl_view_certificates_set          - View a set of certficates' 
+	@echo
+
+#----------------------------------------------------------------------
+# PRIVATE TARGETS
+#
+
+#----------------------------------------------------------------------
+# PUBLIC TARGETS
+#
+
+_csl_create_certificate:
+	@$(INFO) '$(CSL_UI_LABEL)Creating certificate "$(CSL_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation fails if the CA-cert and the CA-private-key cannot be found'; $(NORMAL)
+	@$(WARN) 'Different certificates must be generated for consult-servers, consul-clients, and the CLI'; $(NORMAL)
+	$(CONSUL) tls cert create $(__CSL_CA) $(__CSL_CLI) $(__CSL_CLIENT) $(__CSL_DAYS__CERTIFICATE) $(__CSL_DC) $(__CSL_DOMAIN__CERTIFICATE) $(__CSL_KEY) $(__CSL_SERVER)
+	mv $(CSL_CERTIFICATE_FILENAME) $(CSL_CERTIFICATE_DIRPATH)
+	mv $(CSL_CERTIFICATE_PRIVATEKEY_FILENAME) $(CSL_CERTIFICATE_PRIVATEKEY_DIRPATH)
+
+_csl_delete_certificate:
+	@$(INFO) '$(CSL_UI_LABEL)Deleting certificate "$(CSL_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	rm $(CSL_CERTIFICATE_FILEPATH)
+
+_csl_show_certificate :: _csl_show_certificate_description
+
+_csl_show_certificate_description:
+	@$(INFO) '$(CSL_UI_LABEL)Showing description of certificacte "$(CSL_CERTIFICATE_NAME)" ...'; $(NORMAL)
+
+_csl_view_certificates:
+	@$(INFO) '$(CSL_UI_LABEL)Viewing certificates ...'; $(NORMAL)
+	cd $(CSL_CERTIFICATES_DIRPATH); ls -al
+
+_csl_view_certificates_set:
+	@$(INFO) '$(CSL_UI_LABEL)Viewing certificates-set "$(CSL_CERTIFICATES_SET_NAME)" ...'; $(NORMAL)
+	cd $(CSL_CERTIFICATES_DIRPATH); ls -al $(CSL_CERTIFICATES_REGEX)

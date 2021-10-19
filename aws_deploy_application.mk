@@ -1,0 +1,106 @@
+_AWS_DEPLOY_APPLICATION_MK_VERSION=$(_AWS_DEPLOY_MK_VERSION)
+
+DPY_APPLICATION_COMPUTE_PLATFORM?= Server
+# DPY_APPLICATION_NAME?= DevOps-WebApp
+# DPY_APPLICATION_REVISION?= revisionType=string,s3Location={bucket=string,key=string,bundleType=string,version=string,eTag=string},gitHubLocation={repository=string,commitId=string},string={content=string,sha256=string}
+# DPY_APPLICATION_REVISION_BUCKET?= cicd-workshop-us-east-1-123456789012
+# DPY_APPLICATION_REVISION_BUNDLETYPE?= zip
+# DPY_APPLICATION_REVISION_ETAG?= 991402ab20f4c40a7026cd7b0aafbff1-3
+# DPY_APPLICATION_REVISION_FILEPATH?= ./application-revision.json
+# DPY_APPLICATION_REVISION_KEY?= WebAppOutputArtifact.zip 
+# DPY_APPLICATION_REVISION_S3LOCATION?= bucket=string,bundleType=string,eTag=string,version=string,key=string bucket=cicd-workshop-us-east-1-123456789012,bundleType=zip,eTag=991402ab20f4c40a7026cd7b0aafbff1-3,key=WebAppOutputArtifact.zip
+# DPY_APPLICATION_REVISIONS_BUCKET?= CodeDeployDemoBucket
+DPL_APPLICATION_REVISIONS_DEPLOYED?= ignore
+# DPY_APPLICATION_REVISIONS_SORTBY?= lastUsedTime
+# DPY_APPLICATION_REVISIONS_SORTORDER?= descending
+DPY_APPLICATION_REVISIONS_TYPE?= S3
+
+# Derived variables
+DPY_APPLICATION_REVISION?= $(if $(DPY_APPLICATION_REVISION_FILEPATH),file://$(DPY_APPLICATION_REVISION_FILEPATH))
+DPY_APPLICATION_REVISION_S3LOCATION?= $(if $(DPY_APPLICATION_REVISION_ETAG),bucket=$(DPY_APPLICATION_REVISION_BUCKET),bundleType=$(DPY_APPLICATION_REVISION_BUNDLETYPE),eTag=$(DPY_APPLICATION_REVISION_ETAG),key=$(DPY_APPLICATION_REVISION_KEY),version=$(DPY_APPLICATION_REVISION_VERSION))
+
+
+# Options variables
+__DPY_APPLICATION_NAME= $(if $(DPY_APPLICATION_NAME), --application-name $(DPY_APPLICATION_NAME))
+__DPY_COMPUTE_PLATFORM= $(if $(DPY_APPLICATION_COMPUTE_PLATFORM), --compute-platform $(DPY_APPLICATION_COMPUTE_PLATFORM))
+__DPY_DEPLOYED= $(if $(DPY_APPLICATION_REVISIONS_DEPLOYED), --deployed $(DPY_APPLICATION_REVISIONS_DEPLOYED))
+__DPY_REVISION= $(if $(DPY_APPLICATION_REVISION), --revision $(DPY_APPLICATION_REVISION))
+__DPY_GITHUB_LOCATION=
+__DPY_S_3_BUCKET= $(if $(DPY_APPLICATION_REVISIONS_BUCKET), --s-3-bucket $(DPY_APPLICATION_REVISIONS_BUCKET))
+__DPY_S_3_KEY_PREFIX= $(if $(DPY_APPLICATION_REVISIONS_KEYPREFIX), --s-3-key-prefix $(DPY_APPLICATION_REVISIONS_KEYPREFIX))
+__DPY_S3_LOCATION= $(if $(DPY_APPLICATION_REVISION_S3LOCATION), --s3-location $(DPY_APPLICATION_REVISION_S3LOCATION))
+__DPY_SORT_BY= $(if $(DPY_APPLICATION_REVISIONS_SORTBY), --sort-by $(DPY_APPLICATION_REVISIONS_SORTBY))
+__DPY_SORT_ORDER= $(if $(DPY_APPLICATION_REVISIONS_SORTORDER), --sort-order $(DPY_APPLICATION_REVISIONS_SORTORDER))
+
+# UI variables
+DPY_UI_SHOW_APPLICATION_FIELDS?=
+DPY_UI_SHOW_APPLICATION_REVISIONS_FIELDS?= .s3Location
+
+#--- Utilities
+
+#--- MACROS
+
+#----------------------------------------------------------------------
+# USAGE
+#
+
+_dpy_view_makefile_macros ::
+	@echo 'AWS::DePloY::Application ($(_AWS_DEPLOY_APPLICATION_MK_VERSION)) macros:'
+	@echo
+
+_dpy_view_makefile_targets ::
+	@echo 'AWS::DePloY::Application ($(_AWS_DEPLOY_APPLICATION_MK_VERSION)) targets:'
+	@echo '    _dpy_view_applications                  - View existing applications'
+	@echo 
+
+_dpy_view_makefile_variables ::
+	@echo 'AWS::DePloY::Application ($(_AWS_DEPLOY_APPLICATION_MK_VERSION)) variables:'
+	@echo '    DPY_APPLICATION_COMPUTE_PLATFORM=$(DPY_APPLICATION_COMPUTE_PLATFORM)'
+	@echo '    DPY_APPLICATION_NAME=$(DPY_APPLICATION_NAME)'
+	@echo '    DPY_APPLICATION_REVISION=$(DPY_APPLICATION_REVISION)'
+	@echo '    DPY_APPLICATION_REVISION_BUCKET=$(DPY_APPLICATION_REVISION_BUCKET)'
+	@echo '    DPY_APPLICATION_REVISION_BUNDLETYPE=$(DPY_APPLICATION_REVISION_BUNDLETYPE)'
+	@echo '    DPY_APPLICATION_REVISION_ETAG=$(DPY_APPLICATION_REVISION_ETAG)'
+	@echo '    DPY_APPLICATION_REVISION_FILEPATH=$(DPY_APPLICATION_REVISION_FILEPATH)'
+	@echo '    DPY_APPLICATION_REVISION_KEY=$(DPY_APPLICATION_REVISION_KEY)'
+	@echo '    DPY_APPLICATION_REVISION_VERSION=$(DPY_APPLICATION_REVISION_VERSION)'
+	@echo '    DPY_APPLICATION_REVISIONS_BUCKET=$(DPY_APPLICATION_REVISIONS_BUCKET)'
+	@echo '    DPY_APPLICATION_REVISIONS_DEPLOYED=$(DPY_APPLICATION_REVISIONS_DEPLOYED)'
+	@echo '    DPY_APPLICATION_REVISIONS_KEYPREFIX=$(DPY_APPLICATION_REVISIONS_KEYPREFIX)'
+	@echo '    DPY_APPLICATION_REVISIONS_SORTBY=$(DPY_APPLICATION_REVISIONS_SORTBY)'
+	@echo '    DPY_APPLICATION_REVISIONS_SORTORDER=$(DPY_APPLICATION_REVISIONS_SORTORDER)'
+	@echo '    DPY_APPLICATION_REVISIONS_TYPE=$(DPY_APPLICATION_REVISIONS_TYPE)'
+	@echo
+
+#----------------------------------------------------------------------
+# PRIVATE TARGETS
+#
+
+#----------------------------------------------------------------------
+# PUBLIC TARGETS
+#
+
+_dpy_create_application:
+	@$(INFO) '$(AWS_UI_LABEL)Creating application "$(DPY_APPLICATION_NAME)" ...'; $(NORMAL)
+	$(AWS) deploy create-application $(__DPY_APPLICATION_NAME) $(__DPY_COMPUTE_PLATFORM)
+
+_dpy_delete_application:
+	@$(INFO) '$(AWS_UI_LABEL)Deleting application "$(DPY_APPLICATION_NAME)" ...'; $(NORMAL)
+	$(AWS) deploy delete-application $(__DPY_APPLICATION_NAME)
+
+_dpy_show_application:
+	@$(INFO) '$(AWS_UI_LABEL)Show application "$(DPY_APPLICATION_NAME)" ...'; $(NORMAL)
+	$(AWS) deploy get-application $(__DPY_APPLICATION_NAME) --query "application$(DPY_UI_SHOW_APPLICATION_FIELDS)"
+
+_dpy_show_application_revision:
+	@$(INFO) '$(AWS_UI_LABEL)Show details of revisions of application "$(DPY_APPLICATION_NAME)" ...'; $(NORMAL)
+	$(if $(DPY_APPLICATION_REVISION_FILEPATH), cat $(DPY_APPLICATION_REVISION_FILEPATH))
+	$(AWS) deploy get-application-revision $(__DPY_APPLICATION_NAME) $(__DPY_GITHUB_LOCATION) $(__DPY_REVISION) $(__DPY_S3_LOCATION)
+
+_dpy_show_application_revisions:
+	@$(INFO) '$(AWS_UI_LABEL)Show revisions of application "$(DPY_APPLICATION_NAME)" ...'; $(NORMAL)
+	$(AWS) deploy list-application-revisions $(__DPY_APPLICATION_NAME) $(__DPY_DEPLOYED) $(__DPY_S_3_BUCKET) $(__DPY_S_3_KEY_PREFIX) $(__DPY_SORT_BY) $(__DPY_SORT_ORDER) --query "revisions[?revisionType=='$(DPY_APPLICATION_REVISIONS_TYPE)']$(DPY_UI_SHOW_APPLICATION_REVISIONS_FIELDS)"
+
+_dpy_view_applications:
+	@$(INFO) '$(AWS_UI_LABEL)Viewing applications ...'; $(NORMAL)
+	$(AWS) deploy list-applications --query "applications[]"
