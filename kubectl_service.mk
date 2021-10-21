@@ -1,5 +1,6 @@
 _KUBECTL_SERVICE_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
+# KCL_SERVICE_CURL?= curl
 # KCL_SERVICE_ENDPOINTS_FIELDSELECTOR?= metadata.name=my-endpoint
 # KCL_SERVICE_ENDPOINTS_SELECTOR?= app=service-name
 # KCL_SERVICE_EXTERNAL_IP?=
@@ -29,6 +30,7 @@ KCL_SERVICES_MANIFEST_STDINFLAG?= false
 # KCL_SERVICES_WATCH_ONLY?= true
 
 # Derived parameters
+KCL_SERVICE_CURL?= $(KCL_CURL)
 KCL_SERVICE_ENDPOINTS_SELECTOR?= $(KCL_SERVICE_PODS_SELECTOR)
 KCL_SERVICE_EXTERNAL_URL?= http://$(KCL_SERVICE_EXTERNAL_IP):$(KCL_SERVICE_EXTERNAL_PORT)/
 KCL_SERVICE_KUSTOMIZATION_DIRPATH?= $(KCL_INPUTS_DIRPATH)
@@ -165,7 +167,7 @@ _kcl_create_service:
 
 _kcl_curl_service:
 	@$(INFO) '$(KCL_UI_LABEL)Curling service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
-	$(KCL_CURL) $(KCL_SERVICE_EXTERNAL_URL) 
+	$(KCL_SERVICE_CURL) $(KCL_SERVICE_EXTERNAL_URL) 
 
 _kcl_delete_service:
 	@$(INFO) '$(KCL_UI_LABEL)Deleting service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
@@ -237,6 +239,8 @@ _kcl_show_service_pods:
 
 _kcl_show_service_state:
 	@$(INFO) '$(KCL_UI_LABEL)Showing state of service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
+	@$(WARN) 'To see the target-ports on backends you must describe the service'; $(NORMAL)
 	$(KUBECTL) get service $(__KCL_NAMESPACE__SERVICE) $(KCL_SERVICE_NAME) 
 
 _kcl_tail_service:
@@ -261,23 +265,27 @@ _kcl_update_service:
 _kcl_view_services:
 	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL services ...'; $(NORMAL)
 	@$(WARN) 'At a minimum, this operation returns the service to connect to the K8s API server, i.e. kubernetes.default.svc.cluster.local'; $(NORMAL)
-	@$(WARN) 'Ports are reported as CSV of LB_port:Node_port/ or Service_port/transproto. For target-port on backends you must describe service'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
+	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
 	$(KUBECTL) get services --all-namespaces=true $(_X__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(_X__KCL_SELECTOR__SERVICES)$(__KCL_SHOW_LABELS__SERVICES)
 
 _kcl_view_services_set:
 	@$(INFO) '$(KCL_UI_LABEL)Viewing services-set "$(KCL_SERVICES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	@$(WARN) 'Ports are reported as CSV of LB_port:Node_port/ or Service_port/transproto. For target-port on backends you must describe service'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
+	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
 	$(KUBECTL) get services --all-namespaces=false $(__KCL_FIELD_SELECTOR__SERVICES) $(__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(__KCL_SELECTOR__SERVICES) $(__KCL_SHOW_LABELS__SERVICES)
 
 _kcl_watch_services:
 	@$(INFO) '$(KCL_UI_LABEL)Watching services ...'; $(NORMAL)
 	@$(WARN) 'At a minimum, this operation returns the service to connect to the K8s API server, i.e. kubernetes.default.svc.cluster.local'; $(NORMAL)
-	@$(WARN) 'Ports are reported as CSV of LB_port:Node_port/ or Service_port/transproto. For target-port on backends you must describe service'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NORMAL)
+	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
 	$(KUBECTL) get services $(strip $(_X__KCL_ALL_NAMESPACES__SERVICES) --all-namespaces=true $(_X__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(_X__KCL_SELECTOR__SERVICES) $(_X__KCL_WATCH__SERVICES) --watch=true $(__KCL_WATCH_ONLY__SERVICES) )
 
 _kcl_watch_services_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching services ...'; $(NORMAL)
 	@$(WARN) 'Services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	@$(WARN) 'Ports are reported as CSV of LB_port:Node_port/ or Service_port/transproto. For target-port on backends you must describe service'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol.'
+	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
 	$(KUBECTL) get services $(strip $(__KCL_ALL_NAMESPACES__SERVICES) $(__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(__KCL_SELECTOR__SERVICES) $(_X__KCL_WATCH__SERVICES) --watch=true $(__KCL_WATCH_ONLY__SERVICES) )

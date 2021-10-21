@@ -367,7 +367,7 @@ _kcl_ssh_pod:
 
 _kcl_tail_pod:
 	@$(INFO) '$(KCL_UI_LABEL)Tailing logs of pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
-	$(_KCL_TAIL_POD_|)$(KUBECTL) logs $(__KCL_CONTAINER__POD) $(__KCL_FOLLOW__POD) $(__KCL_NAMESPACE__POD) $(__KCL_PREVIOUS__POD) $(KCL_POD_NAME) $(|_KCL_TAIL_POD)
+	$(_KCL_TAIL_POD_|)$(KUBECTL) logs $(__KCL_CONTAINER__POD) $(__KCL_FOLLOW__POD) $(__KCL_NAMESPACE__POD) $(__KCL_PREVIOUS__POD) $(_X__KCL_SELECTOR__POD) $(KCL_POD_NAME) $(|_KCL_TAIL_POD)
 
 _kcl_tail_pods:
 	@$(INFO) '$(KCL_UI_LABEL)Tailing logs of pods-set "$(KCL_PODS_SET_NAME)" ...'; $(NORMAL)

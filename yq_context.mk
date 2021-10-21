@@ -1,7 +1,7 @@
 _YQ_CONTEXT_MK_VERSION= $(_YQ_MK_VERSION)
 
 # YQ_CONTEXT_FILEPATH?= ./context.yaml
-YQ_CONTEXT_NAME?= default
+YQ_CONTEXT_NAME?= _active_context
 YQ_CONTEXT_PARAMETER_PATH?= _description
 # YQ_CONTEXT_PARAMETER_QUERY?= path.to.section.path.to.parameter[]
 YQ_CONTEXT_RAWOUTPUT_FLAG?= true#false
