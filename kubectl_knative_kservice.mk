@@ -96,8 +96,12 @@ __KCL_WATCH_ONLY__KSERVICES= $(if $(KCL_KSERVICES_WATCH_ONLY),--watch-only=$(KCL
 
 # Pipe parameters
 _KCL_APPLY_KSERVICES_|?= #
+_KCL_CURL_KSERVICES_|?= # repeat 10 {
 _KCL_DIFF_KSERVICES_|?= $(_KCL_APPLY_KSERVICES_|)
+_KCL_DIG_KSERVICES_|?=
 _KCL_UNAPPLY_KSERVICES_|?= $(_KCL_APPLY_KSERVICES_|)
+|_KCL_CURL_KSERVICES?= # ; sleep 10 }
+|_KCL_DIG_KSERVICES?=
 |_KCL_KUSTOMIZE_KSERVICE?=
 
 
@@ -222,7 +226,7 @@ _kcl_create_kservice:
 _kcl_curl_kservice:
 	@$(INFO) '$(KCL_UI_LABEL)Curling knative-service "$(KCL_KSERVICE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the gateway times out before the backend pods reach the running state'; $(NORMAL)
-	$(KCL_KSERVICE_CURL) $(KCL_KSERVICE_URL) 
+	$(_KCL_CURL_KSERVICE_|)$(KCL_KSERVICE_CURL) $(KCL_KSERVICE_URL) $(|_KCL_CURL_KSERVICE)
 
 _kcl_delete_kservice:
 	@$(INFO) '$(KCL_UI_LABEL)Deleting knative-service "$(KCL_KSERVICE_NAME)" ...'; $(NORMAL)
@@ -239,7 +243,7 @@ _kcl_diff_kservices:
 _kcl_dig_kservice:
 	@$(INFO) '$(KCL_UI_LABEL)Dig-ing the knative-service "$(KCL_KSERVICE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the provided DNS record for the kservice is incorrect '; $(NORMAL)
-	$(KCL_KSERVICE_DIG) $(KCL_KSERVICE_DNSNAME) 
+	$(_KCL_DIG_KSERVICE_|)$(KCL_KSERVICE_DIG) $(KCL_KSERVICE_DNSNAME) $(|_KCL_DIG_KSERVICE) 
 
 _kcl_edit_kservice:
 	@$(INFO) '$(KCL_UI_LABEL)Editing knative-service "$(KCL_KSERVICE_NAME)" ...'; $(NORMAL)
