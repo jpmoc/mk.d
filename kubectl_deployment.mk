@@ -334,6 +334,7 @@ _kcl_show_deployment_state:
 
 _kcl_tail_deployment:
 	@$(INFO) '$(KCL_UI_LABEL)Tailing pods spawned by deployment "$(KCL_DEPLOYMENT_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation tails a single pod in the replica-set of the deployment'; $(NORMAL)
 	$(_KCL_TAIL_DEPLOYMENT_|)$(KUBECTL) logs $(__KCL_CONTAINER__DEPLOYMENT) $(__KCL_FOLLOW__DEPLOYMENT) $(__KCL_NAMESPACE__DEPLOYMENT) deployment/$(strip $(KCL_DEPLOYMENT_NAME)) $(|_KCL_TAIL_DEPLOYMENT)
 
 _kcl_unapply_deployment: _kcl_unapply_deployments

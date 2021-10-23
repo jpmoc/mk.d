@@ -245,6 +245,7 @@ _kcl_show_service_state:
 
 _kcl_tail_service:
 	@$(INFO) '$(KCL_UI_LABEL)Tailing pods of service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation tails a single pod in the endpoints of the service'; $(NORMAL)
 	$(_KCL_TAIL_SERVICE_|)$(KUBECTL) logs $(__KCL_CONTAINER__SERVICE) $(__KCL_FOLLOW__SERVICE) $(__KCL_NAMESPACE__SERVICE) service/$(strip $(KCL_SERVICE_NAME) )
 
 _kcl_unapply_service: _kcl_unapply_services
