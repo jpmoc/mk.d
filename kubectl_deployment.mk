@@ -373,3 +373,10 @@ _kcl_watch_deployments:
 
 _kcl_watch_deployments_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching deployments-set "$(KCL_DEPLOYMENTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	# $(KUBECTL) get deployments --all-namespaces=false $(__KCL_NAMESPACE__DEPLOYMENTS) $(__KCL_OUTPUT__DEPLOYMENTS) $(__KCL_SELECTOR__DEPLOYMENTS) $(__KCL_SORT_BY__DEPLOYMENTS)
+
+_kcl_write_deployment: _kcl_write_deployments
+_kcl_write_deployments:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more deployments ...'; $(NORMAL)
+	$(EDITOR) $(KCL_DEPLOYMENTS_MANIFEST_FILEPATH)

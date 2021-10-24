@@ -97,7 +97,7 @@ _kcl_view_framework_parameters ::
 _kcl_view_framework_targets ::
 	@echo 'KubeCtL::Istio::Gateway ($(_KUBECTL_ISTIO_GATEWAY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_gateway                - Annotate a gateway'
-	@echo '    _kcl_apply_gateways                  - Apply mannifest for one-or-more gateways'
+	@echo '    _kcl_apply_gateways                  - Apply manifest for one-or-more gateways'
 	@echo '    _kcl_create_gateway                  - Create a gateway'
 	@echo '    _kcl_dig_gateway                     - Dig a gateway'
 	@echo '    _kcl_delete_gateway                  - Delete a gateway'
@@ -117,6 +117,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_view_gateways                   - View all gateways'
 	@echo '    _kcl_view_gateways_set               - View set of gateways'
 	@echo '    _kcl_watch_gateways                  - Watch gateways'
+	@echo '    _kcl_watch_gateways_set              - Watch a set of gateways'
+	@echo '    _kcl_write_gateways                  - Edit manifest for one-or-more gateways'
 	@echo
 
 #----------------------------------------------------------------------
@@ -259,3 +261,7 @@ _kcl_watch_gateways_set:
 	@$(WARN) 'Gateways are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get gateway --all-namespaces=false $(__KCL_NAMESPACE__GATEWAYS) $(__KCL_OUTPUT__GATEWAYS) $(__KCL_SELECTOR__GATEWAYS) $(__KCL_SORT_BY__GATEWAYS) --watch
 
+_kcl_write_gateway: _kcl_write_gateways
+_kcl_write_gateways:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more gateways ...'; $(NORMAL)
+	$(EDITOR) $(KCL_GATEWAYS_MANIFEST_FILEPATH)

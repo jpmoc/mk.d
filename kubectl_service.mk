@@ -166,6 +166,7 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_view_services_set               - View a set of services'
 	@echo '    _kcl_watch_services                  - Watch services'
 	@echo '    _kcl_watch_services_set              - Watch a set of services'
+	@echo '    _kcl_write_services                  - Write services'
 	@echo
 
 #----------------------------------------------------------------------
@@ -316,3 +317,9 @@ _kcl_watch_services_set:
 	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol.'
 	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
 	$(KUBECTL) get services $(strip $(__KCL_ALL_NAMESPACES__SERVICES) $(__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(__KCL_SELECTOR__SERVICES) $(_X__KCL_WATCH__SERVICES) --watch=true $(__KCL_WATCH_ONLY__SERVICES) )
+
+_kcl_write_service: _kcl_write_services
+_kcl_write_services:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more services ...'; $(NORMAL)
+	$(EDITOR) $(KCL_SERVICES_MANIFEST_FILEPATH)
+

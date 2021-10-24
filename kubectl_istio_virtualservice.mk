@@ -125,6 +125,7 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_view_virtualservices_set               - View a set of virtual-services'
 	@echo '    _kcl_watch_virtualservices                  - Watch virtual-services'
 	@echo '    _kcl_watch_virtualservices_set              - Watch a set of virtual-services'
+	@echo '    _kcl_write_virtualservices                  - Write manifest for one-or-more virtual-services'
 	@echo
 
 #----------------------------------------------------------------------
@@ -255,3 +256,8 @@ _kcl_watch_virtualservices:
 
 _kcl_watch_virtualservices_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching virtual-services-set "$(KCL_VIRTUALSERVICES_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_virtualservice: _kcl_write_virtualservices
+_kcl_write_virtualservices:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more virtual-services ...'; $(NORMAL)
+	$(EDITOR) $(KCL_VIRTUALSERVICES_MANIFEST_FILEPATH)

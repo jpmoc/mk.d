@@ -26,6 +26,10 @@ __KCL_WATCH__EVENTS=
 __KCL_WATCH_ONLY__EVENTS= $(if $(KCL_EVENTS_WATCH_ONLY),--watch-only=$(KCL_EVENTS_WATCH_ONLY))
 
 # UI parameters
+|_KCL_VIEW_EVENTS?=
+|_KCL_VIEW_EVENTS_SET?=
+|_KCL_WATCH_EVENTS?=
+|_KCL_WATCH_EVENTS_SET?= 
 
 #--- MACROS
 
@@ -80,17 +84,17 @@ _kcl_show_event_description:
 
 _kcl_view_events:
 	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL events ...'; $(NORMAL)
-	$(KUBECTL) get event --all-namespaces=true $(_X__KCL_NAMESPACE__EVENTS)
+	$(KUBECTL) get event --all-namespaces=true $(_X__KCL_NAMESPACE__EVENTS) $(|_KCL_VIEW_EVENTS)
 
 _kcl_view_events_set:
 	@$(INFO) '$(KCL_UI_LABEL)Viewing events-set "$(KCL_EVENTS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Events are grouped based on the provided namespace'; $(NORMAL)
-	$(KUBECTL) get event --all-namespaces=false $(__KCL_NAMESPACE__EVENTS)
+	$(KUBECTL) get event --all-namespaces=false $(__KCL_NAMESPACE__EVENTS) $(|_KCL_VIEW_EVENTS_SET)
 
 _kcl_watch_events:
 	@$(INFO) '$(KCL_UI_LABEL)Watching events ...'; $(NORMAL)
-	$(KUBECTL) get event $(strip $(_X__KCL_ALL_NAMESPACES__EVENTS) --all-namespaces=true $(_X__KCL_NAMESPACE__EVENTS) $(_X__KCL_WATCH__EVENTS) --watch=true $(__KCL_WATCH_ONLY__EVENTS) )
+	$(KUBECTL) get event $(strip $(_X__KCL_ALL_NAMESPACES__EVENTS) --all-namespaces=true $(_X__KCL_NAMESPACE__EVENTS) $(_X__KCL_WATCH__EVENTS) --watch=true $(__KCL_WATCH_ONLY__EVENTS) ) $(|_KCL_WATCH_EVENTS)
 
 _kcl_watch_events_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching events-set "$(KCL_EVENTS_SET_NAME)" ...'; $(NORMAL)
-	$(KUBECTL) get event $(strip $(_X__KCL_ALL_NAMESPACES__EVENTS) $(__KCL_NAMESPACE__EVENTS) $(_X__KCL_WATCH__EVENTS) --watch=true $(__KCL_WATCH_ONLY__EVENTS) )
+	$(KUBECTL) get event $(strip $(_X__KCL_ALL_NAMESPACES__EVENTS) $(__KCL_NAMESPACE__EVENTS) $(_X__KCL_WATCH__EVENTS) --watch=true $(__KCL_WATCH_ONLY__EVENTS) ) $(|_KCL_WATCH_EVENTS_SET)

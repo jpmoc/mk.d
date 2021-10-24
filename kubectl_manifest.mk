@@ -100,7 +100,6 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_manifest                    - Diff current state with manifest'
 	@echo '    _kcl_diff_manifests                   - Diff current state with one-or-more manifests'
 	@echo '    _kcl_download_manifest                - Download a manifest'
-	@echo '    _kcl_edit_manifest                    - Edit a manifest'
 	@echo '    _kcl_explode_manifest                 - Explode a mutli-document manifest into many single-document ones'
 	@echo '    _kcl_show_manifest                    - Show everything related to a manifest'
 	@echo '    _kcl_show_manifest_content            - Show everything related to a manifest'
@@ -112,6 +111,7 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_view_manifests_set               - View set of manifests'
 	@echo '    _kcl_watch_manifests                  - Watch manifests'
 	@echo '    _kcl_watch_manifests_set              - Watch a set of manifests'
+	@echo '    _kcl_write_manifest                   - Write a manifest'
 	@echo
 
 #----------------------------------------------------------------------
@@ -156,10 +156,6 @@ _kcl_diff_manifests:
 _kcl_download_manifest:
 	@$(INFO) '$(KCL_UI_LABEL)Downloading manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
 	$(_KCL_DOWNLOAD_MANIFEST_|)wget -O - $(KCL_MANIFEST_URL) $(|_KCL_DOWNLOAD_MANIFEST)
-
-_kcl_edit_manifest:
-	@$(INFO) '$(KCL_UI_LABEL)Editing manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
-	$(EDITOR) $(KCL_MANIFEST_FILEPATH)
 
 _kcl_explode_manifest:
 	@$(INFO) '$(KCL_UI_LABEL)Exploding manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
@@ -206,3 +202,8 @@ _kcl_view_manifest_set:
 	@$(INFO) '$(KCL_UI_LABEL)Viewing manifests-set "$(KCL_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Manifests are grouped based on regex and pipe-filter'; $(NORMAL)
 	cd $(KCL_MANIFESTS_DIRPATH); ls -al $(KCL_MANIFESTS_REGEX) $(|_KCL_VIEW_MANIFESTS_SET)
+
+_kcl_write_manifest:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
+	$(EDITOR) $(KCL_MANIFEST_FILEPATH)
+

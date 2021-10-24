@@ -75,6 +75,7 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_view_destinationrules_set               - View a set of destination-rules'
 	@echo '    _kcl_watch_destinationrules                  - Watch destination-rules'
 	@echo '    _kcl_watch_destinationrules_set              - Watch a set of destination-rules'
+	@echo '    _kcl_write_destinationrules                  - Write manifest for one-or-more destination-rules'
 	@echo
 
 #----------------------------------------------------------------------
@@ -151,9 +152,14 @@ _kcl_view_destinationrules_set:
 	$(KUBECTL) get destinationrules --all-namespaces=false $(__KCL_NAMESPACE__DESTINATIONRULES) $(__KCL_OUTPUT__DESTINATIONRULES) $(__KCL_SELECTOR__DESTINATIONRULES) $(__KCL_SORT_BY__DESTINATIONRULES)
 
 _kcl_watch_destinationrules:
-	@$(INFO) '$(KCL_UI_LABEL)Watching destination-rules ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL destination-rules ...'; $(NORMAL)
 	$(KUBECTL) get destinationrules --all-namespaces=true --watch 
 
 _kcl_watch_destinationrules_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching destination-rules-set "$(KCL_DESTINATIONRULES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get destinationrules --all-namespaces=true --watch 
+
+_kcl_write_destinationrule: _kcl_write_destinationrules
+_kcl_write_destinationrules:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-moredestination-rules ...'; $(NORMAL)
+	$(EDITOR) $(KCL_DESTINATIONRULES_MANIFEST_FILEPATH)
