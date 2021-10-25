@@ -92,7 +92,7 @@ _kcl_view_events_set:
 	$(KUBECTL) get event --all-namespaces=false $(__KCL_NAMESPACE__EVENTS) $(|_KCL_VIEW_EVENTS_SET)
 
 _kcl_watch_events:
-	@$(INFO) '$(KCL_UI_LABEL)Watching events ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL events ...'; $(NORMAL)
 	$(KUBECTL) get event $(strip $(_X__KCL_ALL_NAMESPACES__EVENTS) --all-namespaces=true $(_X__KCL_NAMESPACE__EVENTS) $(_X__KCL_WATCH__EVENTS) --watch=true $(__KCL_WATCH_ONLY__EVENTS) ) $(|_KCL_WATCH_EVENTS)
 
 _kcl_watch_events_set:
