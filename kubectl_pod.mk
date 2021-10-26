@@ -115,7 +115,7 @@ __KCL_WATCH_ONLY__PODS= $(if $(KCL_PODS_WATCH_ONLY),--watch-only=$(KCL_PODS_WATC
 # Pipe parameters
 _KCL_APPLY_PODS_|?= #
 _KCL_DIFF_PODS_|?= $(_KCL_APPLY_PODS_|)
-_KCL_PORTFORWARD_POD_|?= while true; do
+_KCL_PORTFORWARD_POD_|?= while true; do #
 _KCL_TAIL_POD_|?= $(_KCL_TAIL_PODS_|) 
 _KCL_TAIL_PODS_|?= 
 _KCL_UNAPPLY_PODS_|?= $(_KCL_APPLY_PODS_|)
