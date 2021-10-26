@@ -26,7 +26,7 @@ __KCL_NAMESPACE__ISTIOINGRESSGATEWAY?= --namespace $(KCL_ISTIOINGRESSGATEWAY_NAM
 # UI parameters
 _KCL_PORTFORWARD_ISTIOINGRESSGATEWAY_|?= while true; do
 |_KCL_PORTFORWARD_ISTIOINGRESSGATEWAY?= || sleep 10; date; done
-|_KCL_SHOW_ISTIOINGRESSGATEWAY_CONFIG?= | yq eval -P '.' -'
+|_KCL_SHOW_ISTIOINGRESSGATEWAY_CONFIG?= | yq eval -P '.' -
 
 #--- Utilities
 
@@ -68,7 +68,7 @@ _view_framework_targets :: _kcl_view_framework_targets
 _kcl_view_framework_targets ::
 	@echo 'KubeCtL::Istio::IngressGateway ($(_KUBECTL_ISTIO_MK_VERSION)) targets:'
 	@echo '    dig_istioingressgateway           - Dig the ingress gateway'
-	@echo '    portforward_istioingressgateway   - Port-forward to the ingress gateway'
+	@#echo '    portforward_istioingressgateway   - Port-forward to the ingress gateway'
 	@echo
 
 #----------------------------------------------------------------------
@@ -83,9 +83,9 @@ _kcl_dig_istioingressgateway:
 	@$(INFO) '$(KCL_UI_LABEL)Dig-ing the istio-ingress-gateway'; $(NORMAL)
 	$(KCL_ISTIOINGRESSGATEWAY_DIG) $(KCL_ISTIOINGRESSGATEWAY_DNSNAME)
 
-_kcl_portforward_istioingressgateway:
-	@$(INFO) '$(KCL_UI_LABEL)Port-forwarding the istio-ingress-gateway'; $(NORMAL)
-	$(_KCL_PORTFORWARD_ISTIOINGRESSGATEWAY_|)$(KUBECTL) port-forward $(__KCL_NAMESPACE__ISTIOINGRESSGATEWAY) deployment/$(KCL_ISTIOINGRESSGATEWAY_DEPLOYMENT_NAME) $(KCL_ISTIOINGRESSGATEWAY_PORTFORWARD_PORTMAPPINGS) $(|_KCL_PORTFORWARD_ISTIOINGRESSGATEWAY)
+# _kcl_portforward_istioingressgateway:
+# 	@$(INFO) '$(KCL_UI_LABEL)Port-forwarding the istio-ingress-gateway'; $(NORMAL)
+# 	$(_KCL_PORTFORWARD_ISTIOINGRESSGATEWAY_|)$(KUBECTL) port-forward $(__KCL_NAMESPACE__ISTIOINGRESSGATEWAY) deployment/$(KCL_ISTIOINGRESSGATEWAY_DEPLOYMENT_NAME) $(KCL_ISTIOINGRESSGATEWAY_PORTFORWARD_PORTMAPPINGS) $(|_KCL_PORTFORWARD_ISTIOINGRESSGATEWAY)
 
 _KCL_SHOW_ISTIOINGRESSGATEWAY_TARGETS: _kcl_show_istioingressgateway_deployment _kcl_show_istioingressgataeway_config _kcl_show_istioingressgatewat_pod _kcl_show_istioingressgateway_service _kcl_show_istioingressgateway_description
 _kcl_show_istioingressgateway: $(_KCL_SHOW_ISTIOINGRESSGATEWAY_TARGETS)
