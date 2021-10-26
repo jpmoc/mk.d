@@ -24,7 +24,7 @@ KCL_POD_GENERATOR_NAME?= run-pod/v1
 # KCL_POD_PATCH_FILENAME?= patch.yaml
 # KCL_POD_PATCH_FILEPATH?= ./in/patch.yaml
 # KCL_POD_PORTFORWARD_ADDRESS?= localhost,10.19.21.23
-# KCL_POD_PORTFORWARD_PORTS?= 8443:8443 local-port:target-port
+# KCL_POD_PORTFORWARD_PORTMAPPINGS?= 8443:8443 local-port:target-port ...
 # KCL_POD_PORTFORWARD_TIMEOUT?= 1m0s
 KCL_POD_PRESERVE_FLAG?=true
 KCL_POD_PREVIOUS?= false
@@ -115,10 +115,12 @@ __KCL_WATCH_ONLY__PODS= $(if $(KCL_PODS_WATCH_ONLY),--watch-only=$(KCL_PODS_WATC
 # Pipe parameters
 _KCL_APPLY_PODS_|?= #
 _KCL_DIFF_PODS_|?= $(_KCL_APPLY_PODS_|)
+_KCL_PORTFORWARD_POD_|?= while true; do
 _KCL_TAIL_POD_|?= $(_KCL_TAIL_PODS_|) 
 _KCL_TAIL_PODS_|?= 
 _KCL_UNAPPLY_PODS_|?= $(_KCL_APPLY_PODS_|)
 |_KCL_EXEC_POD?=
+|_KCL_PORTFORWARD_POD?= || sleep 10; date; done
 |_KCL_SHOW_POD_CURRENTLOGS?= | tail -20
 |_KCL_SHOW_POD_PREVIOUSLOGS?= $(|_KCL_SHOW_POD_CURRENTLOGS)
 |_KCL_SNIFF_POD?= | wireshark -k -i -
@@ -169,7 +171,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_POD_PATCH_FILENAME=$(KCL_POD_PATCH_FILENAME)'
 	@echo '    KCL_POD_PATCH_FILEPATH=$(KCL_POD_PATCH_FILEPATH)'
 	@echo '    KCL_POD_PORTFORWARD_ADDRESS=$(KCL_POD_PORTFORWARD_ADDRESS)'
-	@echo '    KCL_POD_PORTFORWARD_PORTS=$(KCL_POD_PORTFORWARD_PORTS)'
+	@echo '    KCL_POD_PORTFORWARD_PORTMAPPINGS=$(KCL_POD_PORTFORWARD_PORTMAPPINGS)'
 	@echo '    KCL_POD_PORTFORWARD_TIMEOUT=$(KCL_POD_PORTFORWARD_TIMEOUT)'
 	@echo '    KCL_POD_PRESERVE_FLAG=$(KCL_POD_PRESERVE_FLAG)'
 	@echo '    KCL_POD_PREVIOUS=$(KCL_POD_PREVIOUS)'
@@ -233,6 +235,7 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_view_pods_set                    - View a set of pods'
 	@echo '    _kcl_watch_pods                       - Watching pods'
 	@echo '    _kcl_watch_pods_set                   - Watching a set of pods'
+	@echo '    _kcl_write_pods                       - Write manifest for one-or-more pods'
 	@echo
 
 #----------------------------------------------------------------------
@@ -305,10 +308,7 @@ _kcl_portforward_pod:
 	@$(WARN) 'This operation binds ports to 127.0.0.1 (host-port:container-port) but does NOT allow for bind addresses'; $(NORMAL)
 	@$(WARN) 'This operation times out after a few minutes, if the connection is idle'; $(NORMAL)
 	@$(WARN) 'This operation binds to the network namespace of the pod, that is all of its containers'; $(NORMAL)
-	@# date
-	@# $(KUBECTL) port-forward $(__KCL_NAMESPACE__POD) $(__KCL_POD_RUNNING_TIMEOUT) $(KCL_POD_NAME) $(KCL_POD_PORTFORWARD_PORTS)
-	@# date
-	while true; do $(KUBECTL) port-forward $(__KCL_ADDRESS__POD) $(__KCL_NAMESPACE__POD) $(__KCL_POD_RUNNING_TIMEOUT) pod/$(KCL_POD_NAME) $(KCL_POD_PORTFORWARD_PORTS) || sleep 10; date; done
+	$(_KCL_PORTFORWARD_POD_|)$(KUBECTL) port-forward $(__KCL_ADDRESS__POD) $(__KCL_NAMESPACE__POD) $(__KCL_POD_RUNNING_TIMEOUT) pod/$(KCL_POD_NAME) $(KCL_POD_PORTFORWARD_PORTMAPPINGS) $(|_KCL_PORTFORWARD_POD)
 
 _KCL_SHOW_POD_TARGETS?= _kcl_show_pod_allocatedresources _kcl_show_pod_logs _kcl_show_pod_object _kcl_show_pod_state _kcl_show_pod_description
 _kcl_show_pod :: $(_KCL_SHOW_POD_TARGETS)
@@ -411,3 +411,8 @@ _kcl_watch_pods:
 _kcl_watch_pods_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pods-set "$(KCL_PODS_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get pods $(strip $(__KCL_ALL_NAMESPACES__PODS) $(__KCL_FIELD_SELECTOR__PODS) $(__KCL_NAMESPACE__PODS) $(__KCL_SELECTOR__PODS) $(__KCL_SHOW_LABELS__PODS) $(_X__KCL_WATCH__PODS) --watch=true $(__KCL_WATCH_ONLY__PODS) )
+
+_kcl_write_pod: _kcl_write_pods
+_kcl_write_pods:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more pods ...'; $(NORMAL)
+	$(EDITOR) $(KCL_PODS_MANIFEST_FILEPATH)

@@ -21,35 +21,23 @@ KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME?= $(KCL_ISTIO_NAMESPACE_NAME)
 
 #--- MACROS
 
-_kcl_get_istioingressgateway_dnsname= $(call _kcl_get_istioingressgateway_dnsname_N, $(KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME))
-_kcl_get_istioingressgateway_dnsname_N= $(shell $(KUBECTL) get service --namespace $(1) istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-
-_kcl_get_istioingressgateway_ip= $(call _kcl_get_istioingressgateway_ip_N, $(KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME))
-_kcl_get_istioingressgateway_ip_N= $(shell $(KUBECTL) get service --namespace $(1) istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-
 #----------------------------------------------------------------------
 # USAGE
 #
 
 _kcl_view_framework_macros ::
 	@echo 'KubeCtL::Istio ($(_KUBECTL_ISTIO_MK_VERSION)) macros:'
-	@echo '    _kcl_get_istioingress_dnsname_{|N}          - Get the DNS-name of the istio-ingress-gateway (Namespace)'
-	@echo '    _kcl_get_istioingress_ip_{|N}               - Get the IP of the istio-ingress-gateway (Namespace)'
 	@echo
 
 _kcl_view_framework_parameters ::
 	@echo 'KubeCtL::Istio ($(_KUBECTL_ISTIO_MK_VERSION)) parameters:'
 	@echo '    KCL_ISTIO_NAMESPACE_NAME=$(KCL_ISTIO_NAMESPACE_NAME)'
 	@echo '    KCL_ISTIO_VERSION=$(KCL_ISTIO_VERSION)'
-	@echo '    KCL_ISTIOINGRESSGATEWAY_DNSNAME=$(KCL_ISTIOINGRESSGATEWAY_DNSNAME)'
-	@echo '    KCL_ISTIOINGRESSGATEWAY_IP=$(KCL_ISTIOINGRESSGATEWAY_IP)'
-	@echo '    KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME=$(KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME)'
 	@echo
 
 _view_framework_targets :: _kcl_view_framework_targets
 _kcl_view_framework_targets ::
 	@echo 'KubeCtL::Istio ($(_KUBECTL_ISTIO_MK_VERSION)) targets:'
-	@echo '    dig_istioingressgateway           - Dig the ingress gateway'
 	@echo
 
 #----------------------------------------------------------------------
@@ -69,6 +57,7 @@ MK_DIR?= .
 -include $(MK_DIR)/kubectl_istio_handler.mk
 -include $(MK_DIR)/kubectl_istio_httpapispecbinding.mk
 -include $(MK_DIR)/kubectl_istio_httpapispecs.mk
+-include $(MK_DIR)/kubectl_istio_ingressgateway.mk
 -include $(MK_DIR)/kubectl_istio_instance.mk
 -include $(MK_DIR)/kubectl_istio_meshpolicy.mk
 # -include $(MK_DIR)/kubectl_istio_policy.mk # Renamed authenticationpolicy
@@ -122,7 +111,3 @@ _kcl_show_namespace_virtualservices:
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
 #
-
-_kcl_dig_istioingressgateway:
-	@$(INFO) '$(KCL_UI_LABEL)Dig-ing the istio-ingress-gateway'; $(NORMAL)
-	$(KCL_ISTIO_DIG) $(KCL_ISTIOINGRESSGATEWAY_DNSNAME)

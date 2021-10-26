@@ -13,7 +13,7 @@ _KUBECTL_SERVICE_MK_VERSION= $(_KUBECTL_MK_VERSION)
 # KCL_SERVICE_NAMESPACE_NAME?= default
 # KCL_SERVICE_PODS_SELECTOR?= app=service-name
 # KCL_SERVICE_PORTFORWARD_ADDRESS?= localhost,10.19.21.31
-# KCL_SERVICE_PORTFORWARD_PORTS?= 8080:80 ...
+# KCL_SERVICE_PORTFORWARD_PORTMAPPINGS?= 8080:80 ...
 # KCL_SERVICE_PORTFORWARD_TIMEOUT?= 1m0s
 # KCL_SERVICE_TAILCONTAINER_NAME?= istio-proxy
 KCL_SERVICE_TAILFOLLOW_FLAG?= false
@@ -75,11 +75,13 @@ _KCL_APPLY_SERVICES_|?= #
 _KCL_CURL_SERVICE_|?=
 _KCL_DIFF_SERVICES_|?= $(_KCL_APPLY_SERVICE_|)
 _KCL_DIG_SERVICE_|?=
+_KCL_PORTFORWARD_SERVICE_|?= while true; do
 _KCL_TAIL_SERVICE_|?=
 _KCL_UNAPPLY_SERVICES_|?= $(_KCL_APPLY_SERVICES_|)
 |_KCL_CURL_SERVICE?=
 |_KCL_DIG_SERVICE?=
 |_KCL_KUSTOMIZE_SERVICE?=
+|_KCL_PORTFORWARD_SERVICE?= || sleep 10; date; done
 |_KCL_TAIL_SERVICE?= # | tee service.log
 
 # UI parameters
@@ -115,7 +117,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVICE_NAMESPACE_NAME=$(KCL_SERVICE_NAMESPACE_NAME)'
 	@echo '    KCL_SERVICE_PODS_SELECTOR=$(KCL_SERVICE_PODS_SELECTOR)'
 	@echo '    KCL_SERVICE_PORTFORWARD_ADDRESS=$(KCL_SERVICE_PORTFORWARD_ADDRESS)'
-	@echo '    KCL_SERVICE_PORTFORWARD_PORTS=$(KCL_SERVICE_PORTFORWARD_PORTS)'
+	@echo '    KCL_SERVICE_PORTFORWARD_PORTMAPPINGS=$(KCL_SERVICE_PORTFORWARD_PORTMAPPINGS)'
 	@echo '    KCL_SERVICE_PORTFORWARD_TIMEOUT=$(KCL_SERVICE_PORTFORWARD_TIMEOUT)'
 	@echo '    KCL_SERVICE_TAILCONTAINER_NAME=$(KCL_SERVICE_TAILCONTAINER_NAME)'
 	@echo '    KCL_SERVICE_TAILFOLLOW_FLAG=$(KCL_SERVICE_TAILFOLLOW_FLAG)'
@@ -226,10 +228,10 @@ _kcl_label_service:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
 
 _kcl_portforward_service:
-	@$(INFO) '$(KCL_UI_LABEL)Forwarding ports of a pod behind service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Port-forwarding a pod behind service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation binds ports to 127.0.0.1 (host-port:container-port) but does NOT allow for bind addresses'; $(NORMAL)
 	@$(WARN) 'If connection is idle, the port-forward will time out after a few minutes'; $(NORMAL)
-	while true; do $(KUBECTL) port-forward $(__KCL_ADDRESS__POD) $(__KCL_NAMESPACE__SERVICE) $(__KCL_POD_RUNNING_TIMEOUT__SERVICE) service/$(KCL_SERVICE_NAME) $(KCL_SERVICE_PORTFORWARD_PORTS) || sleep 10; date; done
+	$(_KCL_PORTFORWARD_SERVICE_|)$(KUBECTL) port-forward $(__KCL_ADDRESS__POD) $(__KCL_NAMESPACE__SERVICE) $(__KCL_POD_RUNNING_TIMEOUT__SERVICE) service/$(KCL_SERVICE_NAME) $(KCL_SERVICE_PORTFORWARD_PORTMAPPINGS) $(|_KCL_PORTFORWARD_SERVICE)
 
 _kcl_show_service: _kcl_show_service_endpoints _kcl_show_service_object _kcl_show_service_pods _kcl_show_service_state _kcl_show_service_description
 
@@ -322,4 +324,3 @@ _kcl_write_service: _kcl_write_services
 _kcl_write_services:
 	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more services ...'; $(NORMAL)
 	$(EDITOR) $(KCL_SERVICES_MANIFEST_FILEPATH)
-
