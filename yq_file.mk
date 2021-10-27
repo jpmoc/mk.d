@@ -81,3 +81,5 @@ _yq_show_file_description:
 	@$(INFO) '$(YQ_UI_LABEL)Showing content of file "$(YQ_FILE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Real path: $(realpath $(YQ_FILE_FILEPATH))'; $(NORMAL)
 	ls -al $(YQ_FILE_FILEPATH)
+
+_yq_write_file:

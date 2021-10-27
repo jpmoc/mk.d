@@ -1,6 +1,5 @@
 _KUBECTL_ISTIO_INGRESSGATEWAY_MK_VERSION=$(_KUBECTL_ISTIO_MK_VERSION)
 
-# KCL_ISTIOINGRESSGATEWAY_CURL?= curl -s
 KCL_ISTIOINGRESSGATEWAY_DEPLOYMENT_NAME?= istio-ingressgateway
 # KCL_ISTIOINGRESSGATEWAY_DIG?= dig
 # KCL_ISTIOINGRESSGATEWAY_DNSNAME?=
@@ -15,18 +14,23 @@ KCL_ISTIOINGRESSGATEWAY_URL_PORT?= :15000
 KCL_ISTIOINGRESSGATEWAY_URL_PROTOCOL?= http://
 
 # Derived parameters
-KCL_ISTIOINGRESSGATEWAY_CURL?= $(KCL_ISTIO_CURL)
 KCL_ISTIOINGRESSGATEWAY_DIG?= $(KCL_ISTIO_DIG)
 KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME?= $(KCL_ISTIO_NAMESPACE_NAME)
 KCL_ISTIOINGRESSGATEWAY_URL?= $(KCL_ISTIOINGRESSGATEWAY_URL_PROTOCOL)$(KCL_ISTIOINGRESSGATEWAY_URL_DNSNAME)$(KCL_ISTIOINGRESSGATEWAY_URL_PORT)$(KCL_ISTIOINGRESSGATEWAY_URL_PATH)
+
+KCL_ISTIOINGRESSGATEWAYCONFIG_CURL?= $(KCL_ISTIO_CURL)
+KCL_ISTIOINGRESSGATEWAYCONFIG_URL?= $(KCL_ISTIOINGRESSGATEWAY_URL)/config_dump
 
 # Option parameters
 __KCL_NAMESPACE__ISTIOINGRESSGATEWAY?= --namespace $(KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME)
 
 # UI parameters
+_KCL_SHOW_ISTIOINGRESSGATEWAYCONFIG_CONTENT|?= [ -f $(KCL_ISTIOINGRESSGATEWAY_CONFIG_FILEPATH) ] &&
+|_KCL_SHOW_ISTIOINGRESSGATEWAYCONFIG_CONTENT?=
+
 _KCL_PORTFORWARD_ISTIOINGRESSGATEWAY_|?= while true; do
 |_KCL_PORTFORWARD_ISTIOINGRESSGATEWAY?= || sleep 10; date; done
-|_KCL_SHOW_ISTIOINGRESSGATEWAY_CONFIG?= | yq eval -P '.' -
+|_KCL_SHOW_ISTIOINGRESSGATEWAY_CONFIG?= | yq eval -P 'sortKeys(..)' - # | tee envoy.yaml
 
 #--- Utilities
 
@@ -63,6 +67,11 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_ISTIOINGRESSGATEWAY_URL_PORT=$(KCL_ISTIOINGRESSGATEWAY_URL_PORT)'
 	@echo '    KCL_ISTIOINGRESSGATEWAY_URL_PROTOCOL=$(KCL_ISTIOINGRESSGATEWAY_URL_PROTOCOL)'
 	@echo
+	@echo '    KCL_ISTIOINGRESSGATEWAYCONFIG_DIRPATH=$(KCL_ISTIOINGRESSGATEWAYCONFIG_DIRPATH)'
+	@echo '    KCL_ISTIOINGRESSGATEWAYCONFIG_FILENAME=$(KCL_ISTIOINGRESSGATEWAYCONFIG_FILENAME)'
+	@echo '    KCL_ISTIOINGRESSGATEWAYCONFIG_FILEPATH=$(KCL_ISTIOINGRESSGATEWAYCONFIG_FILEPATH)'
+	@echo '    KCL_ISTIOINGRESSGATEWAYCONFIG_URL=$(KCL_ISTIOINGRESSGATEWAYCONFIG_URL)'
+	@echo
 
 _view_framework_targets :: _kcl_view_framework_targets
 _kcl_view_framework_targets ::
@@ -78,6 +87,25 @@ _kcl_view_framework_targets ::
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
 #
+
+_kcl_dump_istioingressgatewayconfig:
+	@$(INFO) '$(KCL_UI_LABEL)Dumping the istio-ingressgateway configuration'; $(NORMAL)
+	$(KCL_ISTIOINGRESSGATEWAYCONFIG_CURL) $(KCL_ISTIOINGRESSGATEWAYCONFIG_URL) $(|_KCL_DUMP_ISTIOINGRESSGATEWAYCONFIG)
+
+_kcl_show_istioingressgatewayconfig: _kcl_show_istioingressgatewayconfig_content _kcl_show_istioingressgatewayconfig_tlscertificate
+
+_kcl_show_istioingressgatewayconfig_content:
+	@$(INFO) '$(KCL_UI_LABEL)Showing content of the istio-ingressgateway configuration'; $(NORMAL)
+	@$(WARN) 'This operation works only if you have already dumped the istio-ingressgataeway config'; $(NORMAL)
+	$(if $(KCL_ISTIOINGRESSGATEWAYCONFIG_FILEPATH), \
+		$(_KCL_SHOW_ISTIOINGRESSGATEWAYCONFIG_CONTENT|)cat $(KCL_ISTIOINGRESSGATEWAYCONFIG_FILEPATH)$(|_KCL_SHOW_ISTIOINGRESSGATEWAYCONFIG_CONTENT), \
+		@echo "KCL_ISTIOINGRESSGATEWAYCONFIG_FILEPATH not set ..."\
+	)
+
+_kcl_show_istioingressgatewayconfig_tlscertificate:
+	@$(INFO) '$(KCL_UI_LABEL)Showing tls-certificate in the istio-ingressgateway configuration'; $(NORMAL)
+	@$(WARN) 'This operation works only if you have already dumped the istio-ingressgataeway config'; $(NORMAL)
+	$(_KCL_SHOW_ISTIOINGRESSGATEWAYCONFIG_CONTENT|)cat $(KCL_ISTIOINGRESSGATEWAYCONFIG_FILEPATH) | yq eval '.configs.5.dynamic_active_secrets.0.secret.tls_certificate' -
 
 _kcl_dig_istioingressgateway:
 	@$(INFO) '$(KCL_UI_LABEL)Dig-ing the istio-ingress-gateway'; $(NORMAL)
@@ -97,10 +125,6 @@ _kcl_show_istioingressgateway_deployment:
 _kcl_show_istioingressgateway_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of istio-ingressgateway'; $(NORMAL)
 	# Under construction!
-
-_kcl_show_istioingressgateway_config:
-	@$(INFO) '$(KCL_UI_LABEL)Showing configuration of istio-ingressgateway'; $(NORMAL)
-	$(KCL_ISTIOINGRESSGATEWAY_CURL) $(KCL_ISTIOINGRESSGATEWAY_URL)/config_dump $(|_KCL_SHOW_ISTIOINGRESSGATEWAY_CONFIG)
 
 _kcl_show_istioingressgateway_pod:
 	@$(INFO) '$(KCL_UI_LABEL)Showing pods of istio-ingressgateway'; $(NORMAL)

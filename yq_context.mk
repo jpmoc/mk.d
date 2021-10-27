@@ -81,6 +81,7 @@ _yq_view_framework_targets ::
 	@echo '    _yq_show_context_parameters            - Show the parameters in the context'
 	@echo '    _yq_view_contexts                      - View available contexts'
 	@echo '    _yq_view_contexts_set                  - View set of contexts'
+	@echo '    _yq_writing_contexts                   - Writing manifest for one-o-rmore contexts'
 	@echo
 
 #-----------------------------------------------------------------------
@@ -116,3 +117,9 @@ _yq_view_contexts:
 _yq_view_contexts_set:
 	@$(INFO) '$(YQ_UI_LABEL)View contexts-set "$(YQ_CONTEXTS_SET_NAME)" ...'; $(NORMAL)
 	grep -E '^[a-zA-Z0-9]' $(YQ_CONTEXTS_FILEPATH) | sed -e 's/:.*//' | grep -E '$(YQ_CONTEXTS_REGEX)'
+
+_yq_write_context: _yq_write_contexts
+_yq_write_contexts:
+	@$(INFO) '$(YQ_UI_LABEL)Writing manifest for one-or-more contexts ...'; $(NORMAL)
+	$(EDITOR) $(YQ_CONTEXTS_FILEPATH)
+
