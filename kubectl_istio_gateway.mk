@@ -53,8 +53,10 @@ __KCL_SORT_BY__GATEWAYS= $(if $(KCL_GATEWAYS_SORT_BY),--sort-by=$(KCL_GATEWAYS_S
 __KCL_WATCH_ONLY__GATEWAYS= $(if $(KCL_GATEWAYS_WATCH_ONLY),--watch-only=$(KCL_GATEWAYS_WATCH_ONLY))
 
 # UI parameters
+_KCL_UNAPPLY_GATEWAYS_|?= #-
 |_KCL_CURL_GATEWAY?=
 |_KCL_DIG_GATEWAY?=
+|_KCL_UNAPPLY_GATEWAYS?=
 
 #--- MACROS
 
@@ -241,7 +243,7 @@ _kcl_unapply_gateway: _kcl_unapply_gateways
 _kcl_unapply_gateways:
 	@$(INFO) '$(KCL_UI_LABEL)Unapplying manifest for one-or-more gateways ...'; $(NORMAL)
 	# cat $(KCL_GATEWAYS_MANIFEST_FILEPATH)
-	$(KUBECTL) delete $(__KCL_FILENAME__GATEWAYS) $(__KCL_NAMESPACE__GATEWAYS) 
+	$(_KCL_UNAPPLY_GATEWAYS_|)$(KUBECTL) delete $(__KCL_FILENAME__GATEWAYS) $(__KCL_NAMESPACE__GATEWAYS) $(|_KCL_UNAPPLY_GATEWAYS)
 
 _kcl_unlabel_gateway:
 	@$(INFO) '$(KCL_UI_LABEL)Removing labels from gateway "$(KCL_GATEWAY_NAME)" ...'; $(NORMAL)
