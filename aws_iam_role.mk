@@ -26,13 +26,13 @@ IAM_ROLES_PATH_PREFIX?= $(IAM_ROLE_PATH)
 IAM_ROLES_SET_NAME?= $(subst /,,$(IAM_ROLES_PATH_PREFIX))
 
 # Options parameters
-__IAM_ASSUME_ROLE_POLICY_DOCUMENT?= $(if $(IAM_ROLE_ASSUMEPOLICYDOCUMENT),--assume-role-policy-document $(IAM_ROLE_ASSUMEPOLICYDOCUMENT))
+__IAM_ASSUME_ROLE_POLICY_DOCUMENT= $(if $(IAM_ROLE_ASSUMEPOLICYDOCUMENT),--assume-role-policy-document $(IAM_ROLE_ASSUMEPOLICYDOCUMENT))
 __IAM_DESCRIPTION__ROLE= $(if $(IAM_ROLE_DESCRIPTION),--description $(IAM_ROLE_DESCRIPTION))
 __IAM_INSTANCE_PROFILE_NAME__ROLE= $(if $(IAM_ROLE_INSTANCEPROFILE_NAME),--instance-profile-name $(IAM_ROLE_INSTANCEPROFILE_NAME))
 __IAM_PATH_PREFIX__ROLES= $(if $(IAM_ROLES_PATH_PREFIX),--path-prefix $(IAM_ROLES_PATH_PREFIX))
 __IAM_PATH__ROLE= $(if $(IAM_ROLE_PATH),--path $(IAM_ROLE_PATH))
-__IAM_ROLE_NAME?= $(if $(IAM_ROLE_NAME),--role-name $(IAM_ROLE_NAME))
-__IAM_TAGS__ROLE?= $(if $(IAM_ROLE_TAGS_KEYVALUES),--tags $(IAM_ROLE_TAGS_KEYVALUES))
+__IAM_ROLE_NAME= $(if $(IAM_ROLE_NAME),--role-name $(IAM_ROLE_NAME))
+__IAM_TAGS__ROLE= $(if $(IAM_ROLE_TAGS_KEYVALUES),--tags $(IAM_ROLE_TAGS_KEYVALUES))
 __IAM_TAG_KEYS__ROLE?= $(if $(IAM_ROLE_TAGS_KEYS),--tag-keys $(IAM_ROLE_TAGS_KEYS))
 
 # UI parameters
@@ -147,10 +147,14 @@ _iam_untag_role:
 	$(AWS) iam untag-role $(__IAM_ROLE_NAME) $(__IAM_TAG_KEYS__ROLE)
 
 _iam_view_roles:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing roles ...'; $(NORMAL)
+	@$(INFO) '$(IAM_UI_LABEL)Viewing ALL roles ...'; $(NORMAL)
 	$(AWS) iam list-roles $(_X__IAM_PATH_PREFIX__ROLES) --query "Roles[]$(IAM_UI_VIEW_ROLES_FIELDS)"
 
 _iam_view_roles_set:
 	@$(INFO) '$(IAM_UI_LABEL)Showing roles-set "$(IAM_ROLES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Roles are grouped based on the proviced path-prefix and query-filter'; $(NORMAL)
 	$(AWS) iam list-roles $(__IAM_PATH_PREFIX__ROLES) --query "Roles[$(IAM_UI_VIEW_ROLES_SET_QUERYFILTER)]$(IAM_UI_VIEW_ROLES_SET_FIELDS)"
+
+_iam_watch_roles:
+
+_iam_watch_roles_set:
