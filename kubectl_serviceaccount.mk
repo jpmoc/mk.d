@@ -22,6 +22,7 @@ KCL_SERVICEACCOUNTS_NAMESPACE_NAME?= $(KCL_SERVICEACCOUNT_NAMESPACE_NAME)
 KCL_SERVICEACCOUNTS_SET_NAME?= $(KCL_SERVICEACCOUNTS_NAMESPACE_NAME)
 
 # Option parameters
+__KCL_AS__SERVICEACCOUNT?= --as system:serviceaccount:$(KCL_SERVICEACCOUNT_NAMESPACE_NAME):$(KCL_SERVICEACCOUNT_NAME)
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH),--filename $(KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH))
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(filter true,$(KCL_SERVICEACCOUNTS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(KCL_SERVICEACCOUNTS_MANIFEST_URL),--filename $(KCL_SERVICEACCOUNTS_MANIFEST_URL))
@@ -34,6 +35,7 @@ __KCL_PATCH__SERVICEACCOUNT?= $(if $(KCL_SERVICEACCOUNT_PATCH_CONTENT),--patch $
 _KCL_APPLY_SERVICEACCOUNTS_|?= #
 _KCL_DIFF_SERVICEACCOUNTS_|?= $(_KCL_APPLY_SERVICEACCOUNTS_|)
 _KCL_UNAPPLY_SERVICEACCOUNTS_|?= $(_KCL_APPLY_SERVICEACCOUNTS_|)
+|_KCL_SHOW_SERVICEACCOUNT_RBACRULES?=
 
 #--- MACROS
 _kcl_get_serviceaccount_secret_name= $(call _kcl_get_serviceaccount_secret_name_N, $(KCL_SERVICEACCOUNT_NAME))
@@ -82,6 +84,7 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_serviceaccount_clusterrolebindings    - Show cluster-role-bindings referring to a service-account'
 	@echo '    _kcl_show_serviceaccount_description            - Show description of a service-account'
 	@echo '    _kcl_show_serviceaccount_pods                   - Show pods using a service-account'
+	@echo '    _kcl_show_serviceaccount_rights                 - Show rights of a service-account'
 	@echo '    _kcl_show_serviceaccount_secrets                - Show the secret of a service-account'
 	@echo '    _kcl_unapply_serviceaccount                     - Un-apply a manifest for one-or-more service-accounts'
 	@echo '    _kcl_unlabel_serviceaccount                     - Un-label a service-accounts'
@@ -148,7 +151,8 @@ _kcl_patch_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Patching service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) patch serviceaccount $(__KCL_PATCH__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME)
 
-_kcl_show_serviceaccount: _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
+_KCL_SHOW_SERVICEACCOUNT_TARGETS: _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_rbacrules _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
+_kcl_show_serviceaccount: $(_KCL_SHOW_SERVICEACCOUNT_TARGETS)
 
 _kcl_show_serviceaccount_clusterrolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Showing cluster-role-bindings refering to service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
@@ -162,6 +166,10 @@ _kcl_show_serviceaccount_description:
 _kcl_show_serviceaccount_pods:
 	@$(INFO) '$(KCL_UI_LABEL)Showing pods using service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	# To be implemented!
+
+_kcl_show_serviceaccount_rbacrules:
+	@$(INFO) '$(KCL_UI_LABEL)Showing RBAC-rules of service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) auth can-i $(__KCL_AS_SERVICEACCOUNT_NAMESPACE_NAME) --list $(|_KCL_SHOW_SERVICEACCOUNT_RBACRULES)
 
 _kcl_show_serviceaccount_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Showing JWT from secret in service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)

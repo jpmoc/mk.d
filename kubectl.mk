@@ -168,7 +168,6 @@ MK_DIR?= .
 -include $(MK_DIR)/kubectl_node.mk
 -include $(MK_DIR)/kubectl_persistentvolume.mk
 -include $(MK_DIR)/kubectl_persistentvolumeclaim.mk
--include $(MK_DIR)/kubectl_plugin.mk
 -include $(MK_DIR)/kubectl_pod.mk
 -include $(MK_DIR)/kubectl_poddisruptionbudget.mk
 -include $(MK_DIR)/kubectl_podsecuritypolicy.mk
@@ -185,7 +184,7 @@ MK_DIR?= .
 -include $(MK_DIR)/kubectl_statefulset.mk
 -include $(MK_DIR)/kubectl_storageclass.mk
 -include $(MK_DIR)/kubectl_thirdpartyresource.mk
--include $(MK_DIR)/kubectl_user.mk # ???!??
+-include $(MK_DIR)/kubectl_user.mk
 -include $(MK_DIR)/kubectl_validatingwebhookconfiguration.mk
 -include $(MK_DIR)/kubectl_verticalpodautoscaler.mk
 -include $(MK_DIR)/kubectl_volumesnapshot.mk
@@ -200,39 +199,6 @@ MK_DIR?= .
 -include $(MK_DIR)/kubectl_azureassignedidentity.mk
 -include $(MK_DIR)/kubectl_azureidentity.mk
 -include $(MK_DIR)/kubectl_azureidentitybinding.mk
-
-__kcl_install_krew:
-	@$(INFO) '$(KCL_UI_LABEL)Installing dependencies...'; $(NORMAL)
-	@$(WARN) 'Install docs @ https://github.com/kubernetes-sigs/krew'; $(NORMAL)
-	set -x; cd "$$(mktemp -d)" && \
-	curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/v0.3.3/krew.{tar.gz,yaml}" && \
-	tar zxvf krew.tar.gz && \
-	KREW=./krew-"$$(uname | tr '[:upper:]' '[:lower:]')_amd64" && \
-	"$$KREW" install --manifest=krew.yaml --archive=krew.tar.gz && \
-	"$$KREW" update
-	@$(WARN) 'You need to add $$HOME/.krew/bin in your path!'; $(NORMAL)
-
-__kcl_install_kubectl:
-	@$(INFO) '$(KCL_UI_LABEL)Installing dependencies...'; $(NORMAL)
-	@$(WARN) 'Install docs @ https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl'; $(NORMAL)
-	sudo apt-get update && sudo apt-get install -y apt-transport-https
-	curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-	echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
-	sudo apt-get update
-	sudo apt-get install -y kubectl
-	which kubectl
-	kubectl version --short --client
-
-__kcl_show_version_krew:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
-	-kubectl-krew version
-
-__kcl_show_version_kubectl:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
-	kubectl version --short --client
-	# Latest version of kubectl ...
-	curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
-	@echo
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
@@ -250,4 +216,8 @@ _kcl_view_secrettypes:
 	@echo
 
 _view_versions :: _kcl_view_versions
-_kcl_view_versions :: __kcl_show_version_kubectl __kcl_show_version_krew
+_kcl_view_versions:
+	@$(INFO) '$(KCL_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
+	kubectl version --short --client
+	# Latest version of kubectl ...
+	curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
