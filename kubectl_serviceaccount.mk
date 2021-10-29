@@ -1,5 +1,9 @@
 _KUBECTL_SERVICEACCOUNT_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
+# KCL_SERVICEACCOUNT_ANNOTATION_KEY?= key1
+# KCL_SERVICEACCOUNT_ANNOTATION_VALUE?= value1
+# KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS?= key1 ...
+# KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES?= key1=value1 ...
 # KCL_SERVICEACCOUNT_LABELS_KEYVALUES?= istio-injection=enabled ...
 # KCL_SERVICEACCOUNT_NAME?= 
 # KCL_SERVICEACCOUNT_NAMESPACE_NAME?= kube-system
@@ -38,6 +42,11 @@ _KCL_UNAPPLY_SERVICEACCOUNTS_|?= $(_KCL_APPLY_SERVICEACCOUNTS_|)
 |_KCL_SHOW_SERVICEACCOUNT_RBACRULES?=
 
 #--- MACROS
+_kcl_get_serviceaccount_annotation_value= $(call _kcl_get_serviceaccount_annotation_value_K, $(KCL_SERVICEACCOUNT_ANNOTATION_KEY))
+_kcl_get_serviceaccount_annotation_value_K= $(call _kcl_get_serviceaccount_annotation_value_KN, $(1), $(KCL_SERVICEACCOUNT_NAME))
+_kcl_get_serviceaccount_annotation_value_KN= $(call _kcl_get_serviceaccount_annotation_value_KNN, $(1), $(2), $(KCL_SERVICEACCOUNT_NAMESPACE_NAME))
+_kcl_get_serviceaccount_annotation_value_KNN= $(shell $(KUBECTL) get serviceaccount --namespace $(3) $(2) --output jsonpath='{.metadata.annotations.$(strip $(1))}')
+
 _kcl_get_serviceaccount_secret_name= $(call _kcl_get_serviceaccount_secret_name_N, $(KCL_SERVICEACCOUNT_NAME))
 _kcl_get_serviceaccount_secret_name_N= $(call _kcl_get_serviceaccount_secret_name_NN, $(1), $(KCL_SERVICEACCOUNT_NAMESPACE_NAME))
 _kcl_get_serviceaccount_secret_name_NN= $(shell $(KUBECTL) get serviceaccount --namespace $(2) $(1) --output jsonpath="{.secrets[*]['name']}")
@@ -48,11 +57,16 @@ _kcl_get_serviceaccount_secret_name_NN= $(shell $(KUBECTL) get serviceaccount --
 
 _kcl_view_framework_macros ::
 	@echo 'KubeCtL::ServiceAccount ($(_KUBECTL_SERVICEACCOUNT_MK_VERSION)) macros:'
-	@echo '    _kcl_get_serviceaccount_secret_name_{|N|NN}      - Get the name of a service-account secret'
+	@echo '    _kcl_get_serviceaccount_annotation_value_{|K|KN|KNN}  - Get the value of a service-account annotation (Key,Name,Namespace)'
+	@echo '    _kcl_get_serviceaccount_secret_name_{|N|NN}           - Get the name of a service-account secret (Name,Namespace)'
 	@echo
 
 _kcl_view_framework_parameters ::
 	@echo 'KubeCtL::ServiceAccount ($(_KUBECTL_SERVICEACCOUNT_MK_VERSION)) parameters:'
+	@echo '    KCL_SERVICEACCOUNT_ANNOTATION_KEY=$(KCL_SERVICEACCOUNT_ANNOTATION_KEY)'
+	@echo '    KCL_SERVICEACCOUNT_ANNOTATION_VALUE=$(KCL_SERVICEACCOUNT_ANNOTATION_VALUE)'
+	@echo '    KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS=$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS)'
+	@echo '    KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES=$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_SERVICEACCOUNT_LABELS_KEYVALUES=$(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)'
 	@echo '    KCL_SERVICEACCOUNT_NAME=$(KCL_SERVICEACCOUNT_NAME)'
 	@echo '    KCL_SERVICEACCOUNT_NAMESPACE_NAME=$(KCL_SERVICEACCOUNT_NAMESPACE_NAME)'
@@ -151,7 +165,7 @@ _kcl_patch_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Patching service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) patch serviceaccount $(__KCL_PATCH__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME)
 
-_KCL_SHOW_SERVICEACCOUNT_TARGETS: _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_rbacrules _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
+_KCL_SHOW_SERVICEACCOUNT_TARGETS?= _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_rbacrules _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
 _kcl_show_serviceaccount: $(_KCL_SHOW_SERVICEACCOUNT_TARGETS)
 
 _kcl_show_serviceaccount_clusterrolebindings:
@@ -190,7 +204,7 @@ _kcl_unlabel_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 
 _kcl_view_serviceaccounts:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing all service-accounts ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL service-accounts ...'; $(NORMAL)
 	$(KUBECTL) get serviceaccounts --all-namespaces=true $(_X__KCL_SERVICEACCOUNTS_NAMESPACE_NAME)
 
 _kcl_view_serviceaccounts_set:
@@ -199,7 +213,7 @@ _kcl_view_serviceaccounts_set:
 	$(KUBECTL) get serviceaccounts --all-namespaces=false $(__KCL_NAMESPACE__SERVICEACCOUNTS)
 
 _kcl_watch_serviceaccounts:
-	@$(INFO) '$(KCL_UI_LABEL)Watching all service-accounts ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL service-accounts ...'; $(NORMAL)
 
 _kcl_watch_serviceaccounts_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching service-accounts-set "$(KCL_SERVICEACCOUNTS_SET_NAME)"  ...'; $(NORMAL)
