@@ -124,8 +124,8 @@ _iam_view_framework_targets ::
 	@echo '    _iam_show_managedpolicy                    - Show everything related to a managed-policy'
 	@echo '    _iam_show_managedpolicy_contextkeys        - Show context-keys of a managed-policy'
 	@echo '    _iam_show_managedpolicy_description        - Show description of a managed-policy'
-	@echo '    _iam_show_managedpolicy_document           - Show document on a managed-policy'
-	@echo '    _iam_show_managedpolicy_document_filepath  - Show content of document of managed-policy'
+	@echo '    _iam_show_managedpolicy_versioneddocument  - Show the versioned-document of a managed-policy'
+	@echo '    _iam_show_managedpolicy_document_filepath  - Show the local-document of a managed-policy'
 	@echo '    _iam_show_managedpolicy_versions           - Show versions of a managed-policy'
 	@echo '    _iam_view_managedpolicies                  - View all managed-policies'
 	@echo '    _iam_view_managedpolicies_set              - View a set of managed-policies'
@@ -163,7 +163,7 @@ _iam_detach_managedpolicy:
 	-$(if $(IAM_MANAGEDPOLICY_ROLE_NAME), $(AWS) iam detach-role-policy $(__IAM_POLICY_ARN) $(__IAM_ROLE_NAME__MANAGEDPOLICY))
 	-$(if $(IAM_MANAGEDPOLICY_USER_NAME), $(AWS) iam detach-user-policy $(__IAM_POLICY_ARN) $(__IAM_USER_NAME__MANAGEDPOLICY))
 
-_IAM_SHOW_MANAGEDPOLICY_TARGETS?= _iam_show_managedpolicy_contextkeys _iam_show_managedpolicy_document _iam_show_managedpolicy_document_filepath _iam_show_managedpolicy_versions _iam_show_managedpolicy_description
+_IAM_SHOW_MANAGEDPOLICY_TARGETS?= _iam_show_managedpolicy_contextkeys _iam_show_managedpolicy_localfiledocument _iam_show_managedpolicy_versioneddocument _iam_show_managedpolicy_description
 _iam_show_managedpolicy: $(_IAM_SHOW_MANAGEDPOLICY_TARGETS)
 
 _iam_show_managedpolicy_contextkeys:
@@ -174,8 +174,8 @@ _iam_show_managedpolicy_description:
 	@$(INFO) '$(IAM_UI_LABEL)Showing description of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
 	$(_IAM_SHOW_MANAGEDPOLICY_DESRIPTION_|)$(AWS) iam get-policy $(__IAM_POLICY_ARN) --query "Policy"
 
-_iam_show_managedpolicy_document:
-	@$(INFO) '$(IAM_UI_LABEL)Showing document-version "$(IAM_MANAGEDPOLICY_DOCUMENT_VERSION)" of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
+_iam_show_managedpolicy_versioneddocument:
+	@$(INFO) '$(IAM_UI_LABEL)Showing the version "$(IAM_MANAGEDPOLICY_DOCUMENT_VERSION)" of document attached to managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
 	$(if $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION), \
 		$(AWS) iam get-policy-version $(__IAM_POLICY_ARN) $(__IAM_VERSION_ID) --query "PolicyVersion.Document" --output json \
 	, \
@@ -183,17 +183,13 @@ _iam_show_managedpolicy_document:
 	)
 
 
-_iam_show_managedpolicy_document_filepath:
-	@$(INFO) '$(IAM_UI_LABEL)Showing local-file for document of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
+_iam_show_managedpolicy_localfiledocument:
+	@$(INFO) '$(IAM_UI_LABEL)Showing local-file representing document of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
 	$(if $(IAM_MANAGEDPOLICY_DOCUMENT_FILEPATH), \
 		jq --monochrome-output '.' $(IAM_MANAGEDPOLICY_DOCUMENT_FILEPATH) \
 	, \
 		@echo 'IAM_MANAGEDPOLICY_DOCUMENT_FILEPATH not set' \
 	)
-
-_iam_show_managedpolicy_versions:
-	@$(INFO) '$(IAM_UI_LABEL)Showing versions of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	# Not yet implamented
 
 _iam_update_managedpolicy:
 	@$(INFO) '$(IAM_UI_LABEL)Updating managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
