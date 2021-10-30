@@ -63,12 +63,12 @@ IAM_UI_VIEW_MANAGEDPOLICIES_SET_FIELDS?= $(IAM_UI_VIEW_MANAGEDPOLICIES_FIELDS)
 IAM_UI_VIEW_MANAGEDPOLICIES_SET_QUERYFILTER?=
 
 _IAM_SHOW_MANAGEDPOLICY_DESCRIPTION_|?= #
-_IAM_SHOW_MANAGEDPOLICY_DOCUMENT_|?= #
+_IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT_|?= #
+|_IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT?= # | tee policy-document.json
 
 #--- MACROS
 _iam_get_managedpolicy_arn= $(call _iam_get_managedpolicy_arn_N, $(IAM_MANAGEDPOLICY_NAME))
 # _iam_get_managedpolicy_arn_N= $(shell $(AWS) iam list-policies --query "Policies[?PolicyName=='$(strip $(1))'].Arn" --output text)
-# _iam_get_managedpolicy_arn_N= $(call _iam_get_managedpolicy_arn_NP, $(1), $(IAM_MANAGEDPOLICY_PATH))
 _iam_get_managedpolicy_arn_N= $(shell echo 'arn:aws:iam::$(IAM_MANAGEDPOLICY_AWSACCOUNT_ID):policy/$(strip $(1))')
 
 _iam_get_managedpolicy_document_version= $(call _iam_get_managedpolicy_document_version_A, $(IAM_MANAGEDPOLICY_ARN))
@@ -84,8 +84,8 @@ _iam_get_managedpolicy_name_A= $(lastword $(subst /,$(SPACE),$(IAM_MANAGEDPOLICY
 
 _iam_view_framework_macros ::
 	@echo 'AWS::IAM::ManagedPolicy ($(_AWS_IAM_MANAGEDPOLICY_MK_VERSION)) macros:'
-	@echo '    _iam_get_managedpolicy_arn_{|N|NP}              - Get the ARN of a managed-policy (Name,Path)'
-	@echo '    _iam_get_managedpolicy_document_version_{|A}    - Get the active version of the managed-policy document (Arn)'
+	@echo '    _iam_get_managedpolicy_arn_{|N}                 - Get the ARN of a managed-policy (Name)'
+	@echo '    _iam_get_managedpolicy_document_version_{|A}    - Get the current document-version of a managed-policy (Arn)'
 	@echo '    _iam_get_managedpolicy_name_{|A}                - Get the name of a managed-policy (Arn)'
 	@echo
 
@@ -120,10 +120,14 @@ _iam_view_framework_targets ::
 	@echo '    _iam_delete_managedpolicy                  - Delete a managed-policy'
 	@echo '    _iam_detach_managedpolicy                  - Detach a managed-policy'
 	@echo '    _iam_show_managedpolicy                    - Show everything related to a managed-policy'
+	@echo '    _iam_show_managedpolicy_consumers          - Show consumers of a managed-policy'
 	@echo '    _iam_show_managedpolicy_contextkeys        - Show context-keys of a managed-policy'
 	@echo '    _iam_show_managedpolicy_description        - Show description of a managed-policy'
+	@echo '    _iam_show_managedpolicy_groups             - Show groups to which is attached a managed-policy'
+	@echo '    _iam_show_managedpolicy_localfiledocument  - Show the local-document of a managed-policy'
+	@echo '    _iam_show_managedpolicy_roles              - Show roles to which is attached a managed-policy'
+	@echo '    _iam_show_managedpolicy_users              - Show users to which is attached a managed-policy'
 	@echo '    _iam_show_managedpolicy_versioneddocument  - Show the versioned-document of a managed-policy'
-	@echo '    _iam_show_managedpolicy_document_filepath  - Show the local-document of a managed-policy'
 	@echo '    _iam_show_managedpolicy_versions           - Show versions of a managed-policy'
 	@echo '    _iam_view_managedpolicies                  - View all managed-policies'
 	@echo '    _iam_view_managedpolicies_set              - View a set of managed-policies'
@@ -161,8 +165,10 @@ _iam_detach_managedpolicy:
 	-$(if $(IAM_MANAGEDPOLICY_ROLE_NAME), $(AWS) iam detach-role-policy $(__IAM_POLICY_ARN) $(__IAM_ROLE_NAME__MANAGEDPOLICY))
 	-$(if $(IAM_MANAGEDPOLICY_USER_NAME), $(AWS) iam detach-user-policy $(__IAM_POLICY_ARN) $(__IAM_USER_NAME__MANAGEDPOLICY))
 
-_IAM_SHOW_MANAGEDPOLICY_TARGETS?= _iam_show_managedpolicy_contextkeys _iam_show_managedpolicy_localfiledocument _iam_show_managedpolicy_versioneddocument _iam_show_managedpolicy_description
+_IAM_SHOW_MANAGEDPOLICY_TARGETS?= _iam_show_managedpolicy_consumers _iam_show_managedpolicy_contextkeys _iam_show_managedpolicy_localfiledocument _iam_show_managedpolicy_versioneddocument _iam_show_managedpolicy_description
 _iam_show_managedpolicy: $(_IAM_SHOW_MANAGEDPOLICY_TARGETS)
+
+_iam_show_managedpolicy_consumers: _iam_showmanagepolicy_groups _iam_show_managedpolicy_roles _iam_show_managedpolicy_users
 
 _iam_show_managedpolicy_contextkeys:
 	@$(INFO) '$(IAM_UI_LABEL)Showing context-keys of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
@@ -172,14 +178,9 @@ _iam_show_managedpolicy_description:
 	@$(INFO) '$(IAM_UI_LABEL)Showing description of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
 	$(_IAM_SHOW_MANAGEDPOLICY_DESRIPTION_|)$(AWS) iam get-policy $(__IAM_POLICY_ARN) --query "Policy"
 
-_iam_show_managedpolicy_versioneddocument:
-	@$(INFO) '$(IAM_UI_LABEL)Showing the version "$(IAM_MANAGEDPOLICY_DOCUMENT_VERSION)" of document attached to managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	$(if $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION), \
-		$(AWS) iam get-policy-version $(__IAM_POLICY_ARN) $(__IAM_VERSION_ID) --query "PolicyVersion.Document" --output json \
-	, \
-		@echo 'IAM_MANAGEDPOLICY_DOCUMENT_VERSION not set!' \
-	)
-
+_iam_show_managedpolicy_groups:
+	@$(INFO) '$(IAM_UI_LABEL)Showing groups to which is attached the managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
+	# Not yet implemented
 
 _iam_show_managedpolicy_localfiledocument:
 	@$(INFO) '$(IAM_UI_LABEL)Showing local-file representing document of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
@@ -188,6 +189,23 @@ _iam_show_managedpolicy_localfiledocument:
 	, \
 		@echo 'IAM_MANAGEDPOLICY_DOCUMENT_FILEPATH not set' \
 	)
+
+_iam_show_managedpolicy_roles:
+	@$(INFO) '$(IAM_UI_LABEL)Showing roles to which is attached the managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
+	# Not yet implemented
+
+_iam_show_managedpolicy_users:
+	@$(INFO) '$(IAM_UI_LABEL)Showing user to which is attached the managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
+	# Not yet implemented
+
+_iam_show_managedpolicy_versioneddocument:
+	@$(INFO) '$(IAM_UI_LABEL)Showing the version "$(IAM_MANAGEDPOLICY_DOCUMENT_VERSION)" of document attached to managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
+	$(if $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION), \
+		$(AWS) iam get-policy-version $(__IAM_POLICY_ARN) $(__IAM_VERSION_ID) --query "PolicyVersion.Document" --output json $(|_IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT)\
+	, \
+		@echo 'IAM_MANAGEDPOLICY_DOCUMENT_VERSION not set!' \
+	)
+
 
 _iam_update_managedpolicy:
 	@$(INFO) '$(IAM_UI_LABEL)Updating managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
@@ -201,9 +219,6 @@ _iam_view_managedpolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Showing managed-policies-set "$(IAM_MANAGEDPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Policies are grouped based on the optional attachment-status, path-prefix, scope, and query-filter'; $(NORMAL)
 	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(__IAM_PATH_PREFIX__MANAGEDPOLICIES) $(__IAM_SCOPE) --query "Policies[$(IAM_UI_VIEW_MANAGEDPOLICIES_SET_QUERYFILTER)]$(IAM_UI_VIEW_MANAGEDPOLICIES_SET_FIELDS)"
-	-$(if $(IAM_MANAGEDPOLICIES_GROUP_NAME), $(AWS) iam list-attached-group-policies $(__IAM_GROUP_NAME__MANAGEDPOLICIES) --query 'AttachedPolicies[]')
-	-$(if $(IAM_MANAGEDPOLICIES_ROLE_NAME), $(AWS) iam list-attached-role-policies $(__IAM_ROLE_NAME__MANAGEDPOLICIES) --query 'AttachedPolicies[]')
-	-$(if $(IAM_MANAGEDPOLICIES_USER_NAME), $(AWS) iam list-attached-user-policies $(__IAM_USER_NAME__MANAGEDPOLICIES) --query 'AttachedPolicies[]')
 
 _iam_watch_managedpolicies:
 
