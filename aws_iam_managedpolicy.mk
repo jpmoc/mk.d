@@ -70,7 +70,7 @@ _IAM_SHOW_MANAGEDPOLICY_DOCUMENT_|?= #
 _iam_get_managedpolicy_arn= $(call _iam_get_managedpolicy_arn_N, $(IAM_MANAGEDPOLICY_NAME))
 # _iam_get_managedpolicy_arn_N= $(shell $(AWS) iam list-policies --query "Policies[?PolicyName=='$(strip $(1))'].Arn" --output text)
 # _iam_get_managedpolicy_arn_N= $(call _iam_get_managedpolicy_arn_NP, $(1), $(IAM_MANAGEDPOLICY_PATH))
-_iam_get_managedpolicy_arn_N= $(shell echo 'arn:aws:iam::$(IAM_AWSACCOUNT_ID):policy/$(strip $(1))')
+_iam_get_managedpolicy_arn_N= $(shell echo 'arn:aws:iam::$(IAM_MANAGEDPOLICY_AWSACCOUNT_ID):policy/$(strip $(1))')
 
 _iam_get_managedpolicy_document_version= $(call _iam_get_managedpolicy_document_version_A, $(IAM_MANAGEDPOLICY_ARN))
 _iam_get_managedpolicy_document_version_A= $(shell $(AWS) iam get-policy --policy-arn $(1) --query "Policy.DefaultVersionId" --output text)
@@ -92,14 +92,7 @@ _iam_view_framework_macros ::
 
 _iam_view_framework_parameters ::
 	@echo 'AWS::IAM::ManagedPolicy ($(_AWS_IAM_MANAGEDPOLICY_MK_VERSION)) parameters:'
-	@echo '    IAM_MANAGEDPOLICIES_AWSACCOUNT_ID=$(IAM_MANAGEDPOLICIES_AWSACCOUNT_ID)'
-	@echo '    IAM_MANAGEDPOLICIES_GROUP_NAME=$(IAM_MANAGEDPOLICIES_GROUP_NAME)'
-	@echo '    IAM_MANAGEDPOLICIES_ONLY_ATTACHED=$(IAM_MANAGEDPOLICIES_ONLY_ATTACHED)'
-	@echo '    IAM_MANAGEDPOLICIES_PATH_PREFIX=$(IAM_MANAGEDPOLICIES_PATH_PREFIX)'
-	@echo '    IAM_MANAGEDPOLICIES_ROLE_NAME=$(IAM_MANAGEDPOLICIES_ROLE_NAME)'
-	@echo '    IAM_MANAGEDPOLICIES_SCOPE=$(IAM_MANAGEDPOLICIES_SCOPE)'
-	@echo '    IAM_MANAGEDPOLICIES_SET_NAME=$(IAM_MANAGEDPOLICIES_SET_NAME)'
-	@echo '    IAM_MANAGEDPOLICIES_USER_NAME=$(IAM_MANAGEDPOLICIES_USER_NAME)'
+	@echo '    IAM_MANAGEDPOLICY_AWSACCOUNT_ID=$(IAM_MANAGEDPOLICY_AWSACCOUNT_ID)'
 	@echo '    IAM_MANAGEDPOLICY_ACCOUNT_ID=$(IAM_MANAGEDPOLICY_ACCOUNT_ID)'
 	@echo '    IAM_MANAGEDPOLICY_ARN=$(IAM_MANAGEDPOLICY_ARN)'
 	@echo '    IAM_MANAGEDPOLICY_DOCUMENT=$(IAM_MANAGEDPOLICY_DOCUMENT)'
@@ -113,6 +106,13 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_MANAGEDPOLICY_REGION_ID=$(IAM_MANAGEDPOLICY_REGION_ID)'
 	@echo '    IAM_MANAGEDPOLICY_ROLE_NAME=$(IAM_MANAGEDPOLICY_ROLE_NAME)'
 	@echo '    IAM_MANAGEDPOLICY_USER_NAME=$(IAM_MANAGEDPOLICY_USER_NAME)'
+	@echo '    IAM_MANAGEDPOLICIES_GROUP_NAME=$(IAM_MANAGEDPOLICIES_GROUP_NAME)'
+	@echo '    IAM_MANAGEDPOLICIES_ONLY_ATTACHED=$(IAM_MANAGEDPOLICIES_ONLY_ATTACHED)'
+	@echo '    IAM_MANAGEDPOLICIES_PATH_PREFIX=$(IAM_MANAGEDPOLICIES_PATH_PREFIX)'
+	@echo '    IAM_MANAGEDPOLICIES_ROLE_NAME=$(IAM_MANAGEDPOLICIES_ROLE_NAME)'
+	@echo '    IAM_MANAGEDPOLICIES_SCOPE=$(IAM_MANAGEDPOLICIES_SCOPE)'
+	@echo '    IAM_MANAGEDPOLICIES_SET_NAME=$(IAM_MANAGEDPOLICIES_SET_NAME)'
+	@echo '    IAM_MANAGEDPOLICIES_USER_NAME=$(IAM_MANAGEDPOLICIES_USER_NAME)'
 	@echo
 
 _iam_view_framework_targets ::
