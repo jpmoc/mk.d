@@ -1,15 +1,15 @@
 _AWS_IAM_MK_VERSION= 0.99.0
 
-# IAM_ACCOUNT_ID?=
+# IAM_AWSACCOUNT_ID?= 123456789012
 # IAM_INPUTS_DIRPATH?= ./in/
 # IAM_OUTPUTS_DIRPATH?= ./out/
-# IAM_REGION_ID?= us-west-2
+# IAM_AWSREGION_ID?= us-west-2
 
 # Derived parameters
-IAM_ACCOUNT_ID?= $(AWS_ACCOUNT_ID)
+IAM_AWSACCOUNT_ID?= $(AWS_ACCOUNT_ID)
 IAM_INPUTS_DIRPATH?= $(AWS_INPUTS_DIRPATH)
 IAM_OUTPUTS_DIRPATH?= $(AWS_OUTPUTS_DIRPATH)
-IAM_REGION_ID?= $(AWS_REGION_ID)
+IAM_AWSREGION_ID?= $(AWS_REGION_ID)
 
 # Option parameters
 
@@ -32,10 +32,10 @@ _iam_view_framework_macros ::
 _view_framework_parameters :: _iam_view_framework_parameters
 _iam_view_framework_parameters ::
 	@echo 'AWS::IAM ($(_AWS_IAM_MK_VERSION)) parameters:'
-	@echo '    IAM_ACCOUNT_ID=$(IAM_ACCOUNT_ID)'
+	@echo '    IAM_AWSACCOUNT_ID=$(IAM_AWSACCOUNT_ID)'
+	@echo '    IAM_AWSREGION_ID=$(IAM_AWSREGION_ID)'
 	@echo '    IAM_INPUTS_DIRPATH=$(IAM_INPUTS_DIRPATH)'
 	@echo '    IAM_OUTPUTS_DIRPATH=$(IAM_OUTPUTS_DIRPATH)'
-	@echo '    IAM_REGION_ID=$(IAM_REGION_ID)'
 	@echo
 
 _view_framework_targets :: _iam_view_framework_targets
@@ -50,7 +50,7 @@ _iam_view_framework_targets ::
 # PRIVATE TARGETS
 #
 
--include $(MK_DIR)/aws_iam_account.mk
+-include $(MK_DIR)/aws_iam_accountalias.mk
 -include $(MK_DIR)/aws_iam_accesskey.mk
 -include $(MK_DIR)/aws_iam_certificate.mk
 -include $(MK_DIR)/aws_iam_inlinepolicy.mk

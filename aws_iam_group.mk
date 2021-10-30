@@ -1,15 +1,15 @@
 _AWS_IAM_GROUP_MK_VERSION= $(_AWS_IAM_MK_VERSION)
 
-# IAM_GROUP_ACCOUNT_ID?=
 # IAM_GROUP_ARN?= arn:aws:iam::123456789012:group/AdministratorGroup
+# IAM_GROUP_AWSACCOUNT_ID?= 123456789012
 # IAM_GROUP_NAME?= my-group
 IAM_GROUP_PATH?= /
 # IAM_GROUPS_PATH_PREFIX?= /
 # IAM_GROUPS_SET_NAME?= my-groups-set
 
 # Derived parameters 
-IAM_GROUP_ACCOUNT_ID?= $(IAM_ACCOUNT_ID)
 IAM_GROUP_ARN?= $(if $(IAM_GROUP_NAME),arn:aws:iam::$(IAM_GROUP_ACCOUNT_ID):group$(IAM_GROUP_PATH)$(IAM_GROUP_NAME))
+IAM_GROUP_AWSACCOUNT_ID?= $(IAM_AWSACCOUNT_ID)
 
 # Option parameters
 __IAM_GROUP_NAME= $(if $(IAM_GROUP_NAME),--group-name $(IAM_GROUP_NAME))
@@ -37,7 +37,7 @@ _iam_view_framework_macros ::
 
 _iam_view_framework_parameters ::
 	@echo 'AWS::IAM::Group ($(_AWS_IAM_GROUP_MK_VERSION)) parameters:'
-	@echo '    IAM_GROUP_ACCOUNT_ID=$(IAM_GROUP_ACCOUNT_ID)'
+	@echo '    IAM_GROUP_AWSACCOUNT_ID=$(IAM_GROUP_AWSACCOUNT_ID)'
 	@echo '    IAM_GROUP_ARN=$(IAM_GROUP_ARN)'
 	@echo '    IAM_GROUP_NAME=$(IAM_GROUP_NAME)'
 	@echo '    IAM_GROUP_PATH=$(IAM_GROUP_PATH)'
