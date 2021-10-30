@@ -159,7 +159,7 @@ _kcl_list_rolebindings:
 _kcl_list_rolebindings_set:
 	@$(INFO) '$(KCL_UI_LABEL)Listing role-bindings-set "$(KCL_ROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
 	@$(WARN) 'Role-bindings are grouped based on namespace, selector, ...'; $(NORMAL)
-	$(KUBECTL) get rolebindings --all-namespace=false $(__KCL_NAMESPACE__ROLEBINDINGS) $(__KCL_SELECTOR__ROLEBINDINGS)
+	$(KUBECTL) get rolebindings --all-namespaces=false $(__KCL_NAMESPACE__ROLEBINDINGS) $(__KCL_SELECTOR__ROLEBINDINGS)
 
 _kcl_watch_rolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL role-bindings ...'; $(NORMAL)
