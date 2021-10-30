@@ -47,11 +47,11 @@ __S3_GRANTS__OBJECT= $(if $(S3_OBJECT_GRANTS),--grants $(S3_OBJECT_GRANTS))
 # USAGE
 #
 
-_s3_view_framework_macros ::
+_s3_list_macros ::
 	@echo 'AWS::S3::Object ($(_AWS_S3_OBJECT_MK_VERSION)) macros:'
 	@echo
 
-_s3_view_framework_parameters ::
+_s3_list_parameters ::
 	@echo 'AWS::S3::Object ($(_AWS_S3_OBJECT_MK_VERSION)) parameters:'
 	@echo '    S3_OBJECT_BUCKET_MEDIAURL=$(S3_OBJECT_BUCKET_MEDIAURL)'
 	@echo '    S3_OBJECT_BUCKET_URI=$(S3_OBJECT_BUCKET_URI)'
@@ -72,7 +72,7 @@ _s3_view_framework_parameters ::
 	@echo '    S3_OBJECTS_SET_NAME=$(S3_OBJECTS_SET_NAME)'
 	@echo
 
-_s3_view_framework_targets ::
+_s3_list_targets ::
 	@echo 'AWS::S3::Object ($(_AWS_S3_OBJECT_MK_VERSION)) targets:'
 	@echo '     _s3_create_object                   - Create an object'
 	@echo '     _s3_delete_object                   - Delete an object'
@@ -81,8 +81,8 @@ _s3_view_framework_targets ::
 	@echo '     _s3_show_object_description         - Show description of an object'
 	@echo '     _s3_update_object                   - Update an object'
 	@echo '     _s3_upload_object                   - Upload an object'
-	@echo '     _s3_view_objects                    - View objects'
-	@echo '     _s3_view_objects_set                - View a set of objects'
+	@echo '     _s3_list_objects                    - List all objects'
+	@echo '     _s3_list_objects_set                - List a set of objects'
 	@echo '     _s3_watch_objects                   - Watch all objects'
 	@echo '     _s3_watch_objects_set               - Watch a set of objects'
 	@echo '     _s3_webify_object                   - Webify an object'
@@ -110,6 +110,15 @@ _s3_download_object:
 	@$(WARN) 'Transfer: $(S3_OBJECT_URI) --> $(S3_OBJECT_FILEPATH)'; $(NORMAL)
 	$(AWS) s3 cp $(S3_OBJECT_URI) $(S3_OBJECT_FILEPATH)
 
+_s3_list_objects:
+	@$(INFO) '$(S3_UI_LABEL)Listing ALL objects ...'; $(NORMAL)
+	# pstree
+
+_s3_list_objects_set:
+	@$(INFO) '$(S3_UI_LABEL)Listing objects-set "$(S3_OBJECTS_SET_NAME)" ...'; $(NORMAL)A
+	@$(WARN) 'Objects are grouped based on the provided folder'; $(NORMAL)
+	# pstree
+
 _s3_show_object: _s3_show_object_description
 
 _s3_show_object_description:
@@ -124,15 +133,6 @@ _s3_upload_object:
 	@$(WARN) 'Transfer: $(S3_OBJECT_FILEPATH) --> $(S3_OBJECT_URI)'; $(NORMAL)
 	$(AWS) s3 cp $(S3_OBJECT_FILEPATH) $(S3_OBJECT_URI)
 
-_s3_view_objects:
-	@$(INFO) '$(S3_UI_LABEL)Viewing ALL objects ...'; $(NORMAL)
-	# pstree
-
-_s3_view_objects_set:
-	@$(INFO) '$(S3_UI_LABEL)Viewing objects-set "$(S3_OBJECTS_SET_NAME)" ...'; $(NORMAL)A
-	@$(WARN) 'Objects are grouped based on the provided folder'; $(NORMAL)
-	# pstree
-	
 _s3_watch_objects:
 	@$(INFO) '$(S3_UI_LABEL)Watching ALL objects ...'; $(NORMAL)
 

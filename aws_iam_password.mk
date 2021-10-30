@@ -25,11 +25,11 @@ __IAM_PASSWORD_RESET_REQUIRED?= $(if $(filter false, $(IAM_PASSWORD_RESETREQUIRE
 # USAGE
 #
 
-_iam_view_framework_macros ::
-	@echo 'AWS::IAM::Password ($(_AWS_IAM_PASSWORD_MK_VERSION)) macros:'
-	@echo
+_iam_list_macros ::
+	@#echo 'AWS::IAM::Password ($(_AWS_IAM_PASSWORD_MK_VERSION)) macros:'
+	@#echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::Password ($(_AWS_IAM_PASSWORD_MK_VERSION)) parameters:'
 	@echo '    IAM_PASSWORD_USER_NAME=$(IAM_PASSWORD_USER_NAME)'
 	@echo '    IAM_PASSWORD_RESETREQUIRED_FLAG=$(IAM_PASSWORD_RESETREQUIRED_FLAG)'
@@ -38,7 +38,7 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_PASSWORD_STRING_OLD=$(IAM_PASSWORD_STRING_OLD)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::Password ($(_AWS_IAM_PASSWORD_MK_VERSION)) targets:'
 	@echo '    _iam_reset_password              - Reset the password of a user'
 	@echo '    _iam_set_password                - Set the default password for a user'

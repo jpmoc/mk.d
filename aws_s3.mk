@@ -17,18 +17,18 @@ S3_UI_LABEL?= $(AWS_UI_LABEL)
 # USAGE
 #
 
-_aws_view_framework_macros :: _s3_view_framework_macros
-_s3_view_framework_macros ::
-	@echo 'AWS::S3:: ($(_AWS_S3_MK_VERSION)) macros:'
-	@echo
+_aws_list_macros :: _s3_list_macros
+_s3_list_macros ::
+	@#echo 'AWS::S3:: ($(_AWS_S3_MK_VERSION)) macros:'
+	@#echo
 
-_aws_view_framework_parameters :: _s3_view_framework_parameters
-_s3_view_framework_parameters ::
+_aws_list_parameters :: _s3_list_parameters
+_s3_list_parameters ::
 	@echo 'AWS::S3:: ($(_AWS_S3_MK_VERSION)) parameters:'
 	@echo
 
-_aws_view_framework_targets :: _s3_view_framework_targets
-_s3_view_framework_targets ::
+_aws_list_targets :: _s3_list_targets
+_s3_list_targets ::
 	@echo 'AWS::S3:: ($(_AWS_S3_MK_VERSION)) targets:'
 	@echo '    _s3_view_account_limits            - View related AWS limits'
 	@echo

@@ -62,16 +62,16 @@ _sts_get_calleridentity_user_id= $(shell $(AWS) sts get-caller-identity --query 
 # USAGE
 #
 
-_view_framework_macros :: _sts_view_framework_macros
-_sts_view_framework_macros ::
+_aws_list_macros :: _sts_list_macros
+_sts_list_macros ::
 	@echo 'AWS::STS ($(_AWS_STS_MK_VERSION)) macros:'
 	@echo '    _sts_get_calleridentity_account_id       - Get the account ID of the user who made the API call'
 	@echo '    _sts_get_calleridentity_user_arn         - Get the ARN of the user who made this API call'
 	@echo '    _sts_get_calleridentity_user_id          - Get the ID of the user who made this API call'
 	@echo
 
-_view_framework_parameters :: _sts_view_framework_parameters
-_sts_view_framework_parameters ::
+_aws_list_parameters :: _sts_list_parameters
+_sts_list_parameters ::
 	@echo 'AWS::STS ($(_AWS_STS_MK_VERSION)) parameters:'
 	@echo '    STS_ASSUMECREDENTIALS_DIRPATH=$(STS_ASSUMECREDENTIALS_DIRPATH)'
 	@echo '    STS_ASSUMECREDENTIALS_FILENAME=$(STS_ASSUMECREDENTIALS_FILENAME)'
@@ -94,8 +94,8 @@ _sts_view_framework_parameters ::
 	@echo '    STS_ROLESESSION_NAME=$(STS_ROLESESSION_NAME)'
 	@echo
 
-_view_framework_targets :: _sts_view_framework_targets
-_sts_view_framework_targets ::
+_aws_list_targets :: _sts_list_targets
+_sts_list_targets ::
 	@echo 'AWS::STS ($(_AWS_STS_MK_VERSION)) targets:'
 	@echo '    _sts_assume_role                   - Assume a role with IAM'
 	@echo '    _sts_assume_role_with_iam          - Alias to above target'

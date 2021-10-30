@@ -29,8 +29,8 @@ CFE_AWSPROFILES_SET_NAME?= aws-profiles@$(CFE_AWSPROFILES_REGEX)
 __CFE_PROFILE?= $(if $(CFE_AWSPROFILE_NAME),--profile $(CFE_AWSPROFILE_NAME))
 
 # Pipe
+|_CFE_LIST_AWSPROFILES_SET?= | grep $(CFE_AWSPROFILES_REGEX)
 |_CFE_SHOW_AWSPROFILE_CREDENTIALS?= | head -1
-|_CFE_VIEW_AWSPROFILES_SET?= | grep $(CFE_AWSPROFILES_REGEX)
 
 # UI parameters
 
@@ -54,7 +54,7 @@ _cfe_get_awsprofile_parameter_value_NP= $(shell $(AWS) configure get $(1) --prof
 # USAGE
 #
 
-_cfe_view_framework_macros ::
+_cfe_list_macros ::
 	@echo 'AWS::ConFigurE::AwsProfile ($(_AWS_CONFIGURE_AWSPROFILE_MK_VERSION)) macros:'
 	@echo '    _cfe_get_awsprofile_parameter_awsaccesskeyid_{|P}      - Get the access-key-id of an AWS-profile (Profile)'
 	@echo '    _cfe_get_awsprofile_parameter_awssecretaccesskey_{|P}  - Get the secret-access-key of an AWS-profile (Profile)'
@@ -62,7 +62,7 @@ _cfe_view_framework_macros ::
 	@echo '    _cfe_get_awsprofile_parameter_value_{|N|NP}            - Get the parameter value in an AWS-profile (Name,Profile)'
 	@echo
 
-_cfe_view_framework_parameters ::
+_cfe_list_parameters ::
 	@echo 'AWS::ConFigurE::AwsProfile ($(_AWS_CONFIGURE_AWSPROFILE_MK_VERSION)) parameters:'
 	@echo '    CFE_AWSPROFILE_COPY_NAME=$(CFE_AWSPROFILE_COPY_NAME)'
 	@echo '    CFE_AWSPROFILE_NAME=$(CFE_AWSPROFILE_NAME)'
@@ -79,11 +79,13 @@ _cfe_view_framework_parameters ::
 	@echo '    CFE_AWSPROFILES_SET_NAME=$(CFE_AWSPROFILES_SET_NAME)'
 	@echo
 
-_cfe_view_framework_targets ::
+_cfe_list_targets ::
 	@echo 'AWS::ConFigurE::AwsProfile ($(_AWS_CONFIGURE_AWSPROFILE_MK_VERSION)) targets:'
 	@echo '    _cfe_copy_awsprofile                      - Copy an AWS-profile'
 	@echo '    _cfe_create_awsprofile                    - Create an AWS-profile'
 	@echo '    _cfe_delete_awsprofile                    - Delete an AWS-profile'
+	@echo '    _cfe_list_awsprofiles                     - List all AWS-profiles'
+	@echo '    _cfe_list_awsprofiles_set                 - List a set of AWS-profiles'
 	@echo '    _cfe_get_awsprofile_parametervalue        - Get the value of a parameter in an AWS-profile'
 	@echo '    _cfe_set_awsprofile_parametervalue        - Set the value of a parameter in an AWS-profile'
 	@echo '    _cfe_show_awsprofile                      - Show everything related to an AWS-profile'
@@ -91,8 +93,6 @@ _cfe_view_framework_targets ::
 	@echo '    _cfe_show_awsprofile_environment          - Show environment of an AWS-profile'
 	@echo '    _cfe_show_awsprofile_shellexports         - Show shell-exports for an AWS-profile'
 	@echo '    _cfe_update_awsprofile                    - Update the content of an AWS-profile'
-	@echo '    _cfe_view_awsprofiles                     - View AWS-profiles'
-	@echo '    _cfe_view_awsprofiles_set                 - View a set of AWS-profiles'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -174,11 +174,11 @@ _cfe_update_awsprofile:
 	$(AWS) configure set aws_secret_access_key $(CFE_AWSPROFILE_PARAMETER_AWSSECRETACCESSKEY) $(__CFE_PROFILE)
 	$(AWS) configure set aws_session_token $(CFE_AWSPROFILE_PARAMETER_AWSSESSIONTOKEN) $(__CFE_PROFILE)
 
-_cfe_view_awsprofiles:
-	@$(INFO) '$(CFE_UI_LABEL)Viewing AWS-profiles ...'; $(NORMAL)
+_cfe_list_awsprofiles:
+	@$(INFO) '$(CFE_UI_LABEL)Listing ALL AWS-profiles ...'; $(NORMAL)
 	crudini --get $(CFE_AWSPROFILES_CREDENTIALS_FILEPATH)
 
-_cfe_view_awsprofiles_set:
-	@$(INFO) '$(CFE_UI_LABEL)Viewing AWS-profiles-set "$(CFE_AWSPROFILES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'AWS_profiles are igrouped basd on the regex'; $(NORMAL)
-	crudini --get $(CFE_AWSPROFILES_CREDENTIALS_FILEPATH) $(|_CFE_VIEW_AWSPROFILES_SET)
+_cfe_list_awsprofiles_set:
+	@$(INFO) '$(CFE_UI_LABEL)Listing AWS-profiles-set "$(CFE_AWSPROFILES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'AWS_profiles are grouped basd on the regex'; $(NORMAL)
+	crudini --get $(CFE_AWSPROFILES_CREDENTIALS_FILEPATH) $(|_CFE_LIST_AWSPROFILES_SET)

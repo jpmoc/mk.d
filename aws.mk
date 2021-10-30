@@ -93,9 +93,9 @@ _aws_get_user_arn_P= $(shell $(AWS) sts get-caller-identity --query 'UserArn' --
 # USAGE
 #
 
-_view_framework_macros :: _aws_view_framework_macros
-_aws_view_framework_macros ::
-	@echo 'AWS ($(_AWS_MK_VERSION)) macros:'
+_list_macros :: _aws_list_macros
+_aws_list_macros ::
+	@echo 'AWS:: ($(_AWS_MK_VERSION)) macros:'
 	@echo '    _aws_get_account_id_{|P}                           - Get AWS account ID from AWS profile (Profile)'
 	@echo '    _aws_get_profile_accesskey_id_{|P|PF}              - Get an AWS_ACCESS_KEY_ID (Profile, File)'
 	@echo '    _aws_get_profile_assumedrole_arn_{|P|PF}           - Get the assumed-role ARN (Profile, File)'
@@ -107,9 +107,9 @@ _aws_view_framework_macros ::
 	@echo
 
 
-_view_framework_parameters :: _aws_view_framework_parameters
-_aws_view_framework_parameters ::
-	@echo 'AWS ($(_AWS_MK_VERSION)) parameters:'
+_list_parameters :: _aws_list_parameters
+_aws_list_parameters ::
+	@echo 'AWS:: ($(_AWS_MK_VERSION)) parameters:'
 	@echo '    AWS=$(AWS)'
 	@echo '    AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)'
 	@echo '    AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)'
@@ -140,8 +140,8 @@ _aws_view_framework_parameters ::
 	@echo '    AWS_SESSION_TOKEN=$(AWS_SESSION_TOKEN)'
 	@echo
 
-_view_framework_targets :: _aws_view_framework_targets
-_aws_view_framework_targets ::
+_list_targets :: _aws_list_targets
+_aws_list_targets ::
 	@echo 'AWS ($(_AWS_MK_VERSION)) targets:'
 	@echo '    _aws_install_dependencies              - Install dependencies'
 	@echo '    _aws_view_limits                       - View region and account limits'

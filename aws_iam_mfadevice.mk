@@ -34,7 +34,8 @@ __IAM_USER_NAME_MFADEVICE= $(if $(IAM_MFADEVICE_USER_NAME),--user-name $(IAM_MFA
 __IAM_VIRTUAL_MFA_DEVICE_NAME= $(if $(IAM_MFADEVICE_NAME),--virtual-mfa-device-name $(IAM_MFADEVICE_NAME))
 
 # UI variables
-IAM_UI_VIEW_MFADEVICES_FIELDS?= .{SerialNumber:SerialNumber,EnableDate:EnableDate}
+IAM_UI_LIST_MFADEVICES_FIELDS?= .{SerialNumber:SerialNumber,EnableDate:EnableDate}
+IAM_UI_LIST_MFADEVICES_SET_FIELDS?= $(IAM_UI_LIST_MFADEVICES_FIELDS)
 
 #--- MACROS
 _iam_get_mfadevice_arn= $(call _iam_get_user_mfadevice_arn_U, $(IAM_MFADEVICE_NAME))
@@ -44,12 +45,12 @@ _iam_get_mfadevice_arn_U= $(shell echo arn:aws:iam::$(AWS_ACCOUNT_ID):mfa/$(stri
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::MfaDevice ($(_AWS_IAM_MFADEVICE_MK_VERSION)) macros:'
 	@echo '    _iam_get_mfadevice_arn_{|U}     - Get the ARN of MFA-device of a user (Username)'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::MfaDevice ($(_AWS_IAM_MFADEVICE_MK_VERSION)) parameters:'
 	@echo '    IAM_MFADEVICE_ARN=$(IAM_MFADEVICE_ARN)'
 	@echo '    IAM_MFADEVICE_BOOTSTRAPMETHOD=$(IAM_MFADEVICE_BOOTSTRAPMETHOD)'
@@ -64,14 +65,14 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_MFADEVICE_USER_NAME=$(IAM_MFADEVICE_USER_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::MfaDevice ($(_AWS_IAM_MFADEVICE_MK_VERSION)) targets:'
 	@echo '    _iam_attach_mfadevice                - Attach a MFA-device to a user'
 	@echo '    _iam_create_mfadevice                - Create a MFA-device'
 	@echo '    _iam_delete_mfadevice                - Delete a MFA-device'
 	@echo '    _iam_detach_mfadevice                - Detach a MFA-device from a user'
-	@echo '    _iam_view_mfadevices                 - View all existing MFA-devices'
-	@echo '    _iam_view_mfadevices_set             - View a set of MFA-devices'
+	@echo '    _iam_list_mfadevices                 - List all existing MFA-devices'
+	@echo '    _iam_list_mfadevices_set             - List a set of MFA-devices'
 	@echo
 
 #----------------------------------------------------------------------
@@ -102,11 +103,11 @@ _iam_resync_mfadevice:
 	@$(INFO) '$(IAM_UI_LABEL)Resyncing MFA-device "$(IAM_MFADEVICE_NAME)" from user "$(IAM_MFADEVICE_USER_NAME)" ...'; $(NORMAL)
 	$(AWS) iam deactivate-mfa-device $(__IAM_AUTHENTICATION_CODE_1) $(__IAM_AUTHENTICATION_CODE_2) $(__IAM_SERIAL_NUMBER) $(__IAM_USER_NAME_MFADEVICE)
 
-_iam_view_mfadevices:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing all MFA-devices ...'; $(NORMAL)
-	$(AWS) iam list-virtual-mfa-devices $(_X__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(IAM_UI_VIEW_MFADEVICES_FIELDS)"
+_iam_list_mfadevices:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL MFA-devices ...'; $(NORMAL)
+	$(AWS) iam list-virtual-mfa-devices $(_X__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(IAM_UI_LIST_MFADEVICES_FIELDS)"
 
-_iam_view_mfadevices_set:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing all MFA-devices ...'; $(NORMAL)
+_iam_list_mfadevices_set:
+	@$(INFO) '$(IAM_UI_LABEL)List all MFA-devices ...'; $(NORMAL)
 	@$(WARN) 'MFA devices are split in 2+ sets: Assigned, Unassigned, and Any'; $(NORMAL)
-	$(AWS) iam list-virtual-mfa-devices $(__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(IAM_UI_VIEW_MFADEVICES_FIELDS)"
+	$(AWS) iam list-virtual-mfa-devices $(__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(IAM_UI_LIST_MFADEVICES_SET_FIELDS)"

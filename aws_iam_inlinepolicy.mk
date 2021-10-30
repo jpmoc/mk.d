@@ -35,9 +35,9 @@ __IAM_USER_NAME__INLINEPOLICY= $(if $(IAM_INLINEPOLICY_USER_NAME),--user-name $(
 __IAM_USER_NAME__INLINEPOLICIES= $(if $(IAM_INLINEPOLICIES_USER_NAME),--user-name $(IAM_INLINEPOLICIES_USER_NAME))
 
 # UI parameters 
-IAM_UI_VIEW_INLINEPOLICIES_FIELDS?=
-IAM_UI_VIEW_INLINEPOLICIES_SET_FIELDS?= $(IAM_UI_VIEW_INLINEPOLICIES_FIELDS)
-IAM_UI_VIEW_INLINEPOLICIES_SET_QUERYFILTER?=
+IAM_UI_LIST_INLINEPOLICIES_FIELDS?=
+IAM_UI_LIST_INLINEPOLICIES_SET_FIELDS?= $(IAM_UI_LIST_INLINEPOLICIES_FIELDS)
+IAM_UI_LIST_INLINEPOLICIES_SET_QUERYFILTER?=
 
 #--- MACROS
 
@@ -45,11 +45,11 @@ IAM_UI_VIEW_INLINEPOLICIES_SET_QUERYFILTER?=
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::InlinePolicy ($(_AWS_IAM_INLINEPOLICY_MK_VERSION)) macros:'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::InlinePolicy ($(_AWS_IAM_INLINEPOLICY_MK_VERSION)) parameters:'
 	@echo '    IAM_INLINEPOLICIES_GROUP_NAME=$(IAM_INLINEPOLICIES_GROUP_NAME)'
 	@echo '    IAM_INLINEPOLICIES_ROLE_NAME=$(IAM_INLINEPOLICIES_ROLE_NAME)'
@@ -65,15 +65,15 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_INLINEPOLICY_USER_NAME=$(IAM_INLINEPOLICY_USER_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::InlinePolicy ($(_AWS_IAM_INLINEPOLICY_MK_VERSION)) targets:'
 	@echo '    _iam_create_inlinepolicy                  - Create a new inline-oplicy'
 	@echo '    _iam_delete_inlinepolicy                  - Delete an inline-policy'
 	@echo '    _iam_show_inlinepolicy                    - Show everything related to an inline-policy'
 	@echo '    _iam_show_inlinepolicy_description        - Show the description of an inline-policy'
 	@echo '    _iam_show_inlinepolicy_document           - Show the document of an inline-policy'
-	@echo '    _iam_view_inlinepolicies                  - View inline-policies'
-	@echo '    _iam_view_inlinepolicies_set              - View a set of inline-policies'
+	@echo '    _iam_list_inlinepolicies                  - List all inline-policies'
+	@echo '    _iam_list_inlinepolicies_set              - List a set of inline-policies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -92,7 +92,21 @@ _iam_delete_inlinepolicy:
 	-$(if $(IAM_INLINEPOLICY_ROLE_NAME),$(AWS) iam delete-role-policy $(__IAM_POLICY_NAME__INLINEPOLICY) $(__IAM_ROLE_NAME__INLINEPOLICY))
 	-$(if $(IAM_INLINEPOLICY_USER_NAME),$(AWS) iam delete-user-policy $(__IAM_POLICY_NAME__INLINEPOLICY) $(__IAM_USER_NAME__INLINEPOLICY))
 
-_iam_show_inlinepolicy: _iam_show_inlinepolicy_document _iam_show_inlinepolicy_description
+_iam_list_inlinepolicies:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL inline-policies ...'; $(NORMAL)
+	$(if $(IAM_INLINEPOLICIES_GROUP_NAME),$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEPOLICIES) --query 'PolicyNames[]')
+	$(if $(IAM_INLINEPOLICIES_ROLE_NAME),$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEPOLICIES) --query 'PolicyNames[]')
+	$(if $(IAM_INLINEPOLICIES_USER_NAME),$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEPOLICIES) --query 'PolicyNames[]')
+
+_iam_list_inlinepolicies_set:
+	@$(INFO) '$(IAM_UI_LABEL)Listing inline-policies-set "$(IAM_INLINEPOLICIES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Inline-policies are grouped based on the query-filter'; $(NORMAL)
+	$(if $(IAM_INLINEPOLICIES_GROUP_NAME),$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEPOLICIES) --query 'PolicyNames[$(IAM_UI_LIST_INLINEPOLICIES_SET_QUERYFILTER)]')
+	$(if $(IAM_INLINEPOLICIES_ROLE_NAME),$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEPOLICIES) --query 'PolicyNames[$(IAM_UI_LIST_INLINEPOLICIES_SET_QUERYFILTER)]')
+	$(if $(IAM_INLINEPOLICIES_USER_NAME),$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEPOLICIES) --query 'PolicyNames[$(IAM_UI_LIST_INLINEPOLICIES_SET_QUERYFILTER)]')
+
+_IAM_SHOW_INLINEPOLICY_TARGETS?= _iam_show_inlinepolicy_document _iam_show_inlinepolicy_description
+_iam_show_inlinepolicy: $(_IAM_SHOW_INLINEPOLICY_TARGETS)
 
 _iam_show_inlinepolicy_description:
 
@@ -101,16 +115,3 @@ _iam_show_inlinepolicy_document:
 	$(if $(IAM_INLINEPOLICY_GROUP_NAME),$(AWS) iam get-group-policy $(__IAM_GROUP_NAME__INLINEPOLICY) $(__IAM_POLICY_NAME__INLINEPOLICY) --output json)
 	$(if $(IAM_INLINEPOLICY_ROLE_NAME),$(AWS) iam get-role-policy $(__IAM_POLICY_NAME__INLINEPOLICY) $(__IAM_ROLE_NAME__INLINEPOLICY) --output json)
 	$(if $(IAM_INLINEPOLICY_USER_NAME),$(AWS) iam get-user-policy $(__IAM_POLICY_NAME__INLINEPOLICY) $(__IAM_USER_NAME__INLINEPOLICY) --output json)
-
-_iam_view_inlinepolicies:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing inline-policies ...'; $(NORMAL)
-	$(if $(IAM_INLINEPOLICIES_GROUP_NAME),$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEPOLICIES) --query 'PolicyNames[]')
-	$(if $(IAM_INLINEPOLICIES_ROLE_NAME),$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEPOLICIES) --query 'PolicyNames[]')
-	$(if $(IAM_INLINEPOLICIES_USER_NAME),$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEPOLICIES) --query 'PolicyNames[]')
-
-_iam_view_inlinepolicies_set:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing inline-policies-set "$(IAM_INLINEPOLICIES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Inline-policies are grouped based on the query-filter'; $(NORMAL)
-	$(if $(IAM_INLINEPOLICIES_GROUP_NAME),$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEPOLICIES) --query 'PolicyNames[$(IAM_UI_VIEW_INLINEPOLICIES_SET_QUERYFILTER)]')
-	$(if $(IAM_INLINEPOLICIES_ROLE_NAME),$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEPOLICIES) --query 'PolicyNames[$(IAM_UI_VIEW_INLINEPOLICIES_SET_QUERYFILTER)]')
-	$(if $(IAM_INLINEPOLICIES_USER_NAME),$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEPOLICIES) --query 'PolicyNames[$(IAM_UI_VIEW_INLINEPOLICIES_SET_QUERYFILTER)]')

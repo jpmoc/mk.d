@@ -21,18 +21,18 @@ __CFE_SERVICE_NAME?= $(if $(CFE_SERVICEMODEL_SERVICE_NAME), --service-name $(CFE
 # USAGE
 #
 
-_cfe_view_framework_macros ::
+_cfe_list_macros ::
 	@echo 'AWS::ConFigurE::ServiceModel ($(_AWS_CONFIGURE_SERVICEMODEL_VERSION)) macros:'
 	@echo
 
-_cfe_view_framework_parameters ::
+_cfe_list_parameters ::
 	@echo 'AWS::ConFigurE::ServiceModel ($(_AWS_CONFIGURE_SERVICEMODEL_VERSION)) parameters:'
 	@echo '    CFE_SERVICEMODEL_CONTENT=$(CFE_SERVICEMODEL_CONTENT)'
 	@echo '    CFE_SERVICEMODEL_CONTENT_FILEPATH=$(CFE_SERVICEMODEL_CONTENT_FILEPATH)'
 	@echo '    CFE_SERVICEMODEL_SERVICE_NAME=$(CFE_SERVICEMODEL_SERVICE_NAME)'
 	@echo
 
-_cfe_view_framework_targets ::
+_cfe_list_targets ::
 	@echo 'AWS::ConFigurE::ServiceModel ($(_AWS_CONFIGURE_SERVICEMODEL_MK_VERSION)) targets:'
 	@echo '    _cfe_create_servicemodel                    - Create an service-model'
 	@echo 

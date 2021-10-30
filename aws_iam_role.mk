@@ -37,9 +37,9 @@ __IAM_TAG_KEYS__ROLE?= $(if $(IAM_ROLE_TAGS_KEYS),--tag-keys $(IAM_ROLE_TAGS_KEY
 
 # UI parameters
 IAM_UI_SHOW_ROLE_FIELDS?=
-IAM_UI_VIEW_ROLES_FIELDS?= .{createDate:CreateDate,RoleId:RoleId,RoleName:RoleName,path:Path}
-IAM_UI_VIEW_ROLES_SET_FIELDS?= $(IAM_UI_VIEW_ROLES_FIELDS)
-IAM_UI_VIEW_ROLES_SET_QUERYFILTER?=
+IAM_UI_LIST_ROLES_FIELDS?= .{createDate:CreateDate,RoleId:RoleId,RoleName:RoleName,path:Path}
+IAM_UI_LIST_ROLES_SET_FIELDS?= $(IAM_UI_LIST_ROLES_FIELDS)
+IAM_UI_LIST_ROLES_SET_QUERYFILTER?=
 
 #--- MACROS
 _iam_get_role_arn= $(call _iam_get_role_arn_N, $(IAM_ROLE_NAME))
@@ -53,13 +53,13 @@ _iam_get_role_name_A= $(lastword $(subst /,$(SPACE),$(1)) )
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::Role ($(_AWS_IAM_ROLE_MK_VERSION)) macros:'
 	@echo '    _iam_get_role_arn_{|N}                   - Get the ARN of a role (Name)'
 	@echo '    _iam_get_role_name_{|A}                  - Get the name of a role (Arn)'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::Role ($(_AWS_IAM_ROLE_MK_VERSION)) parameters:'
 	@echo '    IAM_ROLE_ACCOUNT_ID=$(IAM_ROLE_ACCOUNT_ID)'
 	@echo '    IAM_ROLE_ARN=$(IAM_ROLE_ARN)'
@@ -76,20 +76,20 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_ROLES_SET_NAME=$(IAM_ROLES_SET_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::Role ($(_AWS_IAM_ROLE_MK_VERSION)) targets:'
 	@echo '    _iam_attach_role                         - Attach a role to an instance-profile'
 	@echo '    _iam_create_role                         - Create a role'
 	@echo '    _iam_delete_role                         - Delete an existing role'
 	@echo '    _iam_detach_role                         - Detach a role from an instance-profile'
+	@echo '    _iam_list_roles                          - List all roles for this account'
+	@echo '    _iam_list_roles_set                      - List a set of roles'
 	@echo '    _iam_show_role                           - Show everything related to a role'
 	@echo '    _iam_show_role_assumepolicydocument      - Show the assume-policy document of a role'
 	@echo '    _iam_show_role_description               - Show description of a role'
 	@echo '    _iam_show_role_managedpolicies           - Show managed-policies attached to a role'
 	@echo '    _iam_show_role_inlinepolicies            - Show inline-policies in a role'
 	@echo '    _iam_show_role_policies                  - Show all policies in a role'
-	@echo '    _iam_view_roles                          - View all roles for this account'
-	@echo '    _iam_view_roles_set                      - View a set of roles'
 	@echo
 
 #----------------------------------------------------------------------
@@ -119,7 +119,17 @@ _iam_detach_role:
 	@$(INFO) '$(IAM_UI_LABEL)Detaching/Removing role "$(IAM_ROLE_NAME)" ...'; $(NORMAL)
 	$(AWS) iam remove-role-from-instance-profile $(__IAM_INSTANCE_PROFILE_NAME__ROLE) $(__IAM_ROLE_NAME)
 
-_iam_show_role:: _iam_show_role_assumepolicydocument _iam_show_role_policies _iam_show_role_description
+_iam_list_roles:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL roles ...'; $(NORMAL)
+	$(AWS) iam list-roles $(_X__IAM_PATH_PREFIX__ROLES) --query "Roles[]$(IAM_UI_LIST_ROLES_FIELDS)"
+
+_iam_list_roles_set:
+	@$(INFO) '$(IAM_UI_LABEL)Showing roles-set "$(IAM_ROLES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Roles are grouped based on the proviced path-prefix and query-filter'; $(NORMAL)
+	$(AWS) iam list-roles $(__IAM_PATH_PREFIX__ROLES) --query "Roles[$(IAM_UI_LIST_ROLES_SET_QUERYFILTER)]$(IAM_UI_LIST_ROLES_SET_FIELDS)"
+
+_IAM_SHOW_ROLE_TARGETS?= _iam_show_role_assumepolicydocument _iam_show_role_policies _iam_show_role_description
+_iam_show_role: $(_IAM_SHOW_ROLE_TARGETS)
 
 _iam_show_role_assumepolicydocument:
 	@$(INFO) '$(IAM_UI_LABEL)Showing assume-policy document for role "$(IAM_ROLE_NAME)" ...'; $(NORMAL)
@@ -146,15 +156,6 @@ _iam_tag_role:
 _iam_untag_role:
 	@$(INFO) '$(IAM_UI_LABEL)Untagging role "$(IAM_ROLE_NAME)" ...'; $(NORMAL)
 	$(AWS) iam untag-role $(__IAM_ROLE_NAME) $(__IAM_TAG_KEYS__ROLE)
-
-_iam_view_roles:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing ALL roles ...'; $(NORMAL)
-	$(AWS) iam list-roles $(_X__IAM_PATH_PREFIX__ROLES) --query "Roles[]$(IAM_UI_VIEW_ROLES_FIELDS)"
-
-_iam_view_roles_set:
-	@$(INFO) '$(IAM_UI_LABEL)Showing roles-set "$(IAM_ROLES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Roles are grouped based on the proviced path-prefix and query-filter'; $(NORMAL)
-	$(AWS) iam list-roles $(__IAM_PATH_PREFIX__ROLES) --query "Roles[$(IAM_UI_VIEW_ROLES_SET_QUERYFILTER)]$(IAM_UI_VIEW_ROLES_SET_FIELDS)"
 
 _iam_watch_roles:
 

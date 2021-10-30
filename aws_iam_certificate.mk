@@ -22,12 +22,12 @@ _iam_get_certificate_arn_N=$(shell $(AWS) iam get-server-certificate --server-ce
 #----------------------------------------------------------------------
 # USAGE
 #
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::Certificate ($(_AWS_IAM_CERTIFICATE_MK_VERSION)) macros:'
 	@echo '    _iam_get_certificate_arn_{|N}        - Get the ARN of a current certificate'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::Certificate ($(_AWS_IAM_CERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    IAM_CERTIFICATE_BODY=$(IAM_CERTIFICATE_BODY)'
 	@echo '    IAM_CERTIFICATE_CHAIN=$(IAM_CERTIFICATE_CHAIN)'
@@ -35,7 +35,7 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_CERTIFICATE_PRIVATE_KEY=$(IAM_CERTIFICATE_PRIVATE_KEY)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::Certificate ($(_AWS_IAM_CERTIFICATE_MK_VERSION)) targets:'
 	@echo '    _iam_show_certificate_content        - Show PEM-encoded certificate, CA bundle, metadata'
 	@echo '    _iam_show_certificate_metadata       - Show the metadata of the current certificate'

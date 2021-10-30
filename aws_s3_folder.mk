@@ -59,11 +59,11 @@ __S3_WEBSITE_REDIRECT=
 # USAGE
 #
 
-_s3_view_framework_macros ::
-	@echo 'AWS::S3::Folder ($(_AWS_S3_FOLDER_MK_VERSION)) macros:'
-	@echo
+_s3_list_macros ::
+	@#echo 'AWS::S3::Folder ($(_AWS_S3_FOLDER_MK_VERSION)) macros:'
+	@#echo
 
-_s3_view_framework_parameters ::
+_s3_list_parameters ::
 	@echo 'AWS::S3::Folder ($(_AWS_S3_FOLDER_MK_VERSION)) parameters:'
 	@echo '    S3_FOLDER_BUCKET_NAME=$(S3_FOLDER_BUCKET_NAME)'
 	@echo '    S3_FOLDER_CACHE_CONTROL=$(S3_FOLDER_CACHE_CONTROL)'
@@ -80,15 +80,16 @@ _s3_view_framework_parameters ::
 	@echo '    S3_FOLDERS_SET_NAME=$(S3_FOLDERS_SET_NAME)'
 	@echo
 
-_s3_view_framework_targets ::
+_s3_list_targets ::
 	@echo 'AWS::S3::Folder ($(_AWS_S3_FOLDER_MK_VERSION)) targets:'
 	@echo '     _s3_create_folder                   - Create a folder'
 	@echo '     _s3_delete_folder                   - Delete a folder'
+	@echo '     _s3_list_folders                    - List all folders'
+	@echo '     _s3_list_folders_set                - List a set of folders'
 	@echo '     _s3_pull_folder                     - Pull content of a folder'
 	@echo '     _s3_push_folder                     - Push content to a folder'
 	@echo '     _s3_show_folder                     - Show everything related to a folder'
 	@echo '     _s3_show_folder_description         - Show description of a folder'
-	@echo '     _s3_view_folders                    - View folders'
 	@echo
 
 #----------------------------------------------------------------------
@@ -105,6 +106,12 @@ _s3_create_folder:
 _s3_deleting_folder: 
 	@$(INFO) '$(S3_UI_LABEL)Deleting folder "$(S3_FOLDER_NAME)" ...'; $(NORMAL)
 	$(AWS) s3 rm $(__S3_DRYRUN) $(_X__S3_EXCLUDE) $(_X__S3_INCLUDE) $(__S3_ONLY_SHOW_ERRORS) $(__S3_QUIET) $(_X__S3_RECURSIVE) $(__S3_REQUEST_PAYER) $(S3_FOLDER_URI)
+
+_s3_list_folders:
+	@$(INFO) '$(S3_UI_LABEL)Listing ALL folders ...'; $(NORMAL)
+
+_s3_list_folders_set:
+	@$(INFO) '$(S3_UI_LABEL)Listing folders-sets "$(S3_FOLDERS_SET_NAME)" ...'; $(NORMAL)
 
 _s3_pull_folder:
 	@$(INFO) '$(S3_UI_LABEL)Pulling content of folder "$(S3_FOLDER_NAME)" ...'; $(NORMAL)
@@ -123,9 +130,3 @@ _s3_show_folder_description:
 	@$(WARN) 'This operation fails if folder does NOT exist!'; $(NORMAL)
 	-$(AWS) s3 ls $(S3_FOLDER_URI)
 	-$(AWS) s3 ls $(S3_FOLDER_URI)/
-
-_s3_view_folders:
-	@$(INFO) '$(S3_UI_LABEL)Viewing folders ...'; $(NORMAL)
-
-_s3_view_folders_set:
-	@$(INFO) '$(S3_UI_LABEL)Viewing folders-sets "$(S3_FOLDERS_SET_NAME)" ...'; $(NORMAL)

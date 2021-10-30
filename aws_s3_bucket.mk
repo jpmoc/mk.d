@@ -38,13 +38,13 @@ _s3_get_bucket_url_NL=$(shell echo 'http://$(strip $(1)).s3-website-$(strip $(2)
 # USAGE
 #
 
-_s3_view_framework_macros ::
+_s3_list_macros ::
 	@echo 'AWS::S3::Bucket ($(_AWS_S3_BUCKET_MK_VERSION)) macros:'
 	@echo '    _s3_get_bucket_count                  - Get the number of bucket for this account'
 	@echo '    _s3_get_bucket_url_{|N|NL}            - Get the website URL of the S3 bucket (Name, Location)'
 	@echo
 
-_s3_view_framework_parameters ::
+_s3_list_parameters ::
 	@echo 'AWS::S3::Bucket ($(_AWS_S3_BUCKET_MK_VERSION)) parameters:'
 	@echo '    S3_BUCKET_COUNT=$(S3_BUCKET_COUNT)'
 	@echo '    S3_BUCKET_DELETE_FORCE=$(S3_BUCKET_DELETE_FORCE)'
@@ -58,15 +58,15 @@ _s3_view_framework_parameters ::
 	@echo '    S3_BUCKETS_SET_NAME=$(S3_BUCKETS_SET_NAME)'
 	@echo
 
-_s3_view_framework_targets ::
+_s3_list_targets ::
 	@echo 'AWS::S3::Bucket ($(_AWS_S3_BUCKET_MK_VERSION)) targets:'
 	@echo '     _s3_create_bucket                   - Create a S3 bucket'
 	@echo '     _s3_delete_bucket                   - Delete a S3 bucket'
 	@echo '     _s3_show_bucket                     - Show everything related to a S3 bucket'
 	@echo '     _s3_show_bucket_description         - Show description of a S3 bucket'
 	@echo '     _s3_show_bucket_objects             - Show objects of a S3 bucket'
-	@echo '     _s3_view_buckets                    - View S3 buckets'
-	@echo '     _s3_view_buckets_set                - View a set of S3 buckets'
+	@echo '     _s3_list_buckets                    - List all S3 buckets'
+	@echo '     _s3_list_buckets_set                - List a set of S3 buckets'
 	@echo '     _s3_webify_bucket                   - Webify a buckets'
 	@echo
 
@@ -89,6 +89,13 @@ _s3_delete_bucket:
 	@$(WARN) 'The region affinity of this bucket (aka LocationContraint) is $(S3_BUCKET_LOCATION_ID)'; $(NORMAL)
 	$(AWS) s3 rb $(__S3_FORCE__BUCKET) $(S3_BUCKET_URI)
 
+_s3_list_buckets:
+	@$(INFO) '$(S3_UI_LABEL)Listing ALL buckets ...'; $(NORMAL)
+	$(AWS) s3 ls
+
+_s3_list_buckets_set:
+	@$(INFO) '$(S3_UI_LABEL)Listing buckets-set "$(S3_BUCKETS_SET_NAME)" ...'; $(NORMAL)
+
 _s3_show_bucket:: _s3_show_bucket_objects _s3_show_bucket_description
 
 _s3_show_bucket_description:
@@ -101,10 +108,6 @@ _s3_show_bucket_objects:
 	@$(WARN) 'This operation returns the object keys'; $(NORMAL)
 	@$(WARN) 'Object keys must be prefixed with /'; $(NORMAL)
 	$(AWS) s3 ls --recursive $(S3_BUCKET_URI)
-
-_s3_view_buckets:
-	@$(INFO) '$(S3_UI_LABEL)Viewing buckets ...'; $(NORMAL)
-	$(AWS) s3 ls
 
 _s3_webify_bucket:
 	@$(INFO) '$(S3_UI_LABEL)Webifying bucket "$(S3_BUCKET_NAME)" ...'; $(NORMAL)

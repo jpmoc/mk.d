@@ -23,9 +23,9 @@ __IAM_USER_NAME__SSHPUBLICKEY= $(if $(IAM_SSHPUBLICKEY_USER_NAME),--user-name $(
 __IAM_USER_NAME__SSHPUBLICKEYS= $(if $(IAM_SSHPUBLICKEYS_USER_NAME),--user-name $(IAM_SSHPUBLICKEYS_USER_NAME))
 
 # UI variables
-IAM_UI_VIEW_SSHPUBLICKEYS_FIELDS?=
-IAM_UI_VIEW_SSHPUBLICKEYS_SET_FIELDS?= $(IAM_UI_VIEW_SSHPUBLICKEYS_FIELDS)
-IAM_UI_VIEW_SSHPUBLICKEYS_SET_QUERYFILTER?=
+IAM_UI_LIST_SSHPUBLICKEYS_FIELDS?=
+IAM_UI_LIST_SSHPUBLICKEYS_SET_FIELDS?= $(IAM_UI_LIST_SSHPUBLICKEYS_FIELDS)
+IAM_UI_LIST_SSHPUBLICKEYS_SET_QUERYFILTER?=
 
 #--- MACROS
 _iam_get_sshpublickey_id= $(call _iam_get_sshpublickey_id_U, $(IAM_SSHPUBLICKEY_USER_NAME))
@@ -35,12 +35,12 @@ _iam_get_sshpublickey_id_U= $(shell $(AWS) iam list-ssh-public-keys --user-name 
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::SshPublicKey ($(_AWS_IAM_SSHPUBLICKEY_MK_VERSION)) macros:'
 	@echo '    _iam_get_sshpublickey_id_{U}               - Get an active SSH public key (Username)'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::SshPublicKey ($(_AWS_IAM_SSHPUBLICKEY_MK_VERSION)) parameters:'
 	@echo '    IAM_SSHPUBLICKEY_BODY=$(IAM_SSHPUBLICKEY_BODY)'
 	@echo '    IAM_SSHPUBLICKEY_BODY_DIRPATH=$(IAM_SSHPUBLICKEY_BODY_DIRPATH)'
@@ -52,14 +52,15 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_SSHPUBLICKEYS_USER_NAME=$(IAM_SSHPUBLICKEYS_USER_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::SshPublicKey ($(_AWS_IAM_SSHPUBLICKEY_MK_VERSION)) targets:'
 	@echo '    _iam_create_sshpublickey                   - Create a new ssh-public-key'
 	@echo '    _iam_delete_sshpublickey                   - Delete an existing ssh-public-key'
+	@echo '    _iam_list_sshpublickeys                    - List all ssh-public-keys'
+	@echo '    _iam_list_sshpublickeys_set                - List a set of ssh-public-keys'
 	@echo '    _iam_show_sshpublickeys                    - Show everything related to a ssh-public-key'
-	@echo '    _iam_show_sshpublickeys_desicription       - Show te description of a ssh-public-key'
+	@echo '    _iam_show_sshpublickeys_description        - Show the description of a ssh-public-key'
 	@echo '    _iam_upload_sshpublickey                   - Upload a ssh-public-key to a user'
-	@echo '    _iam_view_sshpublickeys                    - View ssh-public-keys'
 	@echo
 
 #----------------------------------------------------------------------
@@ -76,6 +77,14 @@ _iam_delete_sshpublickey:
 	@$(INFO) '$(IAM_UI_LABEL)Deleting SSH-public-key of user "$(IAM_USER_NAME)" ...'; $(NORMAL)
 	$(AWS) iam deleting-ssh-public-key $(__IAM_SSH_PUBLIC_KEY_ID) $(__IAM_USER_NAME__SSHPUBLICKEY)
 
+_iam_list_sshpublickeys:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL SSH-public-keys of all users ...'; $(NORMAL)
+	$(AWS) iam list-ssh-public-keys $(_X__IAM_USER_NAME__SSHPUBLICKEYS) --query "SSHPublicKeys[]"
+
+_iam_list_sshpublickeys_set:
+	@$(INFO) '$(IAM_UI_LABEL)Listing SSH-public-keys-set "$(IAM_SSHPUBLICKEYS_SET_NAME)" ...'; $(NORMAL)
+	$(AWS) iam list-ssh-public-keys $(__IAM_USER_NAME__SSHPUBLICKEYS) --query "SSHPublicKeys[]"
+
 _iam_show_sshpublickey: _iam_show_sshpublickey_description
 
 _iam_show_sshpublickey_description:
@@ -85,11 +94,3 @@ _iam_show_sshpublickey_description:
 _iam_upload_sshpublickey:
 	@$(INFO) '$(IAM_UI_LABEL)Uploading SSH-public-keys of user "$(IAM_SSHPUBLICKEY_USER_NAME)" ...'; $(NORMAL)
 	$(AWS) iam upload-ssh-public-key $(__IAM_SSH_PUBLIC_KEY_BODY) $(__IAM_USER_NAME__SSHPUBLICKEYS)
-
-_iam_view_sshpublickeys:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing SSH-public-keys of all users ...'; $(NORMAL)
-	$(AWS) iam list-ssh-public-keys $(_X__IAM_USER_NAME__SSHPUBLICKEYS) --query "SSHPublicKeys[]"
-
-_iam_view_sshpublickeys_set:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing SSH-public-keys-set "$(IAM_SSHPUBLICKEYS_SET_NAME)" ...'; $(NORMAL)
-	$(AWS) iam list-ssh-public-keys $(__IAM_USER_NAME__SSHPUBLICKEYS) --query "SSHPublicKeys[]"

@@ -16,17 +16,17 @@ __IAM_ACCOUNT_ALIAS= $(if $(IAM_ACCOUNTALIAS_NAME),--account-alias $(AWS_ACCOUNT
 # USAGE
 #
 
-_iam_view_framework_macros ::
-	@echo 'AWS::IAM::AccountAlias ($(_AWS_IAM_ACCOUNTALIAS_MK_VERSION)) macros:'
-	@echo
+_iam_list_macros ::
+	@#echo 'AWS::IAM::AccountAlias ($(_AWS_IAM_ACCOUNTALIAS_MK_VERSION)) macros:'
+	@#echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::AccountAlias ($(_AWS_IAM_ACCOUNTALIAS_MK_VERSION)) parameters:'
 	@echo '    IAM_ACCOUNTALIAS_NAME=$(IAM_ACCOUNTALIAS_NAME)'
 	@echo '    IAM_ACCOUNTALIAS_AWSACCOUNT_ID=$(IAM_ACCOUTNALIAS_AWSACCOUNT_ID)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::AccountAlias ($(_AWS_IAM_ACCOUNTALIAS_MK_VERSION)) targets:'
 	@echo '    _iam_create_accountalias    - Create an alias to an AWS-account'
 	@echo

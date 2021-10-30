@@ -37,10 +37,10 @@ __IAM_TAG_KEYS__USER= $(if $(IAM_USER_TAGS_KEYS),--tag-keys $(IAM_USER_TAGS_KEYS
 __IAM_USER_NAME= $(if $(IAM_USER_NAME),--user-name $(IAM_USER_NAME))
 
 # UI variables
+IAM_UI_LIST_USERS_FIELDS?= .{path:Path,UserId:UserId,UserName:UserName,createDate:CreateDate,passwordLastUsed:PasswordLastUsed}
+IAM_UI_LIST_USERS_SET_FIELDS?= $(IAM_UI_LISt_USERS_FIELDS)
+IAM_UI_LIST_USERS_SET_QUERYFILTER?=
 IAM_UI_SHOW_USER_ACCESSKEYS_FIELDS?= 
-IAM_UI_VIEW_USERS_FIELDS?= .{path:Path,UserId:UserId,UserName:UserName,createDate:CreateDate,passwordLastUsed:PasswordLastUsed}
-IAM_UI_VIEW_USERS_SET_FIELDS?= $(IAM_UI_VIEW_USERS_FIELDS)
-IAM_UI_VIEW_USERS_SET_QUERYFILTER?=
 
 #--- MACROS
 _iam_get_user_arn= $(call _iam_get_user_arn_N, $(IAM_USER_NAME))
@@ -54,14 +54,14 @@ _iam_get_all_user_names= $(shell $(AWS) iam list-users --query "Users[].UserName
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::User ($(_AWS_IAM_USER_MK_VERSION)) macros:'
 	@echo '    _iam_get_user_arn_{|N}               - Get the ARN of a user (Name)'
 	@echo '    _iam_get_user_name                   - Get the current username'
 	@echo '    _iam_get_all_user_names              - Get the name of all users in this AWS account'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::User ($(_AWS_IAM_USER_MK_VERSION)) parameters:'
 	@echo '    IAM_USER_ARN=$(IAM_USER_ARN)'
 	@echo '    IAM_USER_AWSACCOUNT_ID=$(IAM_USER_AWSACCOUNT_ID)'
@@ -75,12 +75,14 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_USERS_SET_NAME=$(IAM_USERS_SET_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::User ($(_AWS_IAM_USER_MK_VERSION)) targets:'
 	@echo '    _iam_create_user                     - Create a new user'
 	@echo '    _iam_delete_user                     - Delete an existing user'
 	@echo '    _iam_groupadd_user                   - Add a user to a group'
 	@echo '    _iam_groupdel_user                   - Remove a user from a group'
+	@echo '    _iam_list_users                      - List all users'
+	@echo '    _iam_list_users_set                  - List a set of users'
 	@echo '    _iam_show_user                       - Show everythign related to a user'
 	@echo '    _iam_show_user_accesskeys            - Show access-keys of a user'
 	@echo '    _iam_show_user_contextkeys           - Show context-keys for principal policy'
@@ -95,8 +97,6 @@ _iam_view_framework_targets ::
 	@echo '    _iam_tag_user                        - Tag a user'
 	@echo '    _iam_untag_user                      - Remove one or more tags from a user'
 	@echo '    _iam_update_user_username            - Update username of a given user'
-	@echo '    _iam_view_users                      - View existing users'
-	@echo '    _iam_view_users_set                  - View a set of users'
 	@echo
 
 #----------------------------------------------------------------------
@@ -123,7 +123,17 @@ _iam_groupdel_user:
 	@$(INFO) '$(IAM_UI_LABEL)Removing user "$(IAM_USER_NAME)" from group "$(IAM_USER_GROUP_NAME)" ...'; $(NORMAL)
 	$(AWS) iam remove-user-from-group $(__IAM_GROUP_NAME__USER) $(__IAM_USER_NAME)
 
-_iam_show_user: _iam_show_user_accesskeys _iam_show_user_contextkeys _iam_show_user_groups _iam_show_user_inlinepolicies _iam_show_user_managedpolicies _iam_show_user_mfadevices  _iam_show_user_sshpublickeys _iam_show_user_description
+_iam_list_users:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL IAM users ...'; $(NORMAL)
+	$(AWS) iam list-users --query "Users[]$(IAM_UI_LIST_USERS_FIELDS)"
+
+_iam_list_users_set:
+	@$(INFO) '$(IAM_UI_LABEL)Listing IAM users-set "$(IAM_USERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Users are grouped based on provided query-filter'; $(NORMAL)
+	$(AWS) iam list-users --query "Users[$(IAM_UI_LIST_USERS_QUERYFILTER)]$(IAM_UI_LIST_USERS_SET_FIELDS)"
+
+_IAM_SHOW_USER_TARGETS?= _iam_show_user_accesskeys _iam_show_user_contextkeys _iam_show_user_groups _iam_show_user_inlinepolicies _iam_show_user_managedpolicies _iam_show_user_mfadevices  _iam_show_user_sshpublickeys _iam_show_user_description
+_iam_show_user: $(_IAM_SHOW_USER_TARGETS)
 
 _iam_show_user_accesskeys:
 	@$(INFO) '$(IAM_UI_LABEL)Showing access-keys of user "$(IAM_USER_NAME)" ...'; $(NORMAL)
@@ -174,12 +184,3 @@ _iam_untag_user:
 _iam_update_user_username:
 	@$(INFO) '$(IAM_UI_LABEL)Updating username of user "$(IAM_USER_NAME)" ...'; $(NORMAL)
 	$(AWS) iam update-user $(__IAM_NEW_USER_NAME) $(__IAM_USER_NAME)
-
-_iam_view_users:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing IAM users ...'; $(NORMAL)
-	$(AWS) iam list-users --query "Users[]$(IAM_UI_VIEW_USERS_FIELDS)"
-
-_iam_view_users_set:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing IAM users-set "$(IAM_USERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Users are grouped based on provided query-filter'; $(NORMAL)
-	$(AWS) iam list-users --query "Users[$(IAM_UI_VIEW_USERS_QUERYFILTER)]$(IAM_UI_VIEW_USERS_SET_FIELDS)"

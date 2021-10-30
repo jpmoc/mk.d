@@ -18,9 +18,9 @@ __IAM_PATH_PREFIX__GROUPS= $(if $(IAM_GROUPS_PATH_PREFIX),--path-prefix $(IAM_GR
 
 # UI parameters 
 IAM_UI_SHOW_GROUP_USERS_FIELDS?= .{UserId:UserId,UserName:UserName,arn:Arn,createDate:CreateDate,path:Path}
-IAM_UI_VIEW_GROUPS_FIELDS?= .{GroupId:GroupId,GroupName:GroupName,path:Path,createDate:CreateDate}
-IAM_UI_VIEW_GROUPS_SET_FIELDS?= $(IAM_UI_VIEW_GROUPS_FIELDS)
-IAM_UI_VIEW_GROUPS_SET_QUERYFILTER?=
+IAM_UI_LIST_GROUPS_FIELDS?= .{GroupId:GroupId,GroupName:GroupName,path:Path,createDate:CreateDate}
+IAM_UI_LIST_GROUPS_SET_FIELDS?= $(IAM_UI_LIST_GROUPS_FIELDS)
+IAM_UI_LIST_GROUPS_SET_QUERYFILTER?=
 
 #--- MACROS
 _iam_get_group_arn= $(call _iam_get_group_arn_N, $(IAM_GROUP_NAME))
@@ -30,12 +30,12 @@ _iam_get_group_arn_N= $(shell $(AWS) iam get-group --group-name $(1) --query "Gr
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::Group ($(_AWS_IAM_GROUP_MK_VERSION)) macros:'
 	@echo '    _iam_get_group_arn_{|N}                     - Get a group ARN'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::Group ($(_AWS_IAM_GROUP_MK_VERSION)) parameters:'
 	@echo '    IAM_GROUP_AWSACCOUNT_ID=$(IAM_GROUP_AWSACCOUNT_ID)'
 	@echo '    IAM_GROUP_ARN=$(IAM_GROUP_ARN)'
@@ -45,7 +45,7 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_GROUPS_SET_NAME=$(IAM_GROUPS_SET_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::Group ($(_AWS_IAM_GROUP_MK_VERSION)) targets:'
 	@echo '    _iam_create_group                          - Create a new group'
 	@echo '    _iam_delete_group                          - Delete an existing group'
@@ -54,8 +54,8 @@ _iam_view_framework_targets ::
 	@echo '    _iam_show_group_managedpolicies            - Show the managed-policies attached to a group'
 	@echo '    _iam_show_group_policies                   - Show the policies of a group'
 	@echo '    _iam_show_group_users                      - Show users in a group'
-	@echo '    _iam_view_groups                           - View groups'
-	@echo '    _iam_view_groups_set                       - View a set of groups'
+	@echo '    _iam_list_groups                           - List all groups'
+	@echo '    _iam_list_groups_set                       - List a set of groups'
 	@echo
 
 #----------------------------------------------------------------------
@@ -74,7 +74,17 @@ _iam_delete_group:
 	@$(INFO) '$(IAM_UI_LABEL)Deleting group "$(IAM_GROUP_NAME)" ...'; $(NORMAL)
 	$(AWS) iam delete-group $(__IAM_GROUP_NAME)
 
-_iam_show_group :: _iam_show_group_policies _iam_show_group_users _iam_show_group_description
+_iam_list_groups:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL groups ...'; $(NORMAL)
+	$(AWS) iam list-groups $(_X__IAM_PATH_PREFIX__GROUPS) --query "Groups[]$(IAM_UI_LIST_GROUPS_FIELDS)"
+
+_iam_list_groups_set:
+	@$(INFO) '$(IAM_UI_LABEL)Listing groups-set "$(IAM_GROUPS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Groups are grouped based on the provided path-prefix, query-filter'; $(NORMAL)
+	$(AWS) iam list-groups $(__IAM_PATH_PREFIX__GROUPS) --query "Groups[$(IAM_UI_LIST_GROUPS_SET_QUERYFILTER)]$(IAM_UI_LIST_GROUPS_SET_FIELDS)"
+
+_IAM_SHOW_GROUP_TARGETS?= _iam_show_group_policies _iam_show_group_users _iam_show_group_description
+_iam_show_group: $(_IAM_SHOW_GROUP_TARGETS)
 
 _iam_show_group_description:
 	@$(INFO) '$(IAM_UI_LABEL)Showing group "$(IAM_GROUP_NAME)" ...'; $(NORMAL)
@@ -93,12 +103,3 @@ _iam_show_group_policies: _iam_show_group_inlinepolicies _iam_show_group_managed
 _iam_show_group_users:
 	@$(INFO) '$(IAM_UI_LABEL)Showing users in group "$(IAM_GROUP_NAME)" ...'; $(NORMAL)
 	$(AWS) iam get-group $(__IAM_GROUP_NAME) --query "Users[]$(IAM_UI_SHOW_GROUP_USERS_FIELDS)"
-
-_iam_view_groups:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing groups ...'; $(NORMAL)
-	$(AWS) iam list-groups $(_X__IAM_PATH_PREFIX__GROUPS) --query "Groups[]$(IAM_UI_VIEW_GROUPS_FIELDS)"
-
-_iam_view_groups_set:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing groups-set "$(IAM_GROUPS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Groups are grouped based on the provided path-prefix, query-filter'; $(NORMAL)
-	$(AWS) iam list-groups $(__IAM_PATH_PREFIX__GROUPS) --query "Groups[$(IAM_UI_VIEW_GROUPS_SET_QUERYFILTER)]$(IAM_UI_VIEW_GROUPS_SET_FIELDS)"

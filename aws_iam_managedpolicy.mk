@@ -56,11 +56,11 @@ __IAM_USER_NAME__MANAGEDPOLICY?= $(if $(IAM_MANAGEDPOLICY_USER_NAME),--user-name
 __IAM_VERSION_ID?= $(if $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION),--version-id $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION))
 
 # UI parameters
-IAM_UI_VIEW_MANAGEDPOLICIES_AWS_FIELDS?= $(IAM_UI_VIEW_MANAGEDPOLICIES_FIELDS)
-IAM_UI_VIEW_MANAGEDPOLICIES_AWS_QUERY_FILTER?=
-IAM_UI_VIEW_MANAGEDPOLICIES_FIELDS?= .{PolicyId:PolicyId,PolicyName:PolicyName,versionId:DefaultVersionId,path:Path}
-IAM_UI_VIEW_MANAGEDPOLICIES_SET_FIELDS?= $(IAM_UI_VIEW_MANAGEDPOLICIES_FIELDS)
-IAM_UI_VIEW_MANAGEDPOLICIES_SET_QUERYFILTER?=
+IAM_UI_LIST_MANAGEDPOLICIES_AWS_FIELDS?= $(IAM_UI_LIST_MANAGEDPOLICIES_FIELDS)
+IAM_UI_LIST_MANAGEDPOLICIES_AWS_QUERY_FILTER?=
+IAM_UI_LIST_MANAGEDPOLICIES_FIELDS?= .{PolicyId:PolicyId,PolicyName:PolicyName,versionId:DefaultVersionId,path:Path}
+IAM_UI_LIST_MANAGEDPOLICIES_SET_FIELDS?= $(IAM_UI_LIST_MANAGEDPOLICIES_FIELDS)
+IAM_UI_LIST_MANAGEDPOLICIES_SET_QUERYFILTER?=
 
 _IAM_SHOW_MANAGEDPOLICY_DESCRIPTION_|?= #
 _IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT_|?= #
@@ -83,14 +83,14 @@ _iam_get_managedpolicy_name_A= $(lastword $(subst /,$(SPACE),$(IAM_MANAGEDPOLICY
 # USAGE
 #
 
-_iam_view_framework_macros ::
+_iam_list_macros ::
 	@echo 'AWS::IAM::ManagedPolicy ($(_AWS_IAM_MANAGEDPOLICY_MK_VERSION)) macros:'
 	@echo '    _iam_get_managedpolicy_arn_{|N|NP}              - Get the ARN of a managed-policy (Name,Path)'
 	@echo '    _iam_get_managedpolicy_document_version_{|A}    - Get the current document-version of a managed-policy (Arn)'
 	@echo '    _iam_get_managedpolicy_name_{|A}                - Get the name of a managed-policy (Arn)'
 	@echo
 
-_iam_view_framework_parameters ::
+_iam_list_parameters ::
 	@echo 'AWS::IAM::ManagedPolicy ($(_AWS_IAM_MANAGEDPOLICY_MK_VERSION)) parameters:'
 	@echo '    IAM_MANAGEDPOLICY_ARN=$(IAM_MANAGEDPOLICY_ARN)'
 	@echo '    IAM_MANAGEDPOLICY_AWSACCOUNT_ID=$(IAM_MANAGEDPOLICY_AWSACCOUNT_ID)'
@@ -114,12 +114,14 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_MANAGEDPOLICIES_USER_NAME=$(IAM_MANAGEDPOLICIES_USER_NAME)'
 	@echo
 
-_iam_view_framework_targets ::
+_iam_list_targets ::
 	@echo 'AWS::IAM::ManagedPolicy ($(_AWS_IAM_MANAGEDPOLICY_MK_VERSION)) targets:'
 	@echo '    _iam_attach_managedpolicy                  - Attach a managed-policy'
 	@echo '    _iam_create_managedpolicy                  - Create a managed-policy'
 	@echo '    _iam_delete_managedpolicy                  - Delete a managed-policy'
 	@echo '    _iam_detach_managedpolicy                  - Detach a managed-policy'
+	@echo '    _iam_list_managedpolicies                  - List all managed-policies'
+	@echo '    _iam_list_managedpolicies_set              - List a set of managed-policies'
 	@echo '    _iam_show_managedpolicy                    - Show everything related to a managed-policy'
 	@echo '    _iam_show_managedpolicy_consumers          - Show consumers of a managed-policy'
 	@echo '    _iam_show_managedpolicy_contextkeys        - Show context-keys of a managed-policy'
@@ -130,8 +132,6 @@ _iam_view_framework_targets ::
 	@echo '    _iam_show_managedpolicy_users              - Show users to which is attached a managed-policy'
 	@echo '    _iam_show_managedpolicy_versioneddocument  - Show the versioned-document of a managed-policy'
 	@echo '    _iam_show_managedpolicy_versions           - Show versions of a managed-policy'
-	@echo '    _iam_view_managedpolicies                  - View all managed-policies'
-	@echo '    _iam_view_managedpolicies_set              - View a set of managed-policies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -212,14 +212,14 @@ _iam_update_managedpolicy:
 	@$(INFO) '$(IAM_UI_LABEL)Updating managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
 	#$(AWS) create-policy-version $(__IAM_POLICY_ARN) $(__IAM_POLICY_DOCUMENT__MANAGEDPOLICY) $(__IAM_SET_AS_DEFAULT)
 
-_iam_view_managedpolicies:
-	@$(INFO) '$(IAM_UI_LABEL)Viewing ALL managed-policies ...'; $(NORMAL)
-	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(_X__IAM_PATH_PREFIX__MANAGEDPOLICY) $(_X_IAM_SCOPE) --scope All --query "Policies[$(IAM_UI_VIEW_AWS_MANAGEDPOLICIES_QUERY_FILTER)]$(IAM_UI_VIEW_MANAGEDPOLICIES_FIELDS)"
+_iam_list_managedpolicies:
+	@$(INFO) '$(IAM_UI_LABEL)Listing ALL managed-policies ...'; $(NORMAL)
+	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(_X__IAM_PATH_PREFIX__MANAGEDPOLICY) $(_X_IAM_SCOPE) --scope All --query "Policies[$(IAM_UI_LIST_AWS_MANAGEDPOLICIES_QUERY_FILTER)]$(IAM_UI_LIST_MANAGEDPOLICIES_FIELDS)"
 
-_iam_view_managedpolicies_set:
+_iam_list_managedpolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Showing managed-policies-set "$(IAM_MANAGEDPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Policies are grouped based on their path-prefix, scope, and query-filter'; $(NORMAL)
-	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(__IAM_PATH_PREFIX__MANAGEDPOLICIES) $(__IAM_SCOPE) --query "Policies[$(IAM_UI_VIEW_MANAGEDPOLICIES_SET_QUERYFILTER)]$(IAM_UI_VIEW_MANAGEDPOLICIES_SET_FIELDS)"
+	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(__IAM_PATH_PREFIX__MANAGEDPOLICIES) $(__IAM_SCOPE) --query "Policies[$(IAM_UI_LIST_MANAGEDPOLICIES_SET_QUERYFILTER)]$(IAM_UI_LIST_MANAGEDPOLICIES_SET_FIELDS)"
 
 _iam_watch_managedpolicies:
 

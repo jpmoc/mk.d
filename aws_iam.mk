@@ -24,13 +24,13 @@ IAM_UI_LABEL?= $(AWS_UI_LABEL)
 # USAGE
 #
 
-_view_framework_macros :: _iam_view_framework_macros
-_iam_view_framework_macros ::
+_aws_list_macros :: _iam_list_macros
+_iam_list_macros ::
 	@#echo 'AWS::IAM ($(_AWS_IAM_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _iam_view_framework_parameters
-_iam_view_framework_parameters ::
+_aws_list_parameters :: _iam_list_parameters
+_iam_list_parameters ::
 	@echo 'AWS::IAM ($(_AWS_IAM_MK_VERSION)) parameters:'
 	@echo '    IAM_AWSACCOUNT_ID=$(IAM_AWSACCOUNT_ID)'
 	@echo '    IAM_AWSREGION_ID=$(IAM_AWSREGION_ID)'
@@ -38,8 +38,8 @@ _iam_view_framework_parameters ::
 	@echo '    IAM_OUTPUTS_DIRPATH=$(IAM_OUTPUTS_DIRPATH)'
 	@echo
 
-_view_framework_targets :: _iam_view_framework_targets
-_iam_view_framework_targets ::
+_aws_list_targets :: _iam_list_targets
+_iam_list_targets ::
 	@echo 'AWS::IAM ($(_AWS_IAM_MK_VERSION)) targets:'
 	@echo '    _iam_generate_credentialreport         - Generate a credential-report'
 	@echo '    _iam_fetch_credentialreport            - Fetch the last generated credential-report'

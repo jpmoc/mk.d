@@ -18,19 +18,19 @@ CFE_UI_LABEL?= $(AWS_UI_LABEL)
 # USAGE
 #
 
-_aws_view_framework_macros :: _cfe_view_framework_macros
-_cfe_view_framework_macros ::
+_aws_list_macros :: _cfe_list_macros
+_cfe_list_macros ::
 	@#echo 'AWS::ConFigurE ($(_AWS_CONFIGURE_MK_VERSION)) macros:'
 	@#echo
 
-_aws_view_framework_parameters :: _cfe_view_framework_parameters
-_cfe_view_framework_parameters ::
+_aws_list_parameters :: _cfe_list_parameters
+_cfe_list_parameters ::
 	@echo 'AWS::ConFigurE ($(_AWS_CONFIGURE_MK_VERSION)) parameters:'
 	@echo '    CFE_CREDENTIALS_FILEPATH=$(CFE_CREDENTIALS_FILEPATH)'
 	@echo
 
-_aws_view_framework_targets :: _cfe_view_framework_targets
-_cfe_view_framework_targets ::
+_aws_list_targets :: _cfe_list_targets
+_cfe_list_targets ::
 	@echo 'AWS::ConFigurE ($(_AWS_CONFIGURE_MK_VERSION)) targets:'
 	@echo '    _cfe_install_dependencies            - Install the dependencies'
 	@echo '    _cfe_view_versions                   - View versions of dependencies'
