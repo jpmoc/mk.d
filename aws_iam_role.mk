@@ -46,7 +46,8 @@ _iam_get_role_arn= $(call _iam_get_role_arn_N, $(IAM_ROLE_NAME))
 _iam_get_role_arn_N= $(shell $(AWS) iam list-roles --query "Roles[?RoleName=='$(strip $(1))'].Arn" --output text)
 
 _iam_get_role_name= $(call _iam_get_role_name_A, $(IAM_ROLE_ARN))
-_iam_get_role_name_A= $(shell $(AWS) iam list-roles --query "Roles[?Arn=='$(strip $(1))'].RoleName" --output text)
+# _iam_get_role_name_A= $(shell $(AWS) iam list-roles --query "Roles[?Arn=='$(strip $(1))'].RoleName" --output text)
+_iam_get_role_name_A= $(lastword $(subst /,$(SPACE),$(1)) )
 
 #----------------------------------------------------------------------
 # USAGE
