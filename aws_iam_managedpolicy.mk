@@ -69,7 +69,8 @@ _IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT_|?= #
 #--- MACROS
 _iam_get_managedpolicy_arn= $(call _iam_get_managedpolicy_arn_N, $(IAM_MANAGEDPOLICY_NAME))
 # _iam_get_managedpolicy_arn_N= $(shell $(AWS) iam list-policies --query "Policies[?PolicyName=='$(strip $(1))'].Arn" --output text)
-_iam_get_managedpolicy_arn_N= $(shell echo 'arn:aws:iam::$(IAM_MANAGEDPOLICY_AWSACCOUNT_ID):policy/$(strip $(1))')
+_iam_get_managedpolicy_arn_N= $(call _iam_get_managedpolicy_arn_NP, $(1), $(IAM_MANAGEDPOLICY_PATH))
+_iam_get_managedpolicy_arn_NP= $(shell echo 'arn:aws:iam::$(IAM_MANAGEDPOLICY_AWSACCOUNT_ID):policy$(strip $(2))$(strip $(1))')
 
 _iam_get_managedpolicy_document_version= $(call _iam_get_managedpolicy_document_version_A, $(IAM_MANAGEDPOLICY_ARN))
 _iam_get_managedpolicy_document_version_A= $(shell $(AWS) iam get-policy --policy-arn $(1) --query "Policy.DefaultVersionId" --output text)
@@ -84,7 +85,7 @@ _iam_get_managedpolicy_name_A= $(lastword $(subst /,$(SPACE),$(IAM_MANAGEDPOLICY
 
 _iam_view_framework_macros ::
 	@echo 'AWS::IAM::ManagedPolicy ($(_AWS_IAM_MANAGEDPOLICY_MK_VERSION)) macros:'
-	@echo '    _iam_get_managedpolicy_arn_{|N}                 - Get the ARN of a managed-policy (Name)'
+	@echo '    _iam_get_managedpolicy_arn_{|N|NP}              - Get the ARN of a managed-policy (Name,Path)'
 	@echo '    _iam_get_managedpolicy_document_version_{|A}    - Get the current document-version of a managed-policy (Arn)'
 	@echo '    _iam_get_managedpolicy_name_{|A}                - Get the name of a managed-policy (Arn)'
 	@echo
@@ -217,7 +218,7 @@ _iam_view_managedpolicies:
 
 _iam_view_managedpolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Showing managed-policies-set "$(IAM_MANAGEDPOLICIES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Policies are grouped based on the optional attachment-status, path-prefix, scope, and query-filter'; $(NORMAL)
+	@$(WARN) 'Policies are grouped based on their path-prefix, scope, and query-filter'; $(NORMAL)
 	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(__IAM_PATH_PREFIX__MANAGEDPOLICIES) $(__IAM_SCOPE) --query "Policies[$(IAM_UI_VIEW_MANAGEDPOLICIES_SET_QUERYFILTER)]$(IAM_UI_VIEW_MANAGEDPOLICIES_SET_FIELDS)"
 
 _iam_watch_managedpolicies:

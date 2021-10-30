@@ -4,10 +4,12 @@ _KUBECTL_SERVICEACCOUNT_MK_VERSION= $(_KUBECTL_MK_VERSION)
 # KCL_SERVICEACCOUNT_ANNOTATION_VALUE?= value1
 # KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS?= key1 ...
 # KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES?= key1=value1 ...
+# KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR?= key1=value1 ...
 # KCL_SERVICEACCOUNT_LABELS_KEYVALUES?= istio-injection=enabled ...
 # KCL_SERVICEACCOUNT_NAME?= 
 # KCL_SERVICEACCOUNT_NAMESPACE_NAME?= kube-system
 # KCL_SERVICEACCOUNT_PATCH_CONTENT?= '{\"imagePullSecrets\": [{\"name\": \"myregistrykey\"}]}'
+# KCL_SERVICEACCOUNT_ROLES_SELECTOR?= key1=value1
 # KCL_SERVICEACCOUNT_SECRET_NAME?= my-vault-token-gnvjc
 # KCL_SERVICEACCOUNTS_MANIFEST_DIRPATH?= ./in/
 # KCL_SERVICEACCOUNTS_MANIFEST_FILENAME?= manifest.yaml 
@@ -67,9 +69,11 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATION_VALUE=$(KCL_SERVICEACCOUNT_ANNOTATION_VALUE)'
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS=$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS)'
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES=$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES)'
+	@echo '    KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR=$(KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR)'
 	@echo '    KCL_SERVICEACCOUNT_LABELS_KEYVALUES=$(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)'
 	@echo '    KCL_SERVICEACCOUNT_NAME=$(KCL_SERVICEACCOUNT_NAME)'
 	@echo '    KCL_SERVICEACCOUNT_NAMESPACE_NAME=$(KCL_SERVICEACCOUNT_NAMESPACE_NAME)'
+	@echo '    KCL_SERVICEACCOUNT_ROLES_SELECTOR=$(KCL_SERVICEACCOUNT_ROLES_SELECTOR)'
 	@echo '    KCL_SERVICEACCOUNT_SECRET_NAME=$(KCL_SERVICEACCOUNT_SECRET_NAME)'
 	@echo '    KCL_SERVICEACCOUNTS_MANIFEST_DIRPATH=$(KCL_SERVICEACCOUNTS_MANIFEST_DIRPATH)'
 	@echo '    KCL_SERVICEACCOUNTS_MANIFEST_FILENAME=$(KCL_SERVICEACCOUNTS_MANIFEST_FILENAME)'
@@ -98,7 +102,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_serviceaccount_clusterrolebindings    - Show cluster-role-bindings referring to a service-account'
 	@echo '    _kcl_show_serviceaccount_description            - Show description of a service-account'
 	@echo '    _kcl_show_serviceaccount_pods                   - Show pods using a service-account'
-	@echo '    _kcl_show_serviceaccount_rights                 - Show rights of a service-account'
+	@echo '    _kcl_show_serviceaccount_rbacrules              - Show RBAC-rules of a service-account'
+	@echo '    _kcl_show_serviceaccount_rolebindings           - Show role-bindings of a service-account'
 	@echo '    _kcl_show_serviceaccount_secrets                - Show the secret of a service-account'
 	@echo '    _kcl_unapply_serviceaccount                     - Un-apply a manifest for one-or-more service-accounts'
 	@echo '    _kcl_unlabel_serviceaccount                     - Un-label a service-accounts'
@@ -165,12 +170,16 @@ _kcl_patch_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Patching service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) patch serviceaccount $(__KCL_PATCH__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME)
 
-_KCL_SHOW_SERVICEACCOUNT_TARGETS?= _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_rbacrules _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
+_KCL_SHOW_SERVICEACCOUNT_TARGETS?= _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_rbacrules _kcl_show_serviceaccount_rolebindings _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
 _kcl_show_serviceaccount: $(_KCL_SHOW_SERVICEACCOUNT_TARGETS)
 
 _kcl_show_serviceaccount_clusterrolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Showing cluster-role-bindings refering to service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
-	# To be implemented!
+	$(if $(KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR), \
+		$(KUBECTL) get clusterrolebindings --selector $(KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR) \
+	, \
+		@echo 'KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR not set!' \
+	)
 
 _kcl_show_serviceaccount_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
@@ -180,6 +189,14 @@ _kcl_show_serviceaccount_description:
 _kcl_show_serviceaccount_pods:
 	@$(INFO) '$(KCL_UI_LABEL)Showing pods using service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	# To be implemented!
+
+_kcl_show_serviceaccount_rolebindings:
+	@$(INFO) '$(KCL_UI_LABEL)Showing cluster-role-bindings refering to service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
+	$(if $(KCL_SERVICEACCOUNT_ROLEBINDINGS_SELECTOR), \
+		$(KUBECTL) get rolebindings --selector $(KCL_SERVICEACCOUNT_ROLEBINDINGS_SELECTOR) \
+	, \
+		@echo 'KCL_SERVICEACCOUNT_ROLEBINDINGS_SELECTOR not set!' \
+	)
 
 _kcl_show_serviceaccount_rbacrules:
 	@$(INFO) '$(KCL_UI_LABEL)Showing RBAC-rules of service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
