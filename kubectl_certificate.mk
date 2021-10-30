@@ -28,11 +28,11 @@ KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME?= certificates@$(KCL_CERTIFICATES_DIRPAT
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Certificate ($(_KUBECTL_CERTIFICATE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Certificate ($(_KUBECTL_CERTIFICATE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Certificate ($(_KUBECTL_CERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    KCL_CERTIFICATE_CERTIFICATESIGNINGREQUEST_NAME=$(KCL_CERTIFICATE_CERTIFICATESIGNINGREQUEST_NAME)'
 	@echo '    KCL_CERTIFICATE_DIRPATH=$(KCL_CERTIFICATE_DIRPATH)'
@@ -44,14 +44,17 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CERTIFICATES_SET_NAME=$(KCL_CERTIFICATES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Certificate ($(_KUBECTL_CERTIFICATE_MK_VERSION)) targets:'
 	@echo '    _kcl_delete_certificate                 - Delete a certificate'
 	@echo '    _kcl_download_certificate               - Download a certificate'
+	@echo '    _kcl_list_certificates                  - List all certificates'
+	@echo '    _kcl_list_certificates_set              - List set of certificates'
 	@echo '    _kcl_show_certificate                   - Show everything related to a certificate'
 	@echo '    _kcl_show_certificate_description       - Show description of a certificate'
-	@echo '    _kcl_view_certificates                  - View all certificates'
-	@echo '    _kcl_view_certificates_set              - View set of certificates'
+	@echo '    _kcl_watch_certificates                 - Watch all certificates'
+	@echo '    _kcl_watch_certificates_set             - Watch set of certificates'
+	@echo '    _kcl_write_certificates                 - Write a manifest for one-or-more certificates'
 	@echo
 
 #----------------------------------------------------------------------
@@ -66,17 +69,28 @@ _kcl_delete_certificate:
 	@$(INFO) '$(KCL_UI_LABEL)Deleting certificate "$(KCL_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	rm -f $(KCL_CERTIFICATE_FILEPATH)
 
-_kcl_show_certificate :: _kcl_show_certificate_description
+_kcl_list_certificates:
+	@$(INFO) '$(KCL_UI_LABEL)Listing all certificates ...'; $(NORMAL)
+	ls -la $(KCL_CERTIFICATES_DIRPATH)
+
+_kcl_list_certificates_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing certificates-set "$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Certificates are grouped based on directory, regex, ...'; $(NORMAL)
+	ls -la $(KCL_CERTIFICATES_DIRPATH)$(KCL_CERTIFICATES_REGEX)
+
+_KCL_SHOW_CERTIFICATE_TARGETS?= _kcl_show_certificate_description
+_kcl_show_certificate: $(_KCL_SHOW_CERTIFICATE_TARGETS)
 
 _kcl_show_certificate_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of certificate "$(KCL_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	ls -al $(KCL_CERTIFICATE_FILEPATH)
 
-_kcl_view_certificates:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing certificates ...'; $(NORMAL)
-	ls -la $(KCL_CERTIFICATES_DIRPATH)
+_kcl_watch_certificates:
+	@$(INFO) '$(KCL_UI_LABEL)Watching all certificates ...'; $(NORMAL)
 
-_kcl_view_certificates_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing certificates-set "$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Certificates are grouped based on directory, regex, ...'; $(NORMAL)
-	ls -la $(KCL_CERTIFICATES_DIRPATH)$(KCL_CERTIFICATES_REGEX)
+_kcl_watch_certificates_set:
+	@$(INFO) '$(KCL_UI_LABEL)Watching certificates-set "$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_certificates:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more certificates ...'; $(NORMAL)
+

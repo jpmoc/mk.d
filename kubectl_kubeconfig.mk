@@ -22,6 +22,8 @@ KCL_KUBECONFIGS_DIRPATH?= $(KCL_KUBECONFIG_DIRPATH)
 # Option parameters
 
 # UI parameters
+_KCL_LIST_KUBECONFIGS_|= cd $(KCL_KUBECONFIGS_DIRPATH) && #
+_KCL_LIST_KUBECONFIGS_SET_|= $(_KCL_LIST_KUBECONFIGS_|)
 
 #--- MACROS
 
@@ -33,13 +35,13 @@ _kcl_get_kubeconfig_cluster_url= $(shell $(KUBECTL) config view --minify | yq --
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Kubeconfig ($(_KUBECTL_KUBECONFIG_MK_VERSION)) macros:'
 	@echo '    _kcl_get_kubeconfig_context        - Get the current config-context'
 	@echo '    _kcl_get_kubeconfig_cluster_url    - Get the URL of the active cluster in kubeconfig'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Kubeconfig ($(_KUBECTL_KUBECONFIG_MK_VERSION)) parameters:'
 	@echo '    KCL_KUBECONFIG_CLUSTER_NAME=$(KCL_KUBECONFIG_CLUSTER_NAME)'
 	@echo '    KCL_KUBECONFIG_CLUSTER_URL=$(KCL_KUBECONFIG_CLUSTER_URL)'
@@ -55,7 +57,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_KUBECONFIGS_SET_NAME=$(KCL_KUBECONFIGS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Kubeconfig ($(_KUBECTL_KUBECONFIG_MK_VERSION)) targets:'
 	@echo '    _kcl_set_kubeconfig_property              - Set a kubeconfig property'
 	@echo '    _kcl_show_kubeconfig                      - Show everything related to a kubeconfig'
@@ -69,15 +71,21 @@ _kcl_view_framework_targets ::
 # PUBLIC TARGETS
 #
 
-_kcl_use_kubeconfig_context:
-	@$(INFO) '$(KCL_UI_LABEL)Setting context for kubeconfig "$(KCL_KUBECONFIG_NAME)" ...'; $(NORMAL)
-	$(KUBECTL) config use-context $(KCL_KUBECONFIG_CONTEXT_NAME)
+
+_kcl_list_kubeconfigs:
+	@$(INFO) '$(KCL_UI_LABEL)Listing all kubeconfigs ...'; $(NORMAL)
+	$(_KCL_LIST_KUBECONFIGS_|)ls -la 
+
+_kcl_list_kubeconfigs_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing kubeconfigs-set "$(KCL_KUBECONFIG_SET_NAME)" ...'; $(NORMAL)
+	$(_KCL_LIST_KUBECONFIGS_SET_|)ls -la $(KCL_KUBECONFIGS_REGEX) 
 
 _kcl_set_kubeconfig_property:
 	@$(INFO) '$(KCL_UI_LABEL)Setting property "$(KCL_KUBECONFIG_PROPERTY_NAME)" in kubeconfig "$(KCL_KUBECONFIG_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) config set $(KCL_KUBECONFIG_PROPERTY_NAME)  $(KCL_KUBECONFIG_PROPERTY_VALUE)
 
-_kcl_show_kubeconfig: _kcl_show_kubeconfig_availableclusters _kcl_show_kubeconfig_availablecontexts _kcl_show_kubeconfig_context _kcl_show_kubeconfig_content _kcl_show_kubeconfig_description
+_KCL_SHOW_KUBECONFIG_TARGETS?= _kcl_show_kubeconfig_availableclusters _kcl_show_kubeconfig_availablecontexts _kcl_show_kubeconfig_context _kcl_show_kubeconfig_content _kcl_show_kubeconfig_description
+_kcl_show_kubeconfig: $(_KCL_SHOW_KUBECONFIG_TARGETS)
 
 _kcl_show_kubeconfig_availableclusters:
 	@$(INFO) '$(KCL_UI_LABEL)Showing available-clusters in kubeconfig "$(KCL_KUBECONFIG_NAME)" ...'; $(NORMAL)
@@ -101,11 +109,3 @@ _kcl_show_kubeconfig_description:
 _kcl_unset_kubeconfig_property:
 	@$(INFO) '$(KCL_UI_LABEL)Unsetting parameter "$(KCL_KUBECONFIG_PROPERTY_NAME)" in kubeconfig ...'; $(NORMAL)
 	$(KUBECTL) config unset $(KCL_KUBECONFIG_PROPERTY_NAME) 
-
-_kcl_view_kubeconfigs:
-	@$(INFO) '$(KCL_UI_LABEL)View kubeconfigs ...'; $(NORMAL)
-	cd $(KCL_KUBECONFIGS_DIRPATH); ls -la 
-
-_kcl_view_kubeconfigs_set:
-	@$(INFO) '$(KCL_UI_LABEL)View kubeconfigs-set "$(KCL_KUBECONFIG_SET_NAME)" ...'; $(NORMAL)
-	cd $(KCL_KUBECONFIGS_DIRPATH); ls -la $(KCL_KUBECONFIGS_REGEX) 

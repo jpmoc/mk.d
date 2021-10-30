@@ -32,7 +32,7 @@ __KCL_SELECTOR__CUSTOMRESOURCEDEFINITIONS= $(if $(KCL_CUSTOMRESOURCEDEFINITIONS_
 _KCL_APPLY_CUSTOMRESOURCEDEFINITIONS_|?= #
 _KCL_DIFF_CUSTOMRESOURCEDEFINITIONS_|?= $(_KCL_APPLY_CUSTOMRESOURCEDEFINITIONS_|)
 _KCL_UNAPPLY_CUSTOMRESOURCEDEFINITIONS_|?= $(_KCL_APPLY_CUSTOMRESOURCEDEFINITIONS_|)
-|_KCL_VIEW_CUSTOMRESOURCEDEFINITIONS_SET?= | grep -E '$(KCL_CUSTOMRESOURCEDEFINITIONS_REGEX)'
+|_KCL_LIST_CUSTOMRESOURCEDEFINITIONS_SET?= | grep -E '$(KCL_CUSTOMRESOURCEDEFINITIONS_REGEX)'
 
 # UI parameters
 
@@ -42,11 +42,11 @@ _KCL_UNAPPLY_CUSTOMRESOURCEDEFINITIONS_|?= $(_KCL_APPLY_CUSTOMRESOURCEDEFINITION
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::CustomResourceDefinition ($(_KUBECTL_CUSTOMRESOURCEDEFINITION_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::CustomResourceDefinition ($(_KUBECTL_CUSTOMRESOURCEDEFINITION_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::CustomResourceDefinition ($(_KUBECTL_CUSTOMRESOURCEDEFINITION_MK_VERSION)) parameters:'
 	@echo '    KCL_CUSTOMRESOURCEDEFINITION_LABELS_KEYVALUES=$(KCL_CUSTOMRESOURCEDEFINITION_LABELS_KEYVALUES)'
 	@echo '    KCL_CUSTOMRESOURCEDEFINITION_NAME=$(KCL_CUSTOMRESOURCEDEFINITION_NAME)'
@@ -62,7 +62,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CUSTOMRESOURCEDEFINITIONS_SET_NAME=$(KCL_CUSTOMRESOURCEDEFINITIONS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::CustomResourceDefinition ($(_KUBECTL_CUSTOMRESOURCEDEFINITION_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_customresourcedefinition           - Annotate the custom-resource-definition'
 	@echo '    _kcl_apply_customresourcedefinitions             - Apply a manifest for one-or-more custom-resource-definitions'
@@ -71,16 +71,17 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_customresourcedefinitions              - Diff current-state with manifest of one-or-more custom-resource-definitions'
 	@echo '    _kcl_edit_customresourcedefinition               - Edit a custom-resource-definition'
 	@echo '    _kcl_explain_customresourcedefinition            - Explain the custom-resource-definition object'
+	@echo '    _kcl_list_customresourcedefinitions              - List all custom-resource-definitions'
+	@echo '    _kcl_list_customresourcedefinitions_set          - List a set of custom-resource-definitions'
 	@echo '    _kcl_show_customresourcedefinition               - Show everything related to a custom-resource-definition'
 	@echo '    _kcl_show_customresourcedefinition_description   - Show description of a custom-resource-definition'
 	@echo '    _kcl_show_customresourcedefinition_instances     - Show instances of a custom-resource-definition'
 	@echo '    _kcl_show_customresourcedefinition_object        - Show object of a custom-resource-definition'
 	@echo '    _kcl_unapply_customresourcedefinitions           - Un-apply manifest for one-or-more custom-resource-definitions'
 	@echo '    _kcl_unlabel_customresourcedefinition            - Un-label a custom-resource-definition'
-	@echo '    _kcl_view_customresourcedefinitions              - View custom-resource-definitions'
-	@echo '    _kcl_view_customresourcedefinitions_set          - View a set of custom-resource-definitions'
-	@echo '    _kcl_watch_customresourcedefinition              - Watch custom-resource-definitions'
+	@echo '    _kcl_watch_customresourcedefinition              - Watch all custom-resource-definitions'
 	@echo '    _kcl_watch_customresourcedefinition_set          - Watch a set of custom-resource-definitions'
+	@echo '    _kcl_write_customresourcedefinitions             - Write manifest for one-or-more custom-resource-definitions'
 	@echo
 
 #----------------------------------------------------------------------
@@ -126,7 +127,17 @@ _kcl_label_customresourcedefinition:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling custom-resource-definition "$(KCL_CUSTOMRESOURCEDEFINITION_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label customresourcedefinition $(KCL_CUSTOMRESOURCEDEFINITION_NAME) $(KCL_CUSTOMRESOURCEDEFINITION_LABELS_KEYVALUES)
 
-_kcl_show_customresourcedefinition :: _kcl_show_customresourcedefinition_instances _kcl_show_customresourcedefinition_object _kcl_show_customresourcedefinition_description
+_kcl_list_customresourcedefinitions:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL custom-resource-definitions ...'; $(NORMAL)
+	$(KUBECTL) get customresourcedefinitions
+
+_kcl_list_customresourcedefinitions_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing custom-resource-definitions-set "$(KCL_CUSTOMRESOURCEDEFINITIONS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Custom-resource-definitions are grouped based on provided field-selector, selector, and regex'; $(NORMAL)
+	$(KUBECTL) get customresourcedefinitions $(__KCL_FIELD_SELECTOR__CUSTOMRESOURCEDEFINITIONS) $(__KCL_SELECTOR__CUSTOMRESOURCEDEFINITIONS) $(|_KCL_LIST_CUSTOMRESOURCEDEFINITIONS_SET)
+
+_KCL_SHOW_CUSTOMRESOURCEDEFINITION_TARGETS?= _kcl_show_customresourcedefinition_instances _kcl_show_customresourcedefinition_object _kcl_show_customresourcedefinition_description
+_KCL_SHOW_CUSTOMRESOURCEDEFINITION: $(_KCL_SHOW_CUSTOMRESOURCEDEFINITION_TARGETS)
 
 _kcl_show_customresourcedefinition_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of custom-resource-definition "$(KCL_CUSTOMRESOURCEDEFINITION_NAME)" ...'; $(NORMAL)
@@ -152,17 +163,13 @@ _kcl_unapply_customresourcedefinitions:
 _kcl_unlabel_customresourcedefinition:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling custom-resource-definition "$(KCL_CUSTOMRESOURCEDEFINITION_NAME)" ...'; $(NORMAL)
 
-_kcl_view_customresourcedefinitions:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing custom-resource-definitions ...'; $(NORMAL)
-	$(KUBECTL) get customresourcedefinitions
-
-_kcl_view_customresourcedefinitions_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing custom-resource-definitions-set "$(KCL_CUSTOMRESOURCEDEFINITIONS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Custom-resource-definitions are grouped based on provided field-selector, selector, and regex'; $(NORMAL)
-	$(KUBECTL) get customresourcedefinitions $(__KCL_FIELD_SELECTOR__CUSTOMRESOURCEDEFINITIONS) $(__KCL_SELECTOR__CUSTOMRESOURCEDEFINITIONS) $(|_KCL_VIEW_CUSTOMRESOURCEDEFINITIONS_SET)
-
 _kcl_watch_customresourcedefinitions:
 	@$(INFO) '$(KCL_UI_LABEL)Watch custom-resource-definitions ...'; $(NORMAL)
 
 _kcl_watch_customresourcedefinitions_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watch custom-resource-definitions-set "$(KCL_CUSTOMRESOURCEDEFINITIONS_SET_NAME)"  ...'; $(NORMAL)
+
+_kcl_write_customresourcedefinitions:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more custom-resource-definitions ...'; $(NORMAL)
+	$(WRITER) $(KCL_CUSTOMRESOURCEDEFINITIONS_MANIFEST_FILEPATH)
+

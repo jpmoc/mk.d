@@ -60,12 +60,12 @@ _kcl_get_job_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --selec
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Job ($(_KUBECTL_JOB_MK_VERSION)) macros:'
 	@echo '    _kcl_get_job_pods_names_{|S|SN}        - Get the name of pods spawned by a job (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Job ($(_KUBECTL_JOB_MK_VERSION)) parameters:'
 	@echo '    KCL_JOB_COMMAND=$(KCL_JOB_NAME)'
 	@echo '    KCL_JOB_CONTAINER_NAME=$(KCL_JOB_CONTAINER_NAME)'
@@ -88,7 +88,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_JOBS_SORT_BY=$(KCL_JOBS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Job ($(_KUBECTL_JOB_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_job                      - Annotate a job'
 	@echo '    _kcl_apply_job                         - Apply a manifest for a job'
@@ -97,6 +97,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_job                          - Edit a job'
 	@echo '    _kcl_explain_job                       - Explain the job object'
 	@echo '    _kcl_label_job                         - Label a job'
+	@echo '    _kcl_list_jobs                         - List all jobs'
+	@echo '    _kcl_list_jobs_set                     - List a set of jobs'
 	@echo '    _kcl_show_job                          - Show everything related to a job'
 	@echo '    _kcl_show_job_description              - Show the description of a job'
 	@echo '    _kcl_ssh_job                           - Ssh a job'
@@ -104,10 +106,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_job                       - Un-apply a manifest for a job'
 	@echo '    _kcl_unlabel_job                       - Un-label a manifest for a job'
 	@echo '    _kcl_update_job                        - Update a job'
-	@echo '    _kcl_view_jobs                         - View all jobs'
-	@echo '    _kcl_view_jobs_set                     - View a set of jobs'
 	@echo '    _kcl_watch_jobs                        - Watch jobs'
 	@echo '    _kcl_watch_jobs_set                    - Watch a set of jobs'
+	@echo '    _kcl_write_jobs                        - Write a manifest for one-or-more jobs'
 	@echo
 
 #----------------------------------------------------------------------
@@ -139,7 +140,17 @@ _kcl_explain_job:
 _kcl_label_job:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling job "$(KCL_JOB_NAME)" ...'; $(NORMAL)
 
-_kcl_show_job: _kcl_show_job_cronjobs _kcl_show_job_pods _kcl_show_job_description
+_kcl_list_jobs:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL jobs ...'; $(NORMAL)
+	$(KUBECTL) get job --all-namespaces=true $(_X__KCL_NAMESPACE__JOBS) $(__KCL_OUTPUT_JOBS) $(_X__KCL_SELECTOR__JOBS) $(__KCL_SORT_BY__JOBS)
+
+_kcl_list_jobs_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing jobs-set "$(KCL_JOBS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Jobs are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get job --all-namespaces=false $(__KCL_NAMESPACE__JOBS) $(__KCL_OUTPUT__JOBS) $(__KCL_SELECTOR__JOBS) $(__KCL_SORT_BY__JOBS)
+
+_KCL_SHOW_JOB_TARGETS?= _kcl_show_job_cronjobs _kcl_show_job_pods _kcl_show_job_description
+_kcl_show_job: $(_KCL_SHOW_JOB_TARGETS)
 
 _kcl_show_job_cronjobs:
 	@$(INFO) '$(KCL_UI_LABEL)Showing cron-jobs of job "$(KCL_JOB_NAME)" ...'; $(NORMAL)
@@ -180,18 +191,14 @@ _kcl_unlabel_job:
 _kcl_update_job:
 	@$(INFO) '$(KCL_UI_LABEL)Updating job "$(KCL_JOB_NAME)" ...'; $(NORMAL)
 
-_kcl_view_jobs:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL jobs ...'; $(NORMAL)
-	$(KUBECTL) get job --all-namespaces=true $(_X__KCL_NAMESPACE__JOBS) $(__KCL_OUTPUT_JOBS) $(_X__KCL_SELECTOR__JOBS) $(__KCL_SORT_BY__JOBS)
-
-_kcl_view_jobs_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing jobs-set "$(KCL_JOBS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Jobs are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get job --all-namespaces=false $(__KCL_NAMESPACE__JOBS) $(__KCL_OUTPUT__JOBS) $(__KCL_SELECTOR__JOBS) $(__KCL_SORT_BY__JOBS)
-
 _kcl_watch_jobs:
 	@$(INFO) '$(KCL_UI_LABEL)Watching jobs ...'; $(NORMAL)
 	$(KUBECTL) get jobs --all-namespaces=true --watch
 
 _kcl_watch_jobs_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching jobs-set "$(KCL_JOBS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_job: _kcl_write_jobs
+_kcl_write_jobs:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more jobs ...'; $(NORMAL)
+	$(WRITER) $(KCL_JOBS_MANIFEST_FILEPATH)

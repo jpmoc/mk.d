@@ -50,12 +50,12 @@ _kcl_get_daemonset_pod_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::DaemonSet ($(_KUBECTL_DAEMONSET_MK_VERSION)) macros:'
 	@echo '    _kcl_get_daemonset_pod_names_{|S|SN}    - Get the names of the pods in the daemonset' 
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::DaemonSet ($(_KUBECTL_DAEMONSET_MK_VERSION)) parameters:'
 	@echo '    KCL_DAEMONSET_ANNOTATIONS_KEYVALUES=$(KCL_DAEMONSET_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_DAEMONSET_LABELS_KEYVALUES=$(KCL_DAEMONSET_LABELS_KEYVALUES)'
@@ -73,7 +73,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_DAEMONSETS_SET_NAME=$(KCL_DAEMONSETS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::DaemonSet ($(_KUBECTL_DAEMONSET_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_daemonset                - Annotate a daemon-set'
 	@echo '    _kcl_apply_daemonsets                  - Apply a manifest for one-or-more daemon-sets'
@@ -93,10 +93,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_daemonset_rolloutstatus      - Show the rollout-status of a daemon-set'
 	@echo '    _kcl_unapply_daemonsets                - Un-apply manifest for one-or-more daemon-sets'
 	@echo '    _kcl_unlabel_daemonset                 - Un-label a daemon-set'
-	@echo '    _kcl_view_daemonsets                   - View all daemon-sets'
-	@echo '    _kcl_view_daemonsets_set               - View a set of daemon-sets'
+	@echo '    _kcl_list_daemonsets                   - List all daemon-sets'
+	@echo '    _kcl_list_daemonsets_set               - List a set of daemon-sets'
 	@echo '    _kcl_watch_daemonsets                  - Watch all daemon-sets'
 	@echo '    _kcl_watch_daemonsets_set              - Watch a set of daemon-sets'
+	@echo '    _kcl_write_daemonsets                  - Write manifest for one-or-more daemon-sets'
 	@echo
 
 #----------------------------------------------------------------------
@@ -145,6 +146,15 @@ _kcl_label_daemonset:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling daemon-set "$(KCL_DAEMONSET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label daemonset $(__KCL_NAMESPACE__DAEMONSET) $(KCL_DAEMONSET_NAME) $(KCL_DAEMONSET_LABELS_KEYVALUES)
 
+_kcl_list_daemonsets:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL daemon-sets ...'; $(NORMAL)
+	$(KUBECTL) get daemonset --all-namespaces=true $(_X__KCL_NAMESPACE__DAEMONSETS) $(_X__KCL_SELECTOR__DAEMONSETS) $(_X_KCL_WATCH__DAEMONSETS) $(_X_KCL_WATCH_ONLY__DAEMONSETS)
+
+_kcl_list_daemonsets_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing daemon-sets-set "$(KCL_DAEMONSETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Daemon-sets are grouped based on the provided namespace'; $(NORMAL)
+	$(KUBECTL) get daemonsets --all-namespaces=false $(__KCL_NAMESPACE__DAEMONSETS) $(__KCL_SELECTOR__DAEMONSETS) $(_X_KCL_WATCH__DAEMONSETS) $(_X_KCL__WATCH_ONLY__DAEMONSETS)
+
 _kcl_pause_daemonset:
 	@$(INFO) '$(KCL_UI_LABEL)Pausing rollout of daemon-set "$(KCL_DAEMONSET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) rollout pause daemonset $(__KCL_NAMESPACE__DAEMONSET) $(KCL_DAEMONSET_NAME)
@@ -160,7 +170,8 @@ _kcl_restart_daemonset:
 _kcl_rollout_daemonset:
 	@$(INFO) '$(KCL_UI_LABEL)Rolling out a new version of daemon-set "$(KCL_DAEMONSET_NAME)" ...'; $(NORMAL)
 
-_kcl_show_daemonset :: _kcl_show_daemonset_rollouthistory _kcl_show_daemonset_rolloutstatus _kcl_show_daemonset_description
+_KCL_SHOW_DAEMONSET_TARGETS?= _kcl_show_daemonset_rollouthistory _kcl_show_daemonset_rolloutstatus _kcl_show_daemonset_description
+_kcl_show_daemonset: $(_KCL_SHOW_DAEMONSET_TARGETS)
 
 _kcl_show_daemonset_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description daemon-set "$(KCL_DAEMONSET_NAME)" ...'; $(NORMAL)
@@ -187,18 +198,14 @@ _kcl_unlabel_daemonset:
 	@$(INFO) '$(KCL_UI_LABEL)Unlabeling daemon-set "$(KCL_DAEMONSET_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
 
-_kcl_view_daemonsets:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL daemon-sets ...'; $(NORMAL)
-	$(KUBECTL) get daemonset --all-namespaces=true $(_X__KCL_NAMESPACE__DAEMONSETS) $(_X__KCL_SELECTOR__DAEMONSETS) $(_X_KCL_WATCH__DAEMONSETS) $(_X_KCL_WATCH_ONLY__DAEMONSETS)
-
-_kcl_view_daemonsets_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing daemon-sets-set "$(KCL_DAEMONSETS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Daemon-sets are grouped based on the provided namespace'; $(NORMAL)
-	$(KUBECTL) get daemonsets --all-namespaces=false $(__KCL_NAMESPACE__DAEMONSETS) $(__KCL_SELECTOR__DAEMONSETS) $(_X_KCL_WATCH__DAEMONSETS) $(_X_KCL__WATCH_ONLY__DAEMONSETS)
-
 _kcl_watch_daemonsets:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL daemon-sets ...'; $(NORMAL)
 
 _kcl_watch_daemonsets_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching daemon-sets-set "$(KCL_DAEMONSETS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Daemon-sets are grouped based on the provided namespace'; $(NORMAL)
+
+_kcl_write_daemonsets:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more daemon-sets ...'; $(NORMAL)
+	$(WRITER) $(KCL_DAEMONSETS_MANIFEST_FILEPATH)
+

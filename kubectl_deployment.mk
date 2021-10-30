@@ -113,13 +113,13 @@ _kcl_get_deployment_replicasets_names_SN= $(shell $(KUBECTL) get replicasets --n
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Deployment ($(_KUBECTL_DEPLOYMENT_MK_VERSION)) macros:'
 	@echo '    _kcl_get_deployment_pods_names_{|S|SN}             - Get the name of pods spawned by a deployment (Selector,Namespace)'
 	@echo '    _kcl_get_deployment_replicasets_name_{|S|SN}       - Get the name of the replica-sets spawned by a deployment (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Deployment ($(_KUBECTL_DEPLOYMENT_MK_VERSION)) parameters:'
 	@echo '    KCL_DEPLOYMENT_CONTAINER_NAME=$(KCL_DEPLOYMENT_CONTAINER_NAME)'
 	@echo '    KCL_DEPLOYMENT_CONTAINERS_NAMES=$(KCL_DEPLOYMENT_CONTAINERS_NAMES)'
@@ -169,7 +169,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_DEPLOYMENTS_SORT_BY=$(KCL_DEPLOYMENTS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Deployment ($(_KUBECTL_DEPLOYMENT_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_deployment                - Annotate a deployment'
 	@echo '    _kcl_apply_deployments                  - Apply manifest for one-por-more deployments'
@@ -198,10 +198,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unexpose_deployment                - Un-expose manifest for a deployment'
 	@echo '    _kcl_unlabel_deployment                 - Un-label manifest for a deployment'
 	@echo '    _kcl_update_deployment                  - Update a deployment'
-	@echo '    _kcl_view_deployments                   - View all deployments'
-	@echo '    _kcl_view_deployments_set               - View a set of deployments'
-	@echo '    _kcl_watch_deployments                  - Watching deployments'
+	@echo '    _kcl_list_deployments                   - List all deployments'
+	@echo '    _kcl_list_deployments_set               - List a set of deployments'
+	@echo '    _kcl_watch_deployments                  - Watching all deployments'
 	@echo '    _kcl_watch_deployments_set              - Watching a set of deployments'
+	@echo '    _kcl_write_deployments                  - Write manifest for one-or-more deployments'
 	@echo
 
 #----------------------------------------------------------------------
@@ -260,6 +261,15 @@ _kcl_kustomize_deployments:
 _kcl_label_deployment:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling deployment "$(KCL_DEPLOYMENT_NAME)" ...'; $(NORMAL)
 
+_kcl_list_deployments:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL deployments ...'; $(NORMAL)
+	$(KUBECTL) get deployments --all-namespaces=true $(_X__KCL_NAMESPACE__DEPLOYMENTS) $(__KCL_OUTPUT_DEPLOYMENTS) $(_X__KCL_SELECTOR__DEPLOYMENTS) $(__KCL_SORT_BY__DEPLOYMENTS)
+
+_kcl_list_deployments_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing deployments-set "$(KCL_DEPLOYMENTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get deployments --all-namespaces=false $(__KCL_NAMESPACE__DEPLOYMENTS) $(__KCL_OUTPUT__DEPLOYMENTS) $(__KCL_SELECTOR__DEPLOYMENTS) $(__KCL_SORT_BY__DEPLOYMENTS)
+
 _kcl_pause_deployment:
 	@$(INFO) '$(KCL_UI_LABEL)Pausing rollout of deployment "$(KCL_DEPLOYMENT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) rollout pause deployment $(__KCL_NAMESPACE__DEPLOYMENT) $(KCL_DEPLOYMENT_NAME)
@@ -282,7 +292,8 @@ _kcl_rollback_deployment:
 	@$(INFO) '$(KCL_UI_LABEL)Rolling-back version of deployment "$(KCL_DEPLOYMENT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) rollout undo deployment $(__KCL_NAMESPACE__DEPLOYMENT) $(KCL_DEPLOYMENT_NAME)
 
-_kcl_show_deployment: _kcl_show_deployment_object _kcl_show_deployment_pods _kcl_show_deployment_replicasets _kcl_show_deployment_rollouthistory _kcl_show_deployment_services _kcl_show_deployment_state _kcl_show_deployment_description
+_KCL_SHOW_DEPLOYMENT_TARGETS?= _kcl_show_deployment_object _kcl_show_deployment_pods _kcl_show_deployment_replicasets _kcl_show_deployment_rollouthistory _kcl_show_deployment_services _kcl_show_deployment_state _kcl_show_deployment_description
+_kcl_show_deployment: $(_KCL_SHOW_DEPLOYMENT_TARGETS)
 
 _kcl_show_deployment_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description deployment "$(KCL_DEPLOYMENT_NAME)" ...'; $(NORMAL)
@@ -360,15 +371,6 @@ _kcl_unexpose_deployment:
 _kcl_update_deployment:
 	@$(INFO) '$(KCL_UI_LABEL)Updating deployment "$(KCL_DEPLOYMENT_NAME)" ...'; $(NORMAL)
 
-_kcl_view_deployments:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL deployments ...'; $(NORMAL)
-	$(KUBECTL) get deployments --all-namespaces=true $(_X__KCL_NAMESPACE__DEPLOYMENTS) $(__KCL_OUTPUT_DEPLOYMENTS) $(_X__KCL_SELECTOR__DEPLOYMENTS) $(__KCL_SORT_BY__DEPLOYMENTS)
-
-_kcl_view_deployments_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing deployments-set "$(KCL_DEPLOYMENTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get deployments --all-namespaces=false $(__KCL_NAMESPACE__DEPLOYMENTS) $(__KCL_OUTPUT__DEPLOYMENTS) $(__KCL_SELECTOR__DEPLOYMENTS) $(__KCL_SORT_BY__DEPLOYMENTS)
-
 _kcl_watch_deployments:
 	@$(INFO) '$(KCL_UI_LABEL)Watching deployments ...'; $(NORMAL)
 	$(KUBECTL) get deployments --all-namespaces=true --watch 
@@ -381,4 +383,4 @@ _kcl_watch_deployments_set:
 _kcl_write_deployment: _kcl_write_deployments
 _kcl_write_deployments:
 	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more deployments ...'; $(NORMAL)
-	$(EDITOR) $(KCL_DEPLOYMENTS_MANIFEST_FILEPATH)
+	$(WRITER) $(KCL_DEPLOYMENTS_MANIFEST_FILEPATH)

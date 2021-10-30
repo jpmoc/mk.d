@@ -37,6 +37,8 @@ __KCL_WATCH_ONLY__NAMESPACES=
 _KCL_APPLY_NAMESPACES_|?= #
 _KCL_CREATE_NAMESPACE_|?= -#
 _KCL_DIFF_NAMESPACES_|?= $(_KCL_APPLY_NAMESPACES_|)
+_KCL_SHOW_NAMESPACE_ALLOCATEDRESOURCES_|?= -#
+_KCL_SHOW_NAMESPACE_DESCRIPTION_|?= #
 _KCL_UNAPPLY_NAMESPACES_|?= $(_KCL_APPLY_NAMESPACES_|)
 
 #--- MACROS
@@ -50,13 +52,13 @@ _kcl_get_namespaces_names= $(shell $(KUBECTL) get namespaces --output jsonpath="
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Namespace ($(_KUBECTL_NAMESPACE_MK_VERSION)) macros:'
 	@echo '    _kcl_get_namespace_pod_names_{N}      - Get the pods in a namespace (Name)'
 	@echo '    _kcl_get_namespaces_names             - Get the name of all the namespaces'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Namespace ($(_KUBECTL_NAMESPACE_MK_VERSION)) parameters:'
 	@echo '    KCL_NAMESPACE_LABELOVERWRITE_FLAG=$(KCL_NAMESPACE_LABELOVERWRITE_FLAG)'
 	@echo '    KCL_NAMESPACE_LABELS_KEYS=$(KCL_NAMESPACE_LABELS_KEYS)'
@@ -73,7 +75,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_NAMESPACES_SET_NAME=$(KCL_NAMESPACES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Namespace ($(_KUBECTL_NAMESPACE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_namespace                    - Annotate a namespace'
 	@echo '    _kcl_apply_namespaces                      - Applying manifest for one-or-more namespaces'
@@ -83,6 +85,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_namespace                        - Edit a namespace'
 	@echo '    _kcl_explain_namespace                     - Explain the namespace object'
 	@echo '    _kcl_label_namespace                       - Label a namespace'
+	@echo '    _kcl_list_namespaces                       - List all namespaces'
+	@echo '    _kcl_list_namespaces_set                   - List a set ofnamespaces'
 	@echo '    _kcl_reset_namespace                       - Reset a namespace'
 	@echo '    _kcl_show_namespace                        - Show everything related to a namespace'
 	@echo '    _kcl_show_namespace_allocatedresources     - Show allocated-resources to a namespace'
@@ -107,10 +111,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_namespace                     - Un-applying manifest for a namespace'
 	@echo '    _kcl_unlabel_namespace                     - Remove labels of a namespace'
 	@echo '    _kcl_update_namespace                      - Update namespace'
-	@echo '    _kcl_view_namespaces                       - View namespaces'
-	@echo '    _kcl_view_namespaces_set                   - View a set ofnamespaces'
 	@echo '    _kcl_watch_namespaces                      - Watch namespaces'
 	@echo '    _kcl_watch_namespaces_set                  - Watch a set of namespaces'
+	@echo '    _kcl_write_namespaces                      - Write manifest for one-or-more namespaces'
 	@echo
 
 #----------------------------------------------------------------------
@@ -161,6 +164,13 @@ _kcl_label_namespace:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label namespace $(strip $(_X__KCL_DRY_RUN__NAMESPACE) $(__KCL_OVERWRITE__NAMESPACE) $(__KCL_RESOURCE_VERSION__NAMESPACE) $(KCL_NAMESPACE_NAME) $(KCL_NAMESPACE_LABELS_KEYVALUES) )
 
+_kcl_list_namespaces:
+	@$(INFO) '$(KCL_UI_LABEL)List ALL namespaces ...'; $(NORMAL)
+	$(KUBECTL) get namespaces
+
+_kcl_list_namespaces_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing namespaces-set "$(KCL_NAMESPACES_SET_NAME)" ...'; $(NORMAL)
+
 _kcl_reset_namespace:
 	@$(INFO) '$(KCL_UI_LABEL)Resetting namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) delete pods $(__KCL_NAMESPACE__NAMESPACE) $(KCL_NAMESPACE_PODS_NAMES)
@@ -175,7 +185,7 @@ _kcl_show_namespace__header ::
 _kcl_show_namespace_allocatedresources:
 	@$(INFO) '$(KCL_UI_LABEL)Showing allocated-resources to namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if metrics-server is not installed'; $(NORMAL)
-	-$(KUBECTL) top pod $(__KCL_NAMESPACE__NAMESPACE)
+	$(_KCL_SHOW_NAMESPACE_ALLOCATEDRESOURCES_|)$(KUBECTL) top pod $(__KCL_NAMESPACE__NAMESPACE)
 
 _kcl_show_namespace_configmaps:
 	@$(INFO) '$(KCL_UI_LABEL)Showing config-maps in namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
@@ -196,7 +206,7 @@ _kcl_show_namespace_deployments:
 _kcl_show_namespace_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the namespace does NOT exist'; $(NORMAL)
-	-$(KUBECTL) describe namespace $(KCL_NAMESPACE_NAME)
+	$(_KCL_SHOW_NAMESPACE_DESCRIPTION_|)$(KUBECTL) describe namespace $(KCL_NAMESPACE_NAME)
 
 _kcl_show_namespace_horizontalpodautoscalers:
 	@$(INFO) '$(KCL_UI_LABEL)Showing horizontal-pod-autoscalers in namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
@@ -278,13 +288,6 @@ _kcl_unlabel_namespace:
 _kcl_update_namespace:
 	@$(INFO) '$(KCL_UI_LABEL)Updating namespace "$(KCL_NAMESPACE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_namespaces:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL namespaces ...'; $(NORMAL)
-	$(KUBECTL) get namespaces
-
-_kcl_view_namespaces_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing namespaces-set "$(KCL_NAMESPACES_SET_NAME)" ...'; $(NORMAL)
-
 _kcl_watch_namespaces:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL namespaces ...'; $(NORMAL)
 	$(KUBECTL) get namespaces --watch=true $(__KCL_WATCH_ONLY__NAMESPACES)
@@ -292,3 +295,7 @@ _kcl_watch_namespaces:
 _kcl_watch_namespaces_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching namespaces-set "$(KCL_NAMESPACES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get namespaces --watch=true $(__KCL_WATCH_ONLY__NAMESPACES)
+
+_kcl_write_namespaces:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more namespaces ...'; $(NORMAL)
+	$(WRITER) $(KCL_NAMESPACES_MANNIFEST_FILEPATH)

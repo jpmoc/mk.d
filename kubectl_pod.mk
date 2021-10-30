@@ -140,13 +140,13 @@ _kcl_get_pods_names_SN= $(shell $(KUBECTL) get pod --namespace $(2) --selector $
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Pod ($(_KUBECTL_POD_MK_VERSION)) macros:'
 	@echo '    _kcl_get_pod_containers_names_{|I|IN}  - Get container names in a pod (Id,Namespace)'
 	@echo '    _kcl_get_pods_names_{|S|SN}            - Get names of pods (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Pod ($(_KUBECTL_POD_MK_VERSION)) parameters:'
 	@echo '    KCL_POD_ANNOTATIONS_KEYVALUES=$(KCL_POD_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_POD_COMMAND_ARGS=$(KCL_POD_COMMAND_ARGS)'
@@ -203,7 +203,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PODS_WATCH_ONLY=$(KCL_PODS_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Pod ($(_KUBECTL_POD_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_pod                     - Annotate a pod'
 	@echo '    _kcl_apply_pods                       - Apply a manifest for one-or-more pods'
@@ -218,6 +218,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_exec_pod                         - Execute a command on a pod'
 	@echo '    _kcl_kill_pod                         - Kill a running pod'
 	@echo '    _kcl_label_pod                        - Label a pod'
+	@echo '    _kcl_list_pods                        - List all pods'
+	@echo '    _kcl_list_pods_set                    - List a set of pods'
 	@echo '    _kcl_portforward_pod                  - Forward one or more ports of a pod'
 	@echo '    _kcl_show_pod                         - Show everything related to a pod'
 	@echo '    _kcl_show_pod_allocatedresouces       - Show allocated-resource for a pod'
@@ -231,8 +233,6 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_pods                     - Un-apply a manifest for one-or-more pods'
 	@echo '    _kcl_unlabel_pod                      - Un-label a key from a pod'
 	@echo '    _kcl_update_pod                       - Update a pod'
-	@echo '    _kcl_view_pods                        - View all pods'
-	@echo '    _kcl_view_pods_set                    - View a set of pods'
 	@echo '    _kcl_watch_pods                       - Watching pods'
 	@echo '    _kcl_watch_pods_set                   - Watching a set of pods'
 	@echo '    _kcl_write_pods                       - Write manifest for one-or-more pods'
@@ -302,6 +302,15 @@ _kcl_kill_pod: _kcl_delete_pod
 _kcl_label_pod:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label pod $(__KCL_NAMESPACE__POD) $(KCL_POD_NAME) $(KCL_POD_LABELS_KEYVALUES)
+
+_kcl_list_pods:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL pods ...'; $(NORMAL)
+	$(KUBECTL) get pod --all-namespaces=true $(_X__KCL_NAMESPACE__PODS) $(__KCL_OUTPUT__PODS) $(_X__KCL_SELECTOR__PODS) $(__KCL_SHOW_LABELS__PODS) $(_X_KCL_WATCH__PODS) $(_X_KCL_WATCH_ONLY__PODS)
+
+_kcl_list_pods_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listingg pods-set "$(KCL_PODS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Pods are grouped based on the provided namespace, field-selector, and selector'; $(NORMAL)
+	$(KUBECTL) get pod --all-namespaces=false $(__KCL_FIELD_SELECTOR__PODS) $(__KCL_NAMESPACE__PODS) $(__KCL_OUTPUT__PODS) $(__KCL_SHOW_LABELS__PODS) $(__KCL_SELECTOR__PODS) $(_X_KCL_WATCH__PODS) $(_X_KCL__WATCH_ONLY__PODS)
 
 _kcl_portforward_pod:
 	@$(INFO) '$(KCL_UI_LABEL)Forwarding ports of pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
@@ -395,15 +404,6 @@ _kcl_update_pod:
 	$(if $(KCL_POD_PATCH_FILEPATH), cat $(KCL_POD_PATCH_FILEPATH))
 	$(KUBECTL) patch pod $(__KCL_NAMESPACE__POD) $(__KCL_PATCH__POD) $(KCL_POD_NAME)
 
-_kcl_view_pods:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL pods ...'; $(NORMAL)
-	$(KUBECTL) get pod --all-namespaces=true $(_X__KCL_NAMESPACE__PODS) $(__KCL_OUTPUT__PODS) $(_X__KCL_SELECTOR__PODS) $(__KCL_SHOW_LABELS__PODS) $(_X_KCL_WATCH__PODS) $(_X_KCL_WATCH_ONLY__PODS)
-
-_kcl_view_pods_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing pods-set "$(KCL_PODS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Pods are grouped based on the provided namespace, field-selector, and selector'; $(NORMAL)
-	$(KUBECTL) get pod --all-namespaces=false $(__KCL_FIELD_SELECTOR__PODS) $(__KCL_NAMESPACE__PODS) $(__KCL_OUTPUT__PODS) $(__KCL_SHOW_LABELS__PODS) $(__KCL_SELECTOR__PODS) $(_X_KCL_WATCH__PODS) $(_X_KCL__WATCH_ONLY__PODS)
-
 _kcl_watch_pods:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL pods ...'; $(NORMAL)
 	$(KUBECTL) get pods $(strip $(_X__KCL_ALL_NAMESPACES__PODS) --all-namespaces=true $(_X__KCL_NAMESPACE__PODS) $(_X__KCL_SELECTOR__PODS) $(__KCL_SHOW_LABELS__PODS) $(_X__KCL_WATCH__PODS) --watch=true $(__KCL_WATCH_ONLY__PODS) )
@@ -415,4 +415,4 @@ _kcl_watch_pods_set:
 _kcl_write_pod: _kcl_write_pods
 _kcl_write_pods:
 	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more pods ...'; $(NORMAL)
-	$(EDITOR) $(KCL_PODS_MANIFEST_FILEPATH)
+	$(WRITER) $(KCL_PODS_MANIFEST_FILEPATH)

@@ -32,12 +32,12 @@ __KCL_SELECTOR__LIMITRANGES= $(if $(KCL_LIMITRANGES_SELECTOR),--selector $(KCL_L
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Quota ($(_KUBECTL_LIMITRANGE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::LimitRange ($(_KUBECTL_LIMITRANGE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
-	@echo 'KubeCtL::Quota ($(_KUBECTL_LIMITRANGE_MK_VERSION)) parameters:'
+_kcl_list_parameters ::
+	@echo 'KubeCtL::LimitRange ($(_KUBECTL_LIMITRANGE_MK_VERSION)) parameters:'
 	@echo '    KCL_LIMITRANGE_MANIFEST_DIRPATH=$(KCL_LIMITRANGE_MANIFEST_DIRPATH)'
 	@echo '    KCL_LIMITRANGE_MANIFEST_FILENAME=$(KCL_LIMITRANGE_MANIFEST_FILENAME)'
 	@echo '    KCL_LIMITRANGE_MANIFEST_FILEPATH=$(KCL_LIMITRANGE_MANIFEST_FILEPATH)'
@@ -49,8 +49,8 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_LIMITRANGES_SET_NAME=$(KCL_LIMITRANGES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
-	@echo 'KubeCtL::Quota ($(_KUBECTL_LIMITRANGE_MK_VERSION)) targets:'
+_kcl_list_targets ::
+	@echo 'KubeCtL::LimitRange ($(_KUBECTL_LIMITRANGE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_limitrange                - Annotate a limit-range'
 	@echo '    _kcl_apply_limitrange                   - Apply a manifest of one or more limit-ranges'
 	@echo '    _kcl_create_limitrange                  - Create a new limit-range'
@@ -62,10 +62,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_limitrange                 - Un-apply a manifest of one or more limit-ranges'
 	@echo '    _kcl_unlabel_limitrange                 - Un-label a limit-range'
 	@echo '    _kcl_update_limitrange                  - Update a limit-range'
-	@echo '    _kcl_view_limitranges                   - View all limit-ranges'
-	@echo '    _kcl_view_limitranges_set               - View a set of limit-ranges'
+	@echo '    _kcl_list_limitranges                   - List all limit-ranges'
+	@echo '    _kcl_list_limitranges_set               - List a set of limit-ranges'
 	@echo '    _kcl_watch_limitranges                  - Watch all limit-ranges'
 	@echo '    _kcl_watch_limitranges_set              - Watch a set of limit-ranges'
+	@echo '    _kcl_write_limitranges                  - Write manifest for one-or-more limit-ranges'
 	@echo
 
 #----------------------------------------------------------------------
@@ -92,23 +93,28 @@ _kcl_explain_limitrange:
 _kcl_label_limitrange:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling limit-range "$(KCL_LIMITRANGE_NAME)" ...'; $(NORMAL)
 
-_kcl_show_limitrange: _kcl_show_limitrange_description
+_kcl_list_limitranges:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL limit-ranges ...'; $(NORMAL)
+	$(KUBECTL) get limitranges --all-namespaces=true $(_X__KCL_NAMESPACE__LIMITRANGES)
+
+_kcl_list_limitranges_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing limit-ranges-set "$(KCL_LIMITRANGES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Limit-ranges are grouped based on the provided namespace'; $(NORMAL)
+	$(KUBECTL) get limitranges --all-namespaces=false $(__KCL_NAMESPACE__LIMITRANGES)
+
+_KCL_SHOW_LIMITRANGE_TARGETS?= _kcl_show_limitrange_description
+_kcl_show_limitrange: $(_KCL_SHOW_LIMITRANGE_TARGETS)
 
 _kcl_show_limitrange_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description limit-range "$(KCL_LIMITRANGE_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) describe limitrange $(__KCL_NAMESPACE__LIMITRANGE) $(KCL_LIMITRANGE_NAME)
-
-_kcl_view_limitranges:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL limit-ranges ...'; $(NORMAL)
-	$(KUBECTL) get limitranges --all-namespaces=true $(_X__KCL_NAMESPACE__LIMITRANGES)
-
-_kcl_view_limitranges_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing limit-ranges-set "$(KCL_LIMITRANGES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Events are grouped based on the provided namespace'; $(NORMAL)
-	$(KUBECTL) get limitranges --all-namespaces=false $(__KCL_NAMESPACE__LIMITRANGES)
 
 _kcl_watch_limitranges:
 	@$(INFO) '$(KCL_UI_LABEL)Watch ALL limit-ranges ...'; $(NORMAL)
 
 _kcl_watch_limitranges_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watch limit-ranges-set "$(KCL_LIMITRANGES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Limit-ranges are grouped based on the provided namespace'; $(NORMAL)
+
+_kcl_write_limitranges:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more limit-ranges ...'; $(NORMAL)

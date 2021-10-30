@@ -14,7 +14,6 @@ KCL_MANIFEST_STDIN_FLAG?= false
 # KCL_MANIFEST_URL?= https://...
 KCL_MANIFEST_VALIDATE_FLAG?= true
 # KCL_MANIFESTS_DIRPATH?= ./in/
-# KCL_MANIFESTS_NAME?= my-manifests
 # KCL_MANIFESTS_NAMESPACE_NAME?= default
 KCL_MANIFESTS_REGEX?= *.yaml
 # KCL_MANIFESTS_SELECTOR?= app=nginx
@@ -48,14 +47,17 @@ __KCL_VALIDATE__MANIFESTS= $(if $(KCL_MANIFESTS_VALIDATE_FLAG),--validate=$(KCL_
 # Pipes
 _KCL_APPLY_MANIFEST_|?= #
 _KCL_APPLY_MANIFESTS_|?= #
+_KCL_CREATE_MANIFEST_|?= #
 _KCL_DIFF_MANIFEST_|?= $(_KCL_APPLY_MANIFEST_|)
 _KCL_DIFF_MANIFESTS_|?= $(_KCL_APPLY_MANIFESTS_|)
 _KCL_DOWNLOAD_MANIFEST_|?= -#
 _KCL_EXPLODE_MANIFEST_|?= -#
+_KCL_LIST_MANIFESTS_|?= cd $(KCL_MANIFESTS_DIRPATH) && #
+_KCL_LIST_MANIFESTS_SET_|?= $(_KCL_LIST_MANIFESTS_|)
 _KCL_UNAPPLY_MANIFEST_|?= $(_KCL_APPLY_MANIFEST_|)
 _KCL_UNAPPLY_MANIFESTS_|?= $(_KCL_UNAPPLY_MANIFESTS_|)
 |_KCL_DOWNLOAD_MANIFEST?= | tee $(KCL_MANIFEST_DOWNLOAD_FILEPATH)
-|_KCL_VIEW_MANIFESTS_SET?=
+|_KCL_LIST_MANIFESTS_SET?=
 
 # UI parameters
 
@@ -65,11 +67,11 @@ _KCL_UNAPPLY_MANIFESTS_|?= $(_KCL_UNAPPLY_MANIFESTS_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Manifest ($(_KUBECTL_MANIFEST_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Manifest ($(_KUBECTL_MANIFEST_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Manifest ($(_KUBECTL_MANIFEST_MK_VERSION)) parameters:'
 	@echo '    KCL_MANIFEST_DIRPATH=$(KCL_MANIFEST_DIRPATH)'
 	@echo '    KCL_MANIFEST_DOWNLOAD_DIRPATH=$(KCL_MANIFEST_DOWNLOAD_DIRPATH)'
@@ -85,13 +87,12 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_MANIFEST_VALIDATE_FLAG=$(KCL_MANIFEST_VALIDATE_FLAG)'
 	@echo '    KCL_MANIFEST_URL=$(KCL_MANIFEST_URL)'
 	@echo '    KCL_MANIFESTS_DIRPATH=$(KCL_MANIFESTS_DIRPATH)'
-	@echo '    KCL_MANIFESTS_NAME=$(KCL_MANIFESTS_NAME)'
 	@echo '    KCL_MANIFESTS_REGEX=$(KCL_MANIFESTS_REGEX)'
 	@echo '    KCL_MANIFESTS_SELECTOR=$(KCL_MANIFESTS_SELECTOR)'
 	@echo '    KCL_MANIFESTS_SET_NAME=$(KCL_MANIFESTS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Manifest ($(_KUBECTL_MANIFEST_MK_VERSION)) targets:'
 	@echo '    _kcl_apply_manifest                   - Apply a manifest'
 	@echo '    _kcl_apply_manifests                  - Apply one-or-more manifests'
@@ -101,14 +102,14 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_manifests                   - Diff current state with one-or-more manifests'
 	@echo '    _kcl_download_manifest                - Download a manifest'
 	@echo '    _kcl_explode_manifest                 - Explode a mutli-document manifest into many single-document ones'
+	@echo '    _kcl_list_manifests                   - List all manifests'
+	@echo '    _kcl_list_manifests_set               - List set of manifests'
 	@echo '    _kcl_show_manifest                    - Show everything related to a manifest'
-	@echo '    _kcl_show_manifest_content            - Show everything related to a manifest'
-	@echo '    _kcl_show_manifest_description        - Show description of a manifest'
+	@echo '    _kcl_show_manifest_content            - Show the content of a manifest'
+	@echo '    _kcl_show_manifest_description        - Show the description of a manifest'
 	@echo '    _kcl_show_manifest_md5sum             - Show md5sum of a manifest'
 	@echo '    _kcl_unapply_manifest                 - Unapply manifest'
 	@echo '    _kcl_unapply_manifests                - Unapply one-or-more manifests'
-	@echo '    _kcl_view_manifests                   - View manifests'
-	@echo '    _kcl_view_manifests_set               - View set of manifests'
 	@echo '    _kcl_watch_manifests                  - Watch manifests'
 	@echo '    _kcl_watch_manifests_set              - Watch a set of manifests'
 	@echo '    _kcl_write_manifest                   - Write a manifest'
@@ -126,7 +127,7 @@ _kcl_apply_manifest:
 	$(_KCL_APPLY_MANIFEST_|)$(KUBECTL) apply $(__KCL_FILENAME__MANIFEST) $(__KCL_NAMESPACE__MANIFEST) $(__KCL_SELECTOR__MANIFEST) $(__KCL_VALIDATE__MANIFEST)
 
 _kcl_apply_manifests:
-	@$(INFO) '$(KCL_UI_LABEL)Applying manifests "$(KCL_MANIFESTS_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Applying one-or-more manifests ...'; $(NORMAL)
 	$(if $(KCL_MANIFESTS_DIRPATH), ls -al $(KCL_MANIFESTS_DIRPATH))
 	$(_KCL_APPLY_MANIFESTS_|)$(KUBECTL) apply $(__KCL_FILENAME__MANIFESTS) $(__KCL_NAMESPACE__MANIFESTS) $(__KCL_SELECTOR__MANIFESTS) $(__KCL_VALIDATE__MANIFESTS)
 
@@ -134,7 +135,7 @@ _kcl_create_manifest:
 	@$(INFO) '$(KCL_UI_LABEL)Creating resources declared in manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
 	$(if $(KCL_MANIFEST_FILEPATH), cat $(KCL_MANIFEST_FILEPATH))
 	$(if $(KCL_MANIFEST_URL), curl -L $(KCL_MANIFEST_URL))
-	$(KUBECTL) create $(__KCL_FILENAME__MANIFEST) $(__KCL_NAMESPACE__MANIFEST) $(__KCL_SELECTOR__MANIFEST)
+	$(_KCL_CREATE_MANIFEST_|)$(KUBECTL) create $(__KCL_FILENAME__MANIFEST) $(__KCL_NAMESPACE__MANIFEST) $(__KCL_SELECTOR__MANIFEST)
 
 _kcl_delete_manifest: _kcl_unapply_manifest
 _kcl_delete_manifests: _kcl_unapply_manifests
@@ -194,16 +195,22 @@ _kcl_unapply_manifests:
 	# ls -al $(KCL_MANIFESTS_DIRPATH)
 	$(_KCL_UNAPPLY_MANIFESTS_|)$(KUBECTL) delete $(__KCL_FILENAME__MANIFESTS) $(__KCL_NAMESPACE__MANIFESTS) $(__KCL_SELECTOR__MANIFESTS)
 
-_kcl_view_manifest:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing manifests ...'; $(NORMAL)
-	cd $(KCL_MANIFESTS_DIRPATH); ls -al ??*
+_kcl_list_manifests:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL manifests ...'; $(NORMAL)
+	$(_KCL_LIST_MANIFESTS_|)ls -al ??*
 
-_kcl_view_manifest_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing manifests-set "$(KCL_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
+_kcl_list_manifests_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing manifests-set "$(KCL_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Manifests are grouped based on regex and pipe-filter'; $(NORMAL)
-	cd $(KCL_MANIFESTS_DIRPATH); ls -al $(KCL_MANIFESTS_REGEX) $(|_KCL_VIEW_MANIFESTS_SET)
+	$(_KCL_LIST_MANIFESTS_SET_|)ls -al $(KCL_MANIFESTS_REGEX) $(|_KCL_LIST_MANIFESTS_SET)
+
+_kcl_watch_manifests:
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL manifests ...'; $(NORMAL)
+
+_kcl_watch_manifests_set:
+	@$(INFO) '$(KCL_UI_LABEL)Watching manifests-set "$(KCL_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Manifests are grouped based on regex and pipe-filter'; $(NORMAL)
 
 _kcl_write_manifest:
 	@$(INFO) '$(KCL_UI_LABEL)Writing manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
-	$(EDITOR) $(KCL_MANIFEST_FILEPATH)
-
+	$(WRITER) $(KCL_MANIFEST_FILEPATH)

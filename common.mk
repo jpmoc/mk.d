@@ -25,7 +25,7 @@ COMMA= ,#
 CURL?= curl
 DIG?= dig
 ECHO?= /bin/echo
-EDITOR?= vim
+WRITER?= vim
 MD5SUM?= openssl md5
 WEBBROWSER?= chrome
 
@@ -83,15 +83,15 @@ _cmn_space2comma_S= $(subst $(SPACE),$(COMMA),$(1))
 # USAGE
 #
 
-_view_framework_macros :: _cmn_view_framework_macros
-_cmn_view_framework_macros ::
+_list_macros :: _cmn_list_macros
+_cmn_list_macros ::
 	@echo 'CoMmoN ($(_COMMON_MK_VERSION)) macros:'
 	@echo '    _cmn_comma2space_S         - Convert a csv-string into a string-array (String)'
 	@echo '    _cmn_space2comma_S         - Convert a string-array into a CSV string (String)'
 	@echo
 
-_view_framework_parameters :: _cmn_view_framework_parameters
-_cmn_view_framework_parameters ::
+_list_parameters :: _cmn_list_parameters
+_cmn_list_parameters ::
 	@echo 'CoMmoN ($(_COMMON_MK_VERSION)) parameters:'
 	@echo '    CMN_DATE=$(CMN_DATE)'
 	@echo '    CMN_DATE_HHMMSS=$(CMN_DATE_HHMMSS)'
@@ -108,7 +108,7 @@ _cmn_view_framework_parameters ::
 	@echo '    CMN_VERBOSITY_LEVEL=$(CMN_VERBOSITY_LEVEL)'
 	@echo '    CMN_UI_LABEL=$(CMN_UI_LABEL)'
 	@echo '    DATE=$(DATE)'
-	@echo '    EDITOR=$(EDITOR)'
+	@echo '    WRITER=$(WRITER)'
 	@echo '    HOST=$(HOST)'
 	@echo '    HOSTNAME=$(HOSTNAME)'
 	@echo '    MAKE=$(MAKE)'
@@ -120,8 +120,8 @@ _cmn_view_framework_parameters ::
 	@echo '    WEBBROWSER=$(WEBBROWSER)'
 	@echo
 
-_view_framework_targets :: _cmn_view_framework_targets
-_cmn_view_framework_targets ::
+_list_targets :: _cmn_list_targets
+_cmn_list_targets ::
 	@echo 'CoMmoN ($(_COMMON_MK_VERSION)) targets:'
 	@echo '    _cmn_install_dependencies     - Install software dependencies' 
 	@echo '    _cmn_print-%                  - Print info on a parameter' 
@@ -139,7 +139,7 @@ _cmn_view_framework_targets ::
 # PUBLIC TARGETS
 # 
 
-_install_framework_dependencies :: _cmn_install_dependencies
+_install_dependencies :: _cmn_install_dependencies
 _cmn_install_dependencies ::
 	@$(INFO) '$(CMN_UI_LABEL)Installing dependencies ...'; $(NORMAL)
 	sudo apt-get update

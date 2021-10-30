@@ -24,11 +24,11 @@ __KCL_FILENAME__STORAGECLASS= $(if $(KCL_STORAGECLASS_MANIFEST_FILEPATH),--filen
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) parameters:'
 	@echo '    KCL_STORAGECLASS_LABELS_KEYVALUES=$(KCL_STORAGECLASS_LABELS_KEYVALUES)'
 	@echo '    KCL_STORAGECLASS_MANIFEST_DIRPATH=$(KCL_STORAGECLASS_MANIFEST_DIRPATH)'
@@ -39,7 +39,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_STORAGECLASSES_SET_NAME=$(KCL_STORAGECLASSES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) targets:'
 	@echo '    _kcl_apply_storageclass                  - Apply a manifest for a storage-class'
 	@echo '    _kcl_create_storageclass                 - Create a new storage-class'
@@ -48,8 +48,12 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_storageclass                - Explain the storage-class object'
 	@echo '    _kcl_show_storageclass                   - Show everything related to a storage-class'
 	@echo '    _kcl_unapply_storageclass                - Unapply a manifest of a storage-class'
-	@echo '    _kcl_view_storageclasses                 - View storage-classes'
-	@echo '    _kcl_view_storageclasses_set             - View set of storage-classes'
+	@echo '    _kcl_label_storageclass                  - Label a storage-class'
+	@echo '    _kcl_list_storageclasses                 - List all storage-classes'
+	@echo '    _kcl_list_storageclasses_set             - List a set of storage-classes'
+	@echo '    _kcl_watch_storageclasses                - Watch all storage-classes'
+	@echo '    _kcl_watch_storageclasses_set            - Watch a set of storage-classes'
+	@echo '    _kcl_write_storageclasses                - Write manifest for one-or-more storage-classes'
 	@echo
 
 #----------------------------------------------------------------------
@@ -78,7 +82,20 @@ _kcl_label_storageclass:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label storageclass $(KCL_STORAGECLASS_NAME) $(KCL_STORAGECLASS_LABELS_KEYVALUES)
 
-_kcl_show_storageclass:
+_kcl_list_storageclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL storage-classes ...'; $(NORMAL)
+	$(KUBECTL) get storageclasses $(_X__KCL_SELECTOR_STORAGECLASSES)
+
+_kcl_list_storageclasses_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing storage-classes-set "$(KCL_STORAGECLASSS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Storage-classes are NOT namespaced!'; $(NORMAL)
+	@$(WARN) 'Storage-classes are grouped based on selector, ...'; $(NORMAL)
+	$(KUBECTL) get storageclasses $(__KCL_SELECTOR_STORAGECLASSES)
+
+_KCL_SHOW_STORAGECLASS_TARGETS?= _kcl_show_storageclass_description
+_kcl_show_storageclass: $(_KCL_SHOW_STORAGECLASS_TARGETS)
+
+_kcl_show_storageclass_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) describe storageclass $(KCL_STORAGECLASS_NAME) 
 
@@ -86,12 +103,17 @@ _kcl_unapply_storage_class:
 	@$(INFO) '$(KCL_UI_LABEL)Unapplying storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) delete $(__KCL_FILENAME__STORAGECLASS)
 
-_kcl_view_storageclasses:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing storage-classes ...'; $(NORMAL)
+_kcl_watch_storageclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL storage-classes ...'; $(NORMAL)
 	$(KUBECTL) get storageclasses $(_X__KCL_SELECTOR_STORAGECLASSES)
 
-_kcl_view_storageclasses_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing storage-classes-set "$(KCL_STORAGECLASSS_SET_NAME)" ...'; $(NORMAL)
+_kcl_watch_storageclasses_set:
+	@$(INFO) '$(KCL_UI_LABEL)Watching storage-classes-set "$(KCL_STORAGECLASSS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Storage-classes are NOT namespaced!'; $(NORMAL)
 	@$(WARN) 'Storage-classes are grouped based on selector, ...'; $(NORMAL)
 	$(KUBECTL) get storageclasses $(__KCL_SELECTOR_STORAGECLASSES)
+
+_kcl_write_storageclass: _kcl_write_storageclasses
+_kcl_write_storageclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more storage-classes ...'; $(NORMAL)
+	$(WRITER) $(KCL_STORAGECLASSES_MANIFEST_FILEPATH)

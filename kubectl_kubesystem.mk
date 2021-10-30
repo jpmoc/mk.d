@@ -17,18 +17,18 @@ _kcl_get_kubesystem_pod_names= $(shell $(KUBECTL) get pods --namespace kube-syst
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::KubeSystem ($(_KUBECTL_KUBESYSTEM_MK_VERSION)) macros:'
 	@echo '    _kcl_get_kubesystem_pod_names           - Get the pods in the kube-system namespace'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::KubeSystem ($(_KUBECTL_KUBESYSTEM_MK_VERSION)) parameters:'
 	@echo '    KCL_KUBESYSTEM_NAMESPACE_NAME=$(KCL_KUBESYSTEM_NAMESPACE_NAME)'
 	@echo '    KCL_KUBESYSTEM_POD_NAMES=$(KCL_KUBESYSTEM_POD_NAMES)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::KubeSystem ($(_KUBECTL_SYSTEM_MK_VERSION)) targets:'
 	@echo '    _kcl_show_kubesystem                   - Show everything related to the kube-system namespace'
 	@echo '    _kcl_show_kubesystem_description       - Show description of the kube-system namespace'
@@ -43,7 +43,8 @@ _kcl_view_framework_targets ::
 # PUBLIC TARGETS
 #
 
-_kcl_show_kubesystem: _kcl_show_kubesystem_cronjobs _kcl_show_kubesystem_deployments _kcl_show_kubesystem_jobs _kcl_show_kubesystem_pods _kcl_show_kubesystem_replicasets _kcl_show_kubesystem_serviceaccounts _kcl_show_kubesystem_secrets _kcl_show_kubesystem_services _kcl_show_kubesystem_description
+_KCL_SHOW_KUBESYSTEM_TARGETS?= _kcl_show_kubesystem_cronjobs _kcl_show_kubesystem_deployments _kcl_show_kubesystem_jobs _kcl_show_kubesystem_pods _kcl_show_kubesystem_replicasets _kcl_show_kubesystem_serviceaccounts _kcl_show_kubesystem_secrets _kcl_show_kubesystem_services _kcl_show_kubesystem_description
+_kcl_show_kubesystem: $(_KCL_SHOW_KUBESYSTEM_TARGETS)
 
 _kcl_show_kubesystem_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of namespace "$(KCL_KUBESYSTEM_NAMESPACE_NAME)" ...'; $(NORMAL)

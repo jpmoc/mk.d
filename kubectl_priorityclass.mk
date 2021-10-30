@@ -25,11 +25,11 @@ __KCL_FILENAME__PRIORITYCLASS= $(if $(KCL_PRIORITYCLASS_MANIFEST_FILEPATH),--fil
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::PriorityClass ($(_KUBECTL_PRIORITYCLASS_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::PriorityClass ($(_KUBECTL_PRIORITYCLASS_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::PriorityClass ($(_KUBECTL_PRIORITYCLASS_MK_VERSION)) parameters:'
 	@echo '    KCL_PRIORITYCLASS_DESCRIPTION=$(KCL_PRIORITYCLASS_DESCRIPTION)'
 	@echo '    KCL_PRIORITYCLASS_LABELS_KEYVALUES=$(KCL_PRIORITYCLASS_LABELS_KEYVALUES)'
@@ -42,7 +42,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PRIORITYCLASSES_SET_NAME=$(KCL_PRIORITYCLASSES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::PriorityClass ($(_KUBECTL_PRIORITYCLASS_MK_VERSION)) targets:'
 	@echo '    _kcl_apply_priorityclass                       - Apply a manifest with a priority-class'
 	@echo '    _kcl_create_priorityclass                      - Create a new priority-class'
@@ -53,8 +53,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_priorityclass_description            - Show description of a priority-class'
 	@echo '    _kcl_show_priorityclass_pods                   - Show pods with a priority-class'
 	@echo '    _kcl_unapply_priorityclass                     - Unapply a manifest with a priority-class'
-	@echo '    _kcl_view_priorityclasses                      - View priority-classes'
-	@echo '    _kcl_view_priorityclasses_set                  - View set of priority-classes'
+	@echo '    _kcl_list_priorityclasses                      - List all priority-classes'
+	@echo '    _kcl_list_priorityclasses_set                  - List a set of priority-classes'
+	@echo '    _kcl_watch_priorityclasses                     - Watch all priority-classes'
+	@echo '    _kcl_watch_priorityclasses_set                 - Watch a set of priority-classes'
+	@echo '    _kcl_write_priorityclasses                     - Write manifest for one-or-more priority-classes'
 	@echo
 
 #----------------------------------------------------------------------
@@ -90,7 +93,17 @@ _kcl_label_priorityclass:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling priority-class "$(KCL_PRIORITYCLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label priorityclass $(KCL_PRIORITYCLASS_NAME) $(KCL_PRIORITYCLASS_LABELS_KEYVALUES)
 
-_kcl_show_priorityclass: _kcl_show_priorityclass_pods _kcl_show_priorityclass_description
+_kcl_list_priorityclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL priority-classes ...'; $(NORMAL)
+	$(KUBECTL) get priorityclasses $(_X__KCL_SELECTOR_PRIORITYCLASSES)
+
+_kcl_list_priorityclasses_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing priority-classes-set "$(KCL_PRIORITYCLASSES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Priority-classes are grouped based on selector, ...'; $(NORMAL)
+	$(KUBECTL) get priorityclasses $(__KCL_SELECTOR_PRIORITYCLASSES)
+
+_KCL_SHOW_PRIORITYCLASS_TARGETS?= _kcl_show_priorityclass_pods _kcl_show_priorityclass_description
+_kcl_show_priorityclass: $(_KCL_SHOW_PRIORITYCLASS_TARGETS)
 
 _kcl_show_priorityclass_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of priority-class "$(KCL_PRIORITYCLASS_NAME)" ...'; $(NORMAL)
@@ -104,11 +117,13 @@ _kcl_unapply_priorityclass:
 	@$(INFO) '$(KCL_UI_LABEL)Unapplying manifest with priority-class "$(KCL_PRIORITYCLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) delete $(__KCL_FILENAME__PRIORITYCLASS)
 
-_kcl_view_priorityclasses:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing priority-classes ...'; $(NORMAL)
-	$(KUBECTL) get priorityclasses $(_X__KCL_SELECTOR_PRIORITYCLASSES)
+_kcl_watch_priorityclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL priority-classes ...'; $(NORMAL)
 
-_kcl_view_priorityclasses_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing priority-classes-set "$(KCL_PRIORITYCLASSES_SET_NAME)" ...'; $(NORMAL)
+_kcl_watch_priorityclasses_set:
+	@$(INFO) '$(KCL_UI_LABEL)Watching priority-classes-set "$(KCL_PRIORITYCLASSES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Priority-classes are grouped based on selector, ...'; $(NORMAL)
-	$(KUBECTL) get priorityclasses $(__KCL_SELECTOR_PRIORITYCLASSES)
+
+_kcl_write_priorityclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more priority-classes ...'; $(NORMAL)
+	$(WRITER) $(KCL_PRIORITYCLASSES_MANIFEST_FILEPATH)

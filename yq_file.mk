@@ -33,13 +33,13 @@ _yq_get_file_value_QF= $(shell $(YQ_BIN) -a $(1) $(2))
 # USAGE
 #
 
-_yq_view_framework_macros ::
+_yq_list_macros ::
 	@echo 'YQ:::File ($(_YQ_FILE_MK_VERSION)) macros:'
 	@echo '    _yq_get_file_rawvalue_{|Q|QF}   - Get a raw value using a query on a yaml file (Query,File)'
 	@echo '    _yq_get_file_value_{|Q|QF}      - Get a value using a query on a yaml file (Query,File)'
 	@echo
 
-_yq_view_framework_parameters ::
+_yq_list_parameters ::
 	@echo 'YQ:File: ($(_YQ_FILE_MK_VERSION)) parameters:'
 	@echo '    YQ_FILE_FILEPATH=$(YQ_FILE_FILEPATH)'
 	@echo '    YQ_FILE_NAME=$(YQ_FILE_NAME)'
@@ -50,12 +50,12 @@ _yq_view_framework_parameters ::
 	@echo '    YQ_FILE_VALUE=$(YQ_FILE_VALUE)'
 	@echo
 
-_yq_view_framework_targets ::
+_yq_list_targets ::
 	@echo 'YQ::File ($(_YQ_FILE_MK_VERSION)) targets:'
-	@echo '    _yq_query_file                  - run a query on a file'
-	@echo '    _yq_show_file                   - show everything related to a file'
-	@echo '    _yq_show_file_content           - show content of a file'
-	@echo '    _yq_show_file_description       - show description of a file'
+	@echo '    _yq_query_file                  - Query a file'
+	@echo '    _yq_show_file                   - Show everything related to a file'
+	@echo '    _yq_show_file_content           - Show content of a file'
+	@echo '    _yq_show_file_description       - Show description of a file'
 	@echo
 
 
@@ -83,3 +83,5 @@ _yq_show_file_description:
 	ls -al $(YQ_FILE_FILEPATH)
 
 _yq_write_file:
+	@$(INFO) '$(YQ_UI_LABEL)Writing file "$(YQ_FILE_NAME)" ...'; $(NORMAL)
+	$(WRITER) $(YQ_FILE_FILEPATH)

@@ -43,11 +43,11 @@ _kcl_get_replicaset_pod_name_SN= $(shell $(KUBECTL) get pods --namespace $(2) --
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::ReplicaSet ($(_KUBECTL_REPLICASET_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::ReplicaSet ($(_KUBECTL_REPLICASET_MK_VERSION)) parameters:'
 	@echo '    KCL_REPLICASET_LABELS_KEYVALUES=$(KCL_REPLICASET_LABELS_KEYVALUES)'
 	@echo '    KCL_REPLICASET_NAME=$(KCL_REPLICASET_NAME)'
@@ -62,7 +62,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_REPLICASETS_SET_NAME=$(KCL_REPLICASETS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::ReplicaSet ($(_KUBECTL_REPLICASET_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_replicaset               - Annotate replica-set'
 	@echo '    _kcl_apply_replicaset                  - Apply a manifest for a replica-set'
@@ -71,7 +71,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_replicaset                   - Diff manifest with running replica-set'
 	@echo '    _kcl_edit_replicaset                   - Edit a replica-set'
 	@echo '    _kcl_explain_replicaset                - Explain the replica-set object'
-	@echo '    _kcl_labe_replicaset                   - Label a replica-set'
+	@echo '    _kcl_label_replicaset                  - Label a replica-set'
+	@echo '    _kcl_list_replicasets                  - List all replica-sets'
+	@echo '    _kcl_list_replicasets_set              - List a set of replica-sets'
 	@echo '    _kcl_show_replicaset                   - Show everything related to a replica-set'
 	@echo '    _kcl_show_replicaset_description       - Show description of a replica-set'
 	@echo '    _kcl_show_replicaset_pods              - Show pods of a replica-set'
@@ -80,10 +82,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_replicaset                - Un-apply a manifest for a replica-set'
 	@echo '    _kcl_unlabel_replicaset                - Un-label a replica-set'
 	@echo '    _kcl_update_replicaset                 - Update replica-set'
-	@echo '    _kcl_view_replicasets                  - View replica-sets'
-	@echo '    _kcl_view_replicasets_set              - View a set of replica-sets'
-	@echo '    _kcl_watch_replicasets                 - Watch ALL replica-sets'
-	@echo '    _kcl_wtch_replicasets_set              - Watch a set of a replica-sets'
+	@echo '    _kcl_watch_replicasets                 - Watch all replica-sets'
+	@echo '    _kcl_watch_replicasets_set             - Watch a set of a replica-sets'
+	@echo '    _kcl_write_replicasets                 - Write a manifest for one-or-more replica-sets'
 	@echo
 
 #----------------------------------------------------------------------
@@ -128,7 +129,17 @@ _kcl_label_replicaset:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling replica-set "$(KCL_REPLICASET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label replicaset $(KCL_REPLICASET_NAME) $(KCL_REPLICASET_LABELS_KEYVALUES)
 
-_kcl_show_replicaset: _kcl_show_replicaset_pods _kcl_show_replicaset_description
+_kcl_list_replicasets:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL replica-sets ...'; $(NORMAL)
+	$(KUBECTL) get replicasets --all-namespaces=true $(_X__KCL_NAMESPACE__REPLICASETS)
+
+_kcl_list_replicasets_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing replica-sets-set "$(KCL_REPLICASETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Replica-sets are grouped based on namespace, ...'; $(NORMAL)
+	$(KUBECTL) get replicasets --all-namespaces=false $(__KCL_NAMESPACE__REPLICASETS)
+
+_KCL_SHOW_REPLICASET_TARGETS?= _kcl_show_replicaset_pods _kcl_show_replicaset_description
+_kcl_show_replicaset: $(_KCL_SHOW_REPLICASET_TARGETS)
 
 _kcl_show_replicaset_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of replica-set "$(KCL_REPLICASET_NAME)" ...'; $(NORMAL)
@@ -156,17 +167,11 @@ _kcl_unlabel_replicaset:
 _kcl_update_replicaset:
 	@$(INFO) '$(KCL_UI_LABEL)Updating replica-set "$(KCL_REPLICASET_NAME)" ...'; $(NORMAL)
 
-_kcl_view_replicasets:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing replica-sets ...'; $(NORMAL)
-	$(KUBECTL) get replicasets --all-namespaces=true $(_X__KCL_NAMESPACE__REPLICASETS)
-
-_kcl_view_replicasets_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing replica-sets-set "$(KCL_REPLICASETS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Replica-sets are grouped based on namespace, ...'; $(NORMAL)
-	$(KUBECTL) get replicasets --all-namespaces=false $(__KCL_NAMESPACE__REPLICASETS)
-
 _kcl_watch_replicasets:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing replica-sets ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching replica-sets ...'; $(NORMAL)
 
 _kcl_watch_replicasets_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching replica-sets-set "$(KCL_REPLICASETS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_replicasets:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more replica-sets ...'; $(NORMAL)

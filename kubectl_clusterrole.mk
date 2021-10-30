@@ -38,7 +38,7 @@ _KCL_APPLY_CLUSTERROLES_|?= #
 _KCL_DIFF_CLUSTERROLES_|?= $(_KCL_APPLY_CLUSTERROLES_|)
 _KCL_UNAPPLY_CLUSTERROLES_|?= $(_KCL_APPLY_CLUSTERROLES_|)
 |_KCL_APPLY_CLUSTERROLES?=
-|_KCL_VIEW_CLUSTERROLES_SET?=
+|_KCL_LIST_CLUSTERROLES_SET?=
 
 # UI parameters
 
@@ -48,11 +48,11 @@ _KCL_UNAPPLY_CLUSTERROLES_|?= $(_KCL_APPLY_CLUSTERROLES_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::ClusterRole ($(_KUBECTL_CLUSTERROLE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::ClusterRole ($(_KUBECTL_CLUSTERROLE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::ClusterRole ($(_KUBECTL_CLUSTERROLE_MK_VERSION)) parameters:'
 	@echo '    KCL_CLUSTERROLE_CREATE_DRYRUN=$(KCL_CLUSTERROLE_CREATE_DRYRUN)'
 	@echo '    KCL_CLUSTERROLE_LABELS_KEYVALUES=$(KCL_CLUSTERROLE_LABELS_KEYVALUES)'
@@ -70,7 +70,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CLUSTERROLES_SET_NAME=$(KCL_CLUSTERROLES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::ClusterRole ($(_KUBECTL_CLUSTERROLE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_clusterrole                    - Annotate a cluster-role'
 	@echo '    _kcl_apply_clusterroles                      - Apply a manifest for one-or-more cluster-roles'
@@ -85,10 +85,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_clusterroles                    - Un-apply a manifest for one-or-more cluster-roles'
 	@echo '    _kcl_unlabel_clusterrole                     - Un-label a cluster-role'
 	@echo '    _kcl_update_clusterrole                      - Update a cluster-role'
-	@echo '    _kcl_view_clusterroles                       - View cluster-roles'
-	@echo '    _kcl_view_clusterroles_set                   - View set of cluster-roles'
-	@echo '    _kcl_watch_clusterroles                      - Watch cluster-roles'
+	@echo '    _kcl_list_clusterroles                       - List all cluster-roles'
+	@echo '    _kcl_list_clusterroles_set                   - List set of cluster-roles'
+	@echo '    _kcl_watch_clusterroles                      - Watch all cluster-roles'
 	@echo '    _kcl_watch_clusterroles_set                  - Watch a set of cluster-roles'
+	@echo '    _kcl_write_clusterroles                      - Write manifest for one-or-more cluster-roles'
 	@echo
 
 #----------------------------------------------------------------------
@@ -137,7 +138,17 @@ _kcl_label_clusterrole:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling cluster-role "$(KCL_CLUSTERROLE_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label clusterrole $(KCL_CLUSTERROLE_NAME) $(KCL_CLUSTERROLE_LABELS_KEYVALUES)
 
-_kcl_show_clusterrole: _kcl_show_clusterrole_clusterrolebindings _kcl_show_clusterrole_description
+_kcl_list_clusterroles:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL cluster-roles ...'; $(NORMAL)
+	$(KUBECTL) get clusterroles $(_X__KCL_SELECTOR__CLUSTERROLES)
+
+_kcl_list_clusterroles_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing cluster-roles-set "$(KCL_CLUSTERROLES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Cluster-roles are grouped based on selector, pipe-filter...'; $(NORMAL)
+	$(KUBECTL) get clusterroles $(__KCL_SELECTOR__CLUSTERROLES) $(|_KCL_LIST_CLUSTERROLES_SET)
+
+_KCL_SHOW_CLUSTERROLE_TARGETS?= _kcl_show_clusterrole_clusterrolebindings _kcl_show_clusterrole_description
+_kcl_show_clusterrole: $(_KCL_SHOW_CLUSTERROLE_TARGETS)
 
 _kcl_show_clusterrole_clusterrolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Showing cluster-role-bindings referencing cluster-role "$(KCL_CLUSTERROLE_NAME)" ...'; $(NORMAL)
@@ -163,17 +174,12 @@ _kcl_unlabel_clusterrole:
 _kcl_update_clusterrole:
 	@$(INFO) '$(KCL_UI_LABEL)Updating cluster-role "$(KCL_CLUSTERROLE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_clusterroles:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL cluster-roles ...'; $(NORMAL)
-	$(KUBECTL) get clusterroles $(_X__KCL_SELECTOR__CLUSTERROLES)
-
-_kcl_view_clusterroles_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing cluster-roles-set "$(KCL_CLUSTERROLES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Cluster-roles are grouped based on selector, pipe-filter...'; $(NORMAL)
-	$(KUBECTL) get clusterroles $(__KCL_SELECTOR__CLUSTERROLES) $(|_KCL_VIEW_CLUSTERROLES_SET)
-
 _kcl_watch_clusterroles:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL cluster-roles ...'; $(NORMAL)
 
 _kcl_watch_clusterroles_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching cluster-roles-set "$(KCL_CLUSTERROLES_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_clusterroles:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more cluster-roles ...'; $(NORMAL)
+	$(WRITER) $(KCL_CLUSTERROLES_MANIFEST_FILEPATH)

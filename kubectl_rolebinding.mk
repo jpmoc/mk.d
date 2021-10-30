@@ -47,12 +47,12 @@ _kcl_get_rolebinding_role_name_NN= $(shell $(KUBECTL) get rolebinding --namespac
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::RoleBinding ($(_KUBECTL_ROLEBINDING_MK_VERSION)) macros:'
 	@echo '    _kcl_get_rolebinding_role_name_{|N|NN}    - Get the role name of a role-binding (Name, Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::RoleBinding ($(_KUBECTL_ROLEBINDING_MK_VERSION)) parameters:'
 	@echo '    KCL_ROLEBINDING_GROUP_NAMES=$(KCL_ROLEBINDING_GROUP_NAMES)'
 	@echo '    KCL_ROLEBINDING_LABELS_KEYVALUES=$(KCL_ROLEBINDING_LABELS_KEYVALUES)'
@@ -72,7 +72,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_ROLEBINDINGS_SET_NAME=$(KCL_ROLEBINDINGS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::RoleBinding ($(_KUBECTL_ROLEBINDING_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_rolebinding                 - Create a new role-binding'
 	@echo '    _kcl_apply_rolebindings                 - Apply manifest for one-or-more role-bindings'
@@ -87,10 +87,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_rolebinding_serviceaccount    - Show the service-account of a role-binding'
 	@echo '    _kcl_unapply_rolebindings               - Un-apply manifest for one-or-more role-bindings'
 	@echo '    _kcl_unlabel_rolebindings               - Un-label a role-binding'
-	@echo '    _kcl_view_rolebindings                  - View all role-bindings'
-	@echo '    _kcl_view_rolebindings_set              - View a set of role-bindings'
+	@echo '    _kcl_list_rolebindings                  - List all role-bindings'
+	@echo '    _kcl_list_rolebindings_set              - List a set of role-bindings'
 	@echo '    _kcl_watch_rolebindings                 - Watch all role-bindings'
 	@echo '    _kcl_watch_rolebindings_set             - Watch a set of role-bindings'
+	@echo '    _kcl_write_rolebindings                 - Write a manifest for one-or-more role-bindings'
 	@echo
 
 #----------------------------------------------------------------------
@@ -128,7 +129,8 @@ _kcl_label_rolebinding:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling role-binding "$(KCL_ROLEBINDING_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label rolebinding $(__KCL_NAMESPACE__ROLEBINDING) $(KCL_ROLEBINDING_NAME) $(KCL_ROLEBINDING_LABELS_KEYVALUES)
 
-_kcl_show_rolebinding: _kcl_show_rolebinding_object _kcl_show_rolebinding_role _kcl_show_rolebinding_serviceaccount _kcl_show_rolebinding_description
+_KCL_SHOW_ROLEBINDING_TARGETS?= _kcl_show_rolebinding_object _kcl_show_rolebinding_role _kcl_show_rolebinding_serviceaccount _kcl_show_rolebinding_description
+_kcl_show_rolebinding: $(_KCL_SHOW_ROLEBINDING_TARGETS)
 
 _kcl_show_rolebinding_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of role-binding "$(KCL_ROLEBINDING_NAME)" ...'; $(NORMAL)
@@ -150,18 +152,23 @@ _kcl_unapply_rolebinding: _kcl_unapply_rolebindings
 _kcl_unapply_rolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Un-applying manifest for one-or-more role-bindings ...'; $(NORMAL)
 
-_kcl_view_rolebindings:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL role-bindings ...'; $(NORMAL)
+_kcl_list_rolebindings:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL role-bindings ...'; $(NORMAL)
 	$(KUBECTL) get rolebindings --all-namespaces=true $(_X__KCL_NAMESPACE__ROLEBINDINGS) $(_X__KCL_SELECTOR__ROLEBINDINGS)
 
-_kcl_view_rolebindings_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing role-bindings-set "$(KCL_ROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
+_kcl_list_rolebindings_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing role-bindings-set "$(KCL_ROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
 	@$(WARN) 'Role-bindings are grouped based on namespace, selector, ...'; $(NORMAL)
 	$(KUBECTL) get rolebindings --all-namespace=false $(__KCL_NAMESPACE__ROLEBINDINGS) $(__KCL_SELECTOR__ROLEBINDINGS)
 
 _kcl_watch_rolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL role-bindings ...'; $(NORMAL)
 
-_kcl_watching_rolebindings_set:
+_kcl_watch_rolebindings_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching role-bindings-set "$(KCL_ROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
 	@$(WARN) 'Role-bindings are grouped based on namespace, selector, ...'; $(NORMAL)
+
+_kcl_write_rolebinding: _kcl_write_rolebindings
+_kcl_write_rolebindings:
+	@$(INFO) '$(KCL_UI_LABEL)Write manifest for one-or-more role-bindings ...'; $(NORMAL)
+	$(WRITER) $(KCL_ROLEBINDINGS_MANIFEST_FILEPATH)

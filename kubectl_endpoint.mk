@@ -43,11 +43,11 @@ __KCL_SELECTOR__ENDPOINTS?= $(if $(KCL_ENDPOINTS_SELECTOR),--selector $(KCL_ENDP
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Endpoint ($(_KUBECTL_ENDPOINT_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Endpoint ($(_KUBECTL_ENDPOINT_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Endpoint ($(_KUBECTL_ENDPOINT_MK_VERSION)) parameters:'
 	@echo '    KCL_ENDPOINT_LABELS_KEYVALUES=$(KCL_ENDPOINT_LABELS_KEYVALUES)'
 	@echo '    KCL_ENDPOINT_NAME=$(KCL_ENDPOINT_NAME)'
@@ -68,7 +68,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_ENDPOINTS_SET_NAME=$(KCL_ENDPOINTS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Endpoint ($(_KUBECTL_ENDPOINT_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_endpoint               - Annotate an endpoint'
 	@echo '    _kcl_apply_endpoints                 - Apply manifest for one-or-more endpoints'
@@ -87,10 +87,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_endpoints               - Unapply manifest for one-or-more endpoint'
 	@echo '    _kcl_unlabel_endpoint                - Unlabel an endpoint'
 	@echo '    _kcl_update_endpoint                 - Update an endpoint'
-	@echo '    _kcl_view_endpoints                  - View endpoints'
-	@echo '    _kcl_view_endpoints_set              - View a set of endpoints'
+	@echo '    _kcl_list_endpoints                  - List endpoints'
+	@echo '    _kcl_list_endpoints_set              - List a set of endpoints'
 	@echo '    _kcl_watch_endpoints                 - Watch endpoints'
 	@echo '    _kcl_watch_endpoints_set             - Watch a set of endpoints'
+	@#echo '    _kcl_write_endpoints                 - Write manifest for one-or-more endpoints'
 	@echo
 
 #----------------------------------------------------------------------
@@ -137,7 +138,17 @@ _kcl_label_endpoint:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling endpoint "$(KCL_ENDPOINT_NAME)" ...'; $(NORMAL)
 	#$(KUBECTL) label endpoint $(__KCL_NAMESPACE__ENDPOINT) $(KCL_ENDPOINT_NAME) $(KCL_ENDPOINT_LABELS_KEYVALUES)
 
-_kcl_show_endpoint :: _kcl_show_endpoint_object _kcl_show_endpoint_pods _kcl_show_endpoint_services _kcl_show_endpoint_state _kcl_show_endpoint_description
+_kcl_list_endpoints:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL endpoints ...'; $(NORMAL)
+	$(KUBECTL) get endpoints --all-namespaces=true $(_X__KCL_FIELD_SELECTOR__ENDPOINTS) $(_X__KCL_NAMESPACE__ENDPOINTS) $(_X__KCL_SELECTOR__ENDPOINTS)
+
+_kcl_list_endpoints_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing endpoints-set "$(KCL_ENDPOINTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Endpoints are grouped based on provided namespace, field-selector, selector, ...'; $(NORMAL)
+	$(KUBECTL) get endpoints --all-namespaces=false $(__KCL_FIELD_SELECTOR__ENDPOINTS) $(__KCL_NAMESPACE__ENDPOINTS) $(__KCL_SELECTOR__ENDPOINTS)
+
+_KCL_SHOW_ENDPOINT_TARGETS?= _kcl_show_endpoint_object _kcl_show_endpoint_pods _kcl_show_endpoint_services _kcl_show_endpoint_state _kcl_show_endpoint_description
+_kcl_show_endpoint: $(_KCL_SHOW_ENDPOINT_TARGETS)
 
 _kcl_show_endpoint_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of endpoint "$(KCL_ENDPOINT_NAME)" ...'; $(NORMAL)
@@ -189,18 +200,11 @@ _kcl_update_endpoint:
 	@$(INFO) '$(KCL_UI_LABEL)Updating endpoint "$(KCL_ENDPOINT_NAME)" ...'; $(NORMAL)
 	#$(KUBECTL) patch endpoints $(__KCL_PATCH__ENDPOINT) $(KCL_ENDPOINT_NAME)
 
-_kcl_view_endpoints:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL endpoints ...'; $(NORMAL)
-	$(KUBECTL) get endpoints --all-namespaces=true $(_X__KCL_FIELD_SELECTOR__ENDPOINTS) $(_X__KCL_NAMESPACE__ENDPOINTS) $(_X__KCL_SELECTOR__ENDPOINTS)
-
-_kcl_view_endpoints_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing endpoints-set "$(KCL_ENDPOINTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Endpoints are grouped based on provided namespace, field-selector, selector, ...'; $(NORMAL)
-	$(KUBECTL) get endpoints --all-namespaces=false $(__KCL_FIELD_SELECTOR__ENDPOINTS) $(__KCL_NAMESPACE__ENDPOINTS) $(__KCL_SELECTOR__ENDPOINTS)
-
 _kcl_watch_endpoints:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL endpoints ...'; $(NORMAL)
 
 _kcl_watch_endpoints_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching endpoints-set "$(KCL_ENDPOINTS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Endpoints are grouped based on provided namespace, field-selector, selector, ...'; $(NORMAL)
+
+_kcl_write_endpoints:

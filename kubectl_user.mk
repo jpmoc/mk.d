@@ -15,16 +15,16 @@ _KUBECTL_USER_MK_VERSION= $(_KUBECTL_MK_VERSION)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::User ($(_KUBECTL_USER_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::User ($(_KUBECTL_USER_MK_VERSION)) parameters:'
 	@echo '    KCL_USER_NAME=$(KCL_USER_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::User ($(_KUBECTL_USER_MK_VERSION)) targets:'
 	@echo '    _kcl_show_user                   - Show everything related to a user'
 	@echo '    _kcl_show_user_description       - Show description of a user'

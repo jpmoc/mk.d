@@ -1,4 +1,4 @@
-_KUBECTL_MK_VERSION= 0.99.4
+_KUBECTL_MK_VERSION= 1.0.0
 
 # KCL_AS_GROUP?=
 # KCL_AS_USER?=
@@ -84,13 +84,13 @@ KUBECTL_KREW?= $(strip $(__KUBECTL_KREW_ENVIRONMENT) $(KUBECTL_KREW_ENVIRONMENT)
 # USAGE
 #
 
-_view_framework_macros :: _kcl_view_framework_macros
-_kcl_view_framework_macros ::
+_list_macros :: _kcl_list_macros
+_kcl_list_macros ::
 	@#echo 'KubeCtL ($(_KUBECTL_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _kcl_view_framework_parameters
-_kcl_view_framework_parameters ::
+_list_parameters :: _kcl_list_parameters
+_kcl_list_parameters ::
 	@echo 'KubeCtL ($(_KUBECTL_MK_VERSION)) parameters:'
 	@echo '    KCL_AS_GROUP=$(KCL_AS_GROUP)'
 	@echo '    KCL_AS_USER=$(KCL_AS_USER)'
@@ -127,11 +127,11 @@ _kcl_view_framework_parameters ::
 	@echo '    KUBECTL_VMODULE=$(KUBECTL_VMODULE)'
 	@echo
 
-_view_framework_targets :: _kcl_view_framework_targets
-_kcl_view_framework_targets ::
+_list_targets :: _kcl_list_targets
+_kcl_list_targets ::
 	@echo 'KubeCtL ($(_KUBECTL_MK_VERSION)) targets:'
 	@echo '    _kcl_install_dependencies              - Install dependencies'
-	@echo '    _kcl_view_secrettypes                  - View secret-types'
+	@echo '    _kcl_list_secrettypes                  - List all secret-types'
 	@echo '    _kcl_view_versions                     - View versions of dependencies'
 	@echo
 
@@ -207,8 +207,8 @@ MK_DIR?= .
 _install_framework_dependencies :: _kcl_install_dependencies
 _kcl_install_dependencies :: __kcl_install_kubectl __kcl_install_krew
 
-_kcl_view_secrettypes:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing secret-types ...'; $(NORMAL)
+_kcl_list_secrettypes:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL secret-types ...'; $(NORMAL)
 	@echo 'Type: generic/Opaque                      ~~> key-value pair secret for pods'; $(NORMAL)
 	@echo 'Type: kubernetes.io/dockerconfigjson      ~~> docker registry credentials'; $(NORMAL)
 	@echo 'Type: kubernetes.io/service-account-token ~~> RBAC for pods'; $(NORMAL)

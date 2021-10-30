@@ -22,18 +22,18 @@ __KCL_VERBS= $(if $(KCL_API_RESOURCES_VERBS),--verbs $(subst $(SPACE),$(COMMA),$
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@#echo 'KubeCtL::API ($(_KUBECTL_API_MK_VERSION)) macros:'
 	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::API ($(_KUBECTL_API_MK_VERSION)) parameters:'
 	@echo '    KCL_API_OUTPUT_FORMAT=$(KCL_API_OUTPUT_FORMAT)'
 	@echo '    KCL_API_RESOURCES_NAMESPACED=$(KCL_API_RESOURCES_NAMESPACED)'
 	@echo '    KCL_API_RESOURCES_VERBS=$(KCL_API_RESOURCES_VERBS)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::API ($(_KUBECTL_API_MK_VERSION)) targets:'
 	@echo '    _kcl_show_api                       - Show everything related to the API'
 	@echo '    _kcl_show_api_resources             - Show resources to the API'
@@ -60,9 +60,14 @@ _kcl_show_api_versions:
 	@$(INFO) '$(KCL_UI_LABEL)Showing which API/version combos are available on this cluster...'; $(NORMAL)
 	$(KUBECTL) api-versions
 
-_kcl_show_apiservice:
+_KCL_SHOW_APISERVICE_TARGETS?= _kcl_show_apiservice_description
+_kcl_show_apiservice: $(_KCL_SHOW_APISERVICE_TARGETS)
+
+_kcl_show_apiservice_description:
+	@$(INFO) '$(KCL_UI_LABEL)Shogin description of API-service "$(KCL_APISERVICE_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) describe apiservices.apiregistration.k8s.io v1beta.compose.docket.com
 	# https://speakerdeck.com/thockin/dockercon-2018-kubernetes-extensibility?slide=44
 
-_kcl_view_apiservices:
+_kcl_list_apiservices:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL API/version combos available on this cluster...'; $(NORMAL)
 	$(KUBECTL) get apiservices.apiregistration.k8s.io#

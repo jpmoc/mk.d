@@ -9,11 +9,11 @@ _KUBECTL_CERTIFICATESIGNINGREQUEST_MK_VERSION= $(_KUBECTL_MK_VERSION)
 # KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_DIRPATH?= ./in/
 # KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILENAME?= manifest.yaml 
 # KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH?= ./in/manifest.yaml
-KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_STDINFLAG?= false
 # KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL?= http://...
 # KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH?= ./in/
 # KCL_CERTIFICATESIGNINGREQUESTS_SELECTOR?=
 # KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME?= my-certificatesigningrequests-set
+KCL_CERTIFICATESIGNINGREQUESTS_STDIN_FLAG?= false
 
 # Derived parameters
 KCL_CERTIFICATESIGNINGREQUEST_CONFIG_DIRPATH?= $(KCL_INPUTS_DIRPATH)
@@ -24,7 +24,7 @@ KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME?= $(HOSTNAME)
 
 # Option parameters
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH),--filename $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH))
-__KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(filter true,$(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_STDINFLAG),--filename -)
+__KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(filter true, $(KCL_CERTIFICATESIGNINGREQUESTS_STDINFLAG)),--filename -)
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL),--filename $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL))
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH),--filename $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH))
 
@@ -39,11 +39,11 @@ _KCL_UNAPPLY_CERTIFICATESIGNINGREQUESTS_|?= $(_KCL_APPLY_CERTIFICATESIGNINGREQUE
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::CertificateSigningRequest ($(_KUBECTL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::CertificateSigningRequest ($(_KUBECTL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::CertificateSigningRequest ($(_KUBECTL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) parameters:'
 	@echo '    KCL_CERTIFICATESIGNINGREQUEST_CONFIG_DIRPATH=$(KCL_CERTIFICATESIGNINGREQUEST_CONFIG_DIRPATH)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUEST_CONFIG_FILENAME=$(KCL_CERTIFICATESIGNINGREQUEST_CONFIG_FILENAME)'
@@ -54,14 +54,14 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_DIRPATH=$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_DIRPATH)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILENAME=$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILENAME)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH=$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH)'
-	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_STDINFLAG=$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_STDINFLAG)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL=$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH=$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_SELECTOR=$(KCL_CERTIFICATESIGNINGREQUESTS_SELECTOR)'
 	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME=$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)'
+	@echo '    KCL_CERTIFICATESIGNINGREQUESTS_STDIN_FLAG=$(KCL_CERTIFICATESIGNINGREQUESTS_STDIN_FLAG)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::CertificateSigningRequest ($(_KUBECTL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_certificatesigningrequest               - Annotate a certificate-signing-request'
 	@echo '    _kcl_apply_certificatesigningrequest                  - Apply a manifest for one-or-more certificate-signing-requests'
@@ -72,16 +72,17 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_certificatesigningrequest                   - Diff a manifest for one or more certificate-signing-requests'
 	@echo '    _kcl_edit_certificatesigningrequest                   - Edit a certificate-signing-request'
 	@echo '    _kcl_explain_certificatesigningrequest                - Explain the certificate-signing-request object'
+	@echo '    _kcl_list_certificatesigningrequests                  - List certificate-signing-requests'
+	@echo '    _kcl_list_certificatesigningrequests_set              - List set of certificate-signing-requests'
 	@echo '    _kcl_show_certificatesigningrequest                   - Show everything related to a certificate-signing-request'
 	@echo '    _kcl_show_certificatesigningrequest_description       - Show description of a certificate-signing-request'
 	@echo '    _kcl_show_certificatesigningrequest_state             - Show state of a certificate-signing-request'
 	@echo '    _kcl_unapply_certificatesigningrequest                - Un-apply a manifest for a certificate-signing-request'
 	@echo '    _kcl_unlabel_certificatesigningrequest                - Un-label a certificate-signing-request'
 	@echo '    _kcl_update_certificatesigningrequest                 - Update a certificate-signing-request'
-	@echo '    _kcl_view_certificatesigningrequests                  - View certificate-signing-requests'
-	@echo '    _kcl_view_certificatesigningrequests_set              - View set of certificate-signing-requests'
 	@echo '    _kcl_watch_certificatesigningrequests                 - Watch certificate-signing-requests'
 	@echo '    _kcl_watch_certificatesigningrequests_set             - Watch a set of certificate-signing-requests'
+	@echo '    _kcl_write_certificatesigningrequests                 - Write manifest for one-or-more certificate-signing-requests'
 	@echo
 
 #----------------------------------------------------------------------
@@ -95,7 +96,7 @@ _kcl_apply_certificatesigningrequest: _kcl_apply_certificatesigningrequests
 _kcl_apply_certificatesigningrequests:
 	@$(INFO) '$(KCL_UI_LABEL)Applying manifest for one-or-more certificate-signing-requests ...'; $(NORMAL)
 	$(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH),cat $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH))
-	$(if $(filter true,$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_STDINFLAG)),$(_KCL_APPLY_CERTIFICATESIGNINGREQUESTS_|)cat)
+	$(if $(filter true,$(KCL_CERTIFICATESIGNINGREQUESTS_STDIN_FLAG)),$(_KCL_APPLY_CERTIFICATESIGNINGREQUESTS_|)cat)
 	$(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL),curl -L $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL))
 	$(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH),ls -al $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH))
 	$(_KCL_APPLY_CERTIFICATESIGNINGREQUESTS_|)$(KUBECTL) apply $(__KCL_FILENAME__CERTIFICATESIGNINGREQUESTS)
@@ -138,7 +139,17 @@ _kcl_label_certificatesigningrequest:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling certificate-signing-request "$(KCL_CERTIFICATESIGNINGREQUEST_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label certificatesigningrequest $(KCL_CERTIFICATESIGNINGREQUEST_NAME) $(KCL_CERTIFICATESIGNINGREQUEST_LABELS_KEYVALUES)
 
-_kcl_show_certificatesigningrequest :: _kcl_show_certificatesigningrequest_state _kcl_show_certificatesigningrequest_description
+_kcl_list_certificatesigningrequests:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL certificate-signing-requests ...'; $(NORMAL)
+	$(KUBECTL) get certificatesigningrequests $(_X__KCL_SELECTOR_CERTIFICATESIGNINGREQUESTS)
+
+_kcl_list_certificatesigningrequests_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing certificate-signing-requests-set "$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Certificate-signing-requests are grouped based on field-selector, selector, ...'; $(NORMAL)
+	$(KUBECTL) get certificatesigningrequests $(__KCL_FIELD_SELECTOR__CERTIFICATESIGNINGREQUESTS) $(__KCL_SELECTOR__CERTIFICATESIGNINGREQUESTS)
+
+_KCL_SHOW_CERTIFICATESIGNINGREQUEST_TARGETS?= _kcl_show_certificatesigningrequest_state _kcl_show_certificatesigningrequest_description
+_kcl_show_certificatesigningrequest: $(_KCL_SHOW_CERTIFICATESIGNINGREQUEST_TARGETS)
 
 _kcl_show_certificatesigningrequest_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of certificate-signing-request "$(KCL_CERTIFICATESIGNINGREQUEST_NAME)" ...'; $(NORMAL)
@@ -163,17 +174,13 @@ _kcl_unlabel_certificatesigningrequest:
 _kcl_update_certificatesigningrequest:
 	@$(INFO) '$(KCL_UI_LABEL)Updating certificate-signing-request "$(KCL_CERTIFICATESIGNINGREQUEST_NAME)" ...'; $(NORMAL)
 
-_kcl_view_certificatesigningrequests:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing certificate-signing-requests ...'; $(NORMAL)
-	$(KUBECTL) get certificatesigningrequests $(_X__KCL_SELECTOR_CERTIFICATESIGNINGREQUESTS)
-
-_kcl_view_certificatesigningrequests_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing certificate-signing-requests-set "$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Certificate-signing-requests are grouped based on field-selector, selector, ...'; $(NORMAL)
-	$(KUBECTL) get certificatesigningrequests $(__KCL_FIELD_SELECTOR__CERTIFICATESIGNINGREQUESTS) $(__KCL_SELECTOR__CERTIFICATESIGNINGREQUESTS)
-
 _kcl_watch_certificatesigningrequests:
 	@$(INFO) '$(KCL_UI_LABEL)Watching certificate-signing-requests ...'; $(NORMAL)
 
 _kcl_watch_certificatesigningrequests_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching certificate-signing-requests-set "$(KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_certificatesigningrequests:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more  certificate-signing-requests ...'; $(NORMAL)
+	$(WRITER) $(KCL_CERTIFICATESIGNINGREQUETS_MANIFEST_FILEPATH)
+

@@ -1,4 +1,4 @@
-_YQ_MK_VERSION= 0.99.0
+_YQ_MK_VERSION= 1.0.0
 
 YQ_DOWNLOAD_BINARY?= yq_linux_amd64
 YQ_DOWNLOAD_VERSION?= 4.2.1
@@ -20,19 +20,19 @@ YQ?= $(strip $(__YQ_ENVIRONMENT) $(YQ_ENVIRONMENT) $(YQ_BIN) $(__YQ_OPTIONS) $(Y
 # USAGE
 #
 
-_view_framework_macros :: _yq_view_framework_macros
-_yq_view_framework_macros ::
+_list_macros :: _yq_list_macros
+_yq_list_macros ::
 	@echo 'YQ:: ($(_YQ_MK_VERSION)) macros:'
 	@echo
 
-_view_framework_parameters :: _yq_view_framework_parameters
-_yq_view_framework_parameters ::
+_list_parameters :: _yq_list_parameters
+_yq_list_parameters ::
 	@echo 'YQ:: ($(_YQ_MK_VERSION)) parameters:'
 	@echo '    YQ_OUTPUT_FORMAT=$(YQ_OUTPUT_FORMAT)'
 	@echo
 
-_view_framework_targets :: _yq_view_framework_targets
-_yq_view_framework_targets ::
+_list_targets :: _yq_list_targets
+_yq_list_targets ::
 	@echo 'YQ:: ($(_YQ_MK_VERSION)) targets:'
 	@echo '    _yq_install_dependencoes        - Install the dependencies'
 	@echo '    _yq_view_versions               - View versions of dependencies'

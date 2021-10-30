@@ -110,13 +110,13 @@ _kcl_get_secret_jwt_NN= $(shell $(KUBECTL) get secret --namespace $(2) $(1) --ou
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Secret ($(_KUBECTL_SECRET_MK_VERSION)) macros:'
 	@echo '    _kcl_get_secret_cacert_{|N|NN|NNF}  - Get the CA-cert in a a secret (Name,Namespace,Filepath)'
 	@echo '    _kcl_get_secret_jwt_{|N|NN}         - Get the JWT in a a secret (Name,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Secret ($(_KUBECTL_SECRET_MK_VERSION)) parameters:'
 	@echo '    KCL_SECRET_CACERT=$(KCL_SECRET_CACERT)'
 	@echo '    KCL_SECRET_CACERT_DIRPATH=$(KCL_SECRET_CACERT_DIRPATH)'
@@ -158,7 +158,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SECRETS_SET_NAME=$(KCL_SECRETS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Secret ($(_KUBECTL_SECRET_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_secret                - Annotate a secret'
 	@echo '    _kcl_apply_secrets                  - Apply a manifest for one-or-more secret'
@@ -171,6 +171,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_secret                 - Explain the secret object'
 	@echo '    _kcl_kustomize_secret               - Kustomize one-or-more secrets'
 	@echo '    _kcl_label_secret                   - Label a secret'
+	@echo '    _kcl_list_secrets                   - List all secrets'
+	@echo '    _kcl_list_secrets_set               - List a set ofsecrets'
 	@echo '    _kcl_show_secret                    - Show everything related to a secret'
 	@echo '    _kcl_show_secret_description        - Show the description of a secret'
 	@echo '    _kcl_show_secret_endpoints          - Show the endpoints of a secret'
@@ -178,10 +180,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_secrets                - Un-apply a manifest for one-or-more secrets'
 	@echo '    _kcl_unlabel_secret                 - Un-label a secret'
 	@echo '    _kcl_update_secret                  - Update a secret'
-	@echo '    _kcl_view_secrets                   - View all secrets'
-	@echo '    _kcl_view_secrets_set               - View a set ofsecrets'
 	@echo '    _kcl_watch_secrets                  - Watch all secrets'
 	@echo '    _kcl_watch_secrets_set              - Watch a set of secrets'
+	@echo '    _kcl_write_secrets                  - Write a manifest for one-or-more secrets'
 	@echo
 
 #----------------------------------------------------------------------
@@ -275,6 +276,15 @@ _kcl_kustomize_secrets:
 _kcl_label_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 
+_kcl_list_secrets:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL secrets ...'; $(NORMAL)
+	$(KUBECTL) get secret --all-namespaces=true $(_X__KCL_NAMESPACE__SECRETS)
+
+_kcl_list_secrets_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing secrets-set "$(KCL_SECRETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Secrets are grouped based on the provided namespace'; $(NORMAL)
+	$(KUBECTL) get secret --all-namespaces=false $(__KCL_NAMESPACE__SECRETS)
+
 _kcl_show_secret: _kcl_show_secret_data _kcl_show_secret_state _kcl_show_secret_type _kcl_show_secret_description
 
 _kcl_show_secret_data:
@@ -332,18 +342,13 @@ _kcl_update_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Updating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	$(_KCL_UPDATE_SECRET_|) $(KUBECTL) patch secret $(__KCL_NAMESPACE__SECRET) $(__KCL_PATCH__SECRET) $(__KCL_TYPE__SECRET) $(KCL_SECRET_NAME)             $(|_KCL_UPDATE_SECRET)
 
-_kcl_view_secrets:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL secrets ...'; $(NORMAL)
-	$(KUBECTL) get secret --all-namespaces=true $(_X__KCL_NAMESPACE__SECRETS)
-
-_kcl_view_secrets_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing secrets-set "$(KCL_SECRETS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Secrets are grouped based on the provided namespace'; $(NORMAL)
-	$(KUBECTL) get secret --all-namespaces=false $(__KCL_NAMESPACE__SECRETS)
-
 _kcl_watch_secrets:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL secrets ...'; $(NORMAL)
 	$(KUBECTL) get secret --all-namespaces=true $(_X__KCL_NAMESPACE__SECRETS) --watch
 
 _kcl_watch_secrets_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching secrets-set "$(KCL_SECRETS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_secrets:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more secrets ...'; $(NORMAL)
+	$(WRITER) $(KCL_SECRETS_MANIFEST_FILEPATH)

@@ -31,11 +31,11 @@ __KCL_TTY=
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::DnsClient ($(_KUBECTL_DNSCLIENT_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::DnsClient ($(_KUBECTL_DNSCLIENT_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::DnsClient ($(_KUBECTL_DNSCLIENT_MK_VERSION)) parameters:'
 	@echo '    KCL_DNSCLIENT_EXEC_COMMAND=$(KCL_DNSCLIENT_EXEC_COMMAND)'
 	@echo '    KCL_DNSCLIENT_MANIFEST_DIRPATH=$(KCL_DNSCLIENT_MANIFEST_DIRPATH)'
@@ -47,7 +47,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_DNSCLIENT_TAILFOLLOW_FLAG=$(KCL_DNSCLIENT_TAILFOLLOW_FLAG)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::DnsClient ($(_KUBECTL_DNSCLIENT_MK_VERSION)) targets:'
 	@echo '    _kcl_apply_dnsclient                        - Apply a manifest for a dns-client'
 	@echo '    _kcl_create_dnsclient                       - Create a new dns-client'
@@ -85,7 +85,8 @@ _kcl_exec_dnsclient:
 
 _kcl_kill_dnsclient: _kcl_delete_dnsclient
 
-_kcl_show_dnsclient: _kcl_show_dnsclient_object _kcl_show_dnsclient_state _kcl_show_dnsclient_description
+_KCL_SHOW_DNSCLIENT_TARGETS?= _kcl_show_dnsclient_object _kcl_show_dnsclient_state _kcl_show_dnsclient_description
+_kcl_show_dnsclient: $(_KCL_SHOW_DNSCLIENT_TARGETS)
 
 _kcl_show_dnsclient_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of dns-client "$(KCL_DNSCLIENT_NAME)" ...'; $(NORMAL)

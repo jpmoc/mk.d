@@ -37,11 +37,11 @@ __KCL_SELECTOR__PERSISTENTVOLUMECLAIMS= $(if $(KCL_PERSISTENTVOLUMECLAIMS_SELECT
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::PersistentVolumeClaim ($(_KUBECTL_PERSISTENTVOLUMECLAIM_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::PersistentVolumeClaim ($(_KUBECTL_PERSISTENTVOLUMECLAIM_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::PersistentVolumeClaim ($(_KUBECTL_PERSISTENTVOLUMECLAIM_MK_VERSION)) parameters:'
 	@echo '    KCL_PERSISTENTVOLUMECLAIM_LABELS_KEYVALUES=$(KCL_PERSISTENTVOLUMECLAIM_LABELS_KEYVALUES)'
 	@echo '    KCL_PERSISTENTVOLUMECLAIM_NAME=$(KCL_PERSISTENTVOLUMECLAIM_NAME)'
@@ -55,17 +55,21 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PERSISTENTVOLUMECLAIMS_SET_NAME=$(KCL_PERSISTENTVOLUMECLAIMS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::PersistentVolumeClaim ($(_KUBECTL_PERSISTENTVOLUMECLAIM_MK_VERSION)) targets:'
 	@echo '    _kcl_apply_persistentvolume                       - Apply a manifest with persistent-volume-claim'
 	@echo '    _kcl_create_persistentvolume                      - Create a new persistent-volume-claim'
 	@echo '    _kcl_delete_persistentvolumeclaim                 - Delete an existing persistent-volume-claim'
 	@echo '    _kcl_edit_persistentvolumeclaim                   - Edit a persistent-volume-claim'
 	@echo '    _kcl_explain_persistentvolumeclaim                - Explain the persistent-volume-claim object'
+	@echo '    _kcl_list_persistentvolumeclaims                  - List all persistent-volume-claims'
+	@echo '    _kcl_list_persistentvolumeclaims_set              - List a set of persistent-volume-claims'
 	@echo '    _kcl_show_persistentvolumeclaim                   - Show everything related to a persistent-volume-claim'
+	@echo '    _kcl_show_persistentvolumeclaim_description       - Show the description of a persistent-volume-claim'
 	@echo '    _kcl_unapply_persistentvolume                     - Unapply a manifest with persistent-volume-claim'
-	@echo '    _kcl_view_persistentvolumeclaims                  - View persistent-volume-claims'
-	@echo '    _kcl_view_persistentvolumeclaims_set              - View set of persistent-volume-claims'
+	@echo '    _kcl_watch_persistentvolumeclaims                 - Watch all persistent-volume-claims'
+	@echo '    _kcl_watch_persistentvolumeclaims_set             - Watch set of persistent-volume-claims'
+	@echo '    _kcl_write_persistentvolumeclaims                 - Write a manifest for one-or-more persistent-volume-claims'
 	@echo
 
 #----------------------------------------------------------------------
@@ -101,7 +105,17 @@ _kcl_label_persistentvolumeclaim:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling persistent-volume-claim "$(KCL_PERSISTENTVOLUMECLAIM_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label persistentvolumeclaim $(KCL_PERSISTENTVOLUMECLAIM_NAME) $(KCL_PERSISTENTVOLUMECLAIM_LABELS_KEYVALUES)
 
-_kcl_show_persistentvolumeclaim: _kcl_show_persistentvolumeclaim_persistentvolume _kcl_show_persistentvolumeclaim_description
+_kcl_list_persistentvolumeclaims:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL persistent-volume-claims ...'; $(NORMAL)
+	$(KUBECTL) get persistentvolumeclaims --all-namespaces=true $(_X__KCL_NAMESPACE__PERSISTENTVOLUMECLAIMS) $(_X__KCL_SELECTOR_PERSISTENTVOLUMECLAIMS)
+
+_kcl_list_persistentvolumeclaims_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing persistent-volume-claims-set "$(KCL_PERSISTENTVOLUMECLAIMS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Persistent-volume-claims are grouped based on namespace, selector, ...'; $(NORMAL)
+	$(KUBECTL) get persistentvolumeclaims $(__KCL_NAMESPACE__PERSISTENTVOLUMECLAIMS) $(__KCL_SELECTOR__PERSISTENTVOLUMECLAIMS)
+
+_KCL_SHOW_PERSISTENTVOLUMECLAIM_TARGETS?= _kcl_show_persistentvolumeclaim_persistentvolume _kcl_show_persistentvolumeclaim_description
+_kcl_show_persistentvolumeclaim: $(_KCL_SHOW_PERSISTENTVOLUMECLAIM_TARGETS)
 
 _kcl_show_persistentvolumeclaim_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of persistent-volume-claim "$(KCL_PERSISTENTVOLUMECLAIM_NAME)" ...'; $(NORMAL)
@@ -118,11 +132,12 @@ _kcl_unapply_persistentvolumeclaims:
 	$(if $(KCL_PERSISTENTVOLUMECLAIMS_MANIFESTS_DIRPATH), ls -al $(KCL_PERSISTENTVOLUMECLAIMS_MANIFESTS_DIRPATH); echo)
 	$(KUBECTL) apply $(__KCL_FILENAME__PERSISTENTVOLUMECLAIMS) $(__KCL_NAMESPACE__PERSISTENTVOLUMECLAIMS)
 
-_kcl_view_persistentvolumeclaims:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing persistent-volume-claims ...'; $(NORMAL)
-	$(KUBECTL) get persistentvolumeclaims --all-namespaces=true $(_X__KCL_NAMESPACE__PERSISTENTVOLUMECLAIMS) $(_X__KCL_SELECTOR_PERSISTENTVOLUMECLAIMS)
+_kcl_watch_persistentvolumeclaims:
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL persistent-volume-claims ...'; $(NORMAL)
 
-_kcl_view_persistentvolumeclaims_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing persistent-volume-claims-set "$(KCL_PERSISTENTVOLUMECLAIMS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Persistent-volume-claims are grouped based on namespace, selector, ...'; $(NORMAL)
-	$(KUBECTL) get persistentvolumeclaims $(__KCL_NAMESPACE__PERSISTENTVOLUMECLAIMS) $(__KCL_SELECTOR__PERSISTENTVOLUMECLAIMS)
+_kcl_watch_persistentvolumeclaims_set:
+	@$(INFO) '$(KCL_UI_LABEL)Watching persistent-volume-claims-set "$(KCL_PERSISTENTVOLUMECLAIMS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_persistentvolumeclaims:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more persistent-volume-claims ...'; $(NORMAL)
+	$(WRITER) $(KCL_PERSISTENTVOLUMECLAIMS_MANIFEST_FILEPATH)

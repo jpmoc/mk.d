@@ -49,14 +49,14 @@ _yq_get_context_value_PDSF= $(shell $(YQ_BIN) eval '$(if $(3),.$(strip $(3))).$(
 # USAGE
 #
 
-_yq_view_framework_macros ::
+_yq_list_macros ::
 	@echo 'YQ::Context ($(_YQ_CONTEXT_MK_VERSION)) macros:'
 	@echo '    _yq_get_context_name_{|F}                 - Get the name of the context (Filepath)'
 	@echo '    _yq_get_context_rawvalue_{P|PD|PDS|PDSF}  - Get a raw value from a config-file (Parameter,Default,Section,Filepath)'
 	@echo '    _yq_get_context_value_{P|PD|PDS|PDSF}     - Get a value from a config-file (Parameter,Default,Section,Filepath)'
 	@echo
 
-_yq_view_framework_parameters ::
+_yq_list_parameters ::
 	@echo 'YQ::Context ($(_YQ_CONTEXT_MK_VERSION)) parameters:'
 	@echo '    YQ_CONTEXT_FILEPATH=$(YQ_CONTEXT_FILEPATH)'
 	@echo '    YQ_CONTEXT_NAME=$(YQ_CONTEXT_NAME)'
@@ -73,14 +73,14 @@ _yq_view_framework_parameters ::
 	@echo '    YQ_CONTEXTS_SET_NAME=$(YQ_CONTEXTS_SET_NAME)'
 	@echo
 
-_yq_view_framework_targets ::
+_yq_list_targets ::
 	@echo 'YQ::Context ($(_YQ_CONTEXT_MK_VERSION)) targets:'
+	@echo '    _yq_list_contexts                      - List all contexts'
+	@echo '    _yq_list_contexts_set                  - List a set of contexts'
 	@echo '    _yq_query_context                      - Query for a parameter in a context'
 	@echo '    _yq_show_context                       - Show everything related to the context'
 	@echo '    _yq_show_context_description           - Show description of the context'
 	@echo '    _yq_show_context_parameters            - Show the parameters in the context'
-	@echo '    _yq_view_contexts                      - View available contexts'
-	@echo '    _yq_view_contexts_set                  - View set of contexts'
 	@echo '    _yq_writing_contexts                   - Writing manifest for one-o-rmore contexts'
 	@echo
 
@@ -91,6 +91,14 @@ _yq_view_framework_targets ::
 #-----------------------------------------------------------------------
 # PUBLIC TARGETS
 #
+
+_yq_list_contexts:
+	@$(INFO) '$(YQ_UI_LABEL)Listing ALL contexts ...'; $(NORMAL)
+	grep -E '^[a-zA-Z0-9]' $(YQ_CONTEXTS_FILEPATH) | sed -e 's/:.*//'
+
+_yq_list_contexts_set:
+	@$(INFO) '$(YQ_UI_LABEL)Listing contexts-set "$(YQ_CONTEXTS_SET_NAME)" ...'; $(NORMAL)
+	grep -E '^[a-zA-Z0-9]' $(YQ_CONTEXTS_FILEPATH) | sed -e 's/:.*//' | grep -E '$(YQ_CONTEXTS_REGEX)'
 
 _yq_query_context:
 	@$(INFO) '$(YQ_UI_LABEL)Quering context "$(YQ_CONTEXT_NAME)" ...'; $(NORMAL)
@@ -110,16 +118,7 @@ _yq_show_context_parameters:
 	@$(INFO) '$(YQ_UI_LABEL)Showing parameters of configuration-file "$(YQ_CONTEXT_NAME)" ...'; $(NORMAL)
 	$(_YQ_SHOW_CONTEXT_PARAMETERS_|) $(YQ) eval '.$(YQ_CONTEXT_SECTION_PATH)' $(YQ_CONTEXT_FILEPATH)
 
-_yq_view_contexts:
-	@$(INFO) '$(YQ_UI_LABEL)View contexts ...'; $(NORMAL)
-	grep -E '^[a-zA-Z0-9]' $(YQ_CONTEXTS_FILEPATH) | sed -e 's/:.*//'
-
-_yq_view_contexts_set:
-	@$(INFO) '$(YQ_UI_LABEL)View contexts-set "$(YQ_CONTEXTS_SET_NAME)" ...'; $(NORMAL)
-	grep -E '^[a-zA-Z0-9]' $(YQ_CONTEXTS_FILEPATH) | sed -e 's/:.*//' | grep -E '$(YQ_CONTEXTS_REGEX)'
-
 _yq_write_context: _yq_write_contexts
 _yq_write_contexts:
 	@$(INFO) '$(YQ_UI_LABEL)Writing manifest for one-or-more contexts ...'; $(NORMAL)
-	$(EDITOR) $(YQ_CONTEXTS_FILEPATH)
-
+	$(WRITER) $(YQ_CONTEXTS_FILEPATH)

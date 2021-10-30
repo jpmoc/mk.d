@@ -65,12 +65,12 @@ _kcl_get_ingress_ip_or_dnsname_NN= $(shell $(KUBECTL) get ingress --namespace $(
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Ingress ($(_KUBECTL_INGRESS_MK_VERSION)) macros:'
 	@echo '    _kcl_get_ingress_address_{N|NN}        - Get the address of a ingress (Name,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Ingress ($(_KUBECTL_INGRESS_MK_VERSION)) parameters:'
 	@echo '    KCL_INGRESS_DNSNAME=$(KCL_INGRESS_DNSNAME)'
 	@echo '    KCL_INGRESS_DNSNAME_DOMAIN=$(KCL_INGRESS_DNSNAME_DOMAIN)'
@@ -95,7 +95,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_INGRESSES_SET_NAME=$(KCL_INGRESSES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Ingress ($(_KUBECTL_INGRESS_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_ingress                - Annotate a ingress'
 	@echo '    _kcl_apply_ingresses                 - Apply a manifest for one-or-more ingresses'
@@ -112,10 +112,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_ingress_description        - Show the description of a ingress'
 	@echo '    _kcl_show_ingress_services           - Show the services of a ingress'
 	@echo '    _kcl_unapply_ingresses               - Un-apply a manifest for one-or-more ingresses'
-	@echo '    _kcl_view_ingresses                  - View all ingresses'
-	@echo '    _kcl_view_ingresses_set              - View set of ingresses'
+	@echo '    _kcl_list_ingresses                  - List all ingresses'
+	@echo '    _kcl_list_ingresses_set              - List set of ingresses'
 	@echo '    _kcl_watch_ingresses                 - Watch all ingresses'
 	@echo '    _kcl_watch_ingresses_set             - Watch set of ingresses'
+	@echo '    _kcl_wirte_ingresses                 - Write manifest for one-or-more ingresses'
 	@echo
 
 #----------------------------------------------------------------------
@@ -167,7 +168,17 @@ _kcl_label_ingress:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling ingress "$(KCL_INGRESS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label ingress $(__KCL_NAMESPACE__INGRESS) $(KCL_INGRESS_NAME)
 
-_kcl_show_ingress: _kcl_show_ingress_certificates _kcl_show_ingress_services _kcl_show_ingress_description
+_kcl_list_ingresses:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL ingresses ...'; $(NORMAL)
+	$(KUBECTL) get ingress --all-namespaces=true $(_X__KCL_NAMESPACE__INGRESSES) $(_X__KCL_SELECTOR__INGRESSES)
+
+_kcl_list_ingresses_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ingresses-set "$(KCL_INGRESSS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Ingresses are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get ingress --all-namespaces=false $(__KCL_NAMESPACE__INGRESSES) $(__KCL_SELECTOR__INGRESSES)
+
+_KCL_SHOW_INGRESS_TARGETS?= _kcl_show_ingress_certificates _kcl_show_ingress_services _kcl_show_ingress_description
+_kcl_show_ingress: $(_KCL_SHOW_INGRESS_TARGETS)
 
 _kcl_show_ingress_certificates:
 	@$(INFO) '$(KCL_UI_LABEL)Showing certificates for ingress "$(KCL_INGRESS_NAME)" ...'; $(NORMAL)
@@ -195,19 +206,15 @@ _kcl_unapply_ingresses:
 _kcl_update_ingress:
 	@$(INFO) '$(KCL_UI_LABEL)Updating ingress "$(KCL_INGRESS_NAME)" ...'; $(NORMAL)
 
-_kcl_view_ingresses:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL ingresses ...'; $(NORMAL)
-	$(KUBECTL) get ingress --all-namespaces=true $(_X__KCL_NAMESPACE__INGRESSES) $(_X__KCL_SELECTOR__INGRESSES)
-
-_kcl_view_ingresses_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ingresses-set "$(KCL_INGRESSS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Ingresses are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get ingress --all-namespaces=false $(__KCL_NAMESPACE__INGRESSES) $(__KCL_SELECTOR__INGRESSES)
-
 _kcl_watch_ingresses:
-	@$(INFO) '$(KCL_UI_LABEL)Watching ingresses ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL ingresses ...'; $(NORMAL)
 	$(KUBECTL) get ingresss --all-namespaces=true --watch 
 
 _kcl_watching_ingresses_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ingresses-set "$(KCL_INGRESSS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Ingresses are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+
+_kcl_write_ingress: _kcl_write_ingresses
+_kcl_write_ingresses:
+	@$(INFO) '$(KCL_UI_LABEL)Writing amnifest for one-or-more ingresses ...'; $(NORMAL)
+	$(WRITE) $(KCL_INGRESSES_MANIFEST_FILEPATH)

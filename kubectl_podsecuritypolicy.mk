@@ -38,12 +38,12 @@ _kcl_get_podsecuritypolicies_names_S= $(shell $(KUBECTL) get podsecuritypolicies
 # USAGE
 #
 
-_kcl_view_framwork_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::PodSecurityPolicy ($(_KUBECTL_PODSECURITYPOLICY_MK_VERSION)) macros:'
 	@echo '    _kcl_get_podsecuritypolicies_names_{|I|IN}     - Get names of pod--securitypolicies (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::PodSecurityPolicy ($(_KUBECTL_PODSECURITYPOLICY_MK_VERSION)) parameters:'
 	@echo '    KCL_PODSECURITYPOLICY_ANNOTATIONS_KEYVALUES=$(KCL_PODSECURITYPOLICY_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_PODSECURITYPOLICY_LABELS_KEYVALUES=$(KCL_PODSECURITYPOLICY_LABELS_KEYVALUES)'
@@ -62,7 +62,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PODSECURITYPOLICIES_WATCH_ONLY=$(KCL_PODSECURITYPOLICIES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::PodSecurityPolicy ($(_KUBECTL_PODSECURITYPOLICY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_podsecuritypolicy                     - Annotate a pod-security-policy'
 	@echo '    _kcl_apply_podsecuritypolicy                        - Apply manifest for a pod-security-policy'
@@ -78,10 +78,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_podsecuritypolicy                      - Un-apply manifest for a pod-security-policy'
 	@echo '    _kcl_unlabel_podsecuritypolicy                      - Un-label a pod-security-policy'
 	@echo '    _kcl_update_podsecuritypolicy                       - Update a pod-security-policy'
-	@echo '    _kcl_view_podsecuritypolicies                        - View all pod-security-policies'
-	@echo '    _kcl_view_podsecuritypolicies_set                    - View a set of pod-security-policies'
-	@echo '    _kcl_watch_podsecuritypolicies                       - Watching pod-security-policies'
-	@echo '    _kcl_watch_podsecuritypolicies_set                   - Watching a set of pod-security-policies'
+	@echo '    _kcl_list_podsecuritypolicies                       - List all pod-security-policies'
+	@echo '    _kcl_list_podsecuritypolicies_set                   - List a set of pod-security-policies'
+	@echo '    _kcl_watch_podsecuritypolicies                      - Watching pod-security-policies'
+	@echo '    _kcl_watch_podsecuritypolicies_set                  - Watching a set of pod-security-policies'
+	@echo '    _kcl_write_podsecuritypolicies                      - Write a manifest for one-or-more pod-security-policies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -116,7 +117,17 @@ _kcl_label_podsecuritypolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling pod-security-policy "$(KCL_PODSECURITYPOLICY_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label podsecuritypolicy $(KCL_PODSECURITYPOLICY_NAME) $(KCL_PODSECURITYPOLICY_LABELS_KEYVALUES)
 
-_kcl_show_podsecuritypolicy: _kcl_show_podsecuritypolicy_object _kcl_show_podsecuritypolicy_state _kcl_show_podsecuritypolicy_description
+_kcl_list_podsecuritypolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL pod-security-policies ...'; $(NORMAL)
+	$(KUBECTL) get podsecuritypolicies $(_X__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X_KCL_WATCH__PODSECURITYPOLICIES) $(_X_KCL_WATCH_ONLY__PODSECURITYPOLICIES)
+
+_kcl_list_podsecuritypolicies_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing pod-security-policies-set "$(KCL_PODSECURITYPOLICIES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Pod-security-policies are grouped based on the provided selector'; $(NORMAL)
+	$(KUBECTL) get podsecuritypolicies $(__KCL_OUTPUT__PODSECURITYPOLICIES) $(__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X_KCL_WATCH__PODSECURITYPOLICIES) $(_X_KCL__WATCH_ONLY__PODSECURITYPOLICIES)
+
+_KCL_SHOW_PODSECURITYPOLICY_TARGETS?= _kcl_show_podsecuritypolicy_object _kcl_show_podsecuritypolicy_state _kcl_show_podsecuritypolicy_description
+_kcl_show_podsecuritypolicy: $(_KCL_SHOW_PODSECURITYPOLICY_TARGETS)
 
 _kcl_show_podsecuritypolicy_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of pod-security-policy "$(KCL_PODSECURITYPOLICY_NAME)" ...'; $(NORMAL)
@@ -141,15 +152,6 @@ _kcl_unlabel_podsecuritypolicy:
 _kcl_update_podsecuritypolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Updating pod-security-policy "$(KCL_PODSECURITYPOLICY_NAME)" ...'; $(NORMAL)
 
-_kcl_view_podsecuritypolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL pod-security-policies ...'; $(NORMAL)
-	$(KUBECTL) get podsecuritypolicies $(_X__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X_KCL_WATCH__PODSECURITYPOLICIES) $(_X_KCL_WATCH_ONLY__PODSECURITYPOLICIES)
-
-_kcl_view_podsecuritypolicies_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing pod-security-policies-set "$(KCL_PODSECURITYPOLICIES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Pod-security-policies are grouped based on the provided selector'; $(NORMAL)
-	$(KUBECTL) get podsecuritypolicies $(__KCL_OUTPUT__PODSECURITYPOLICIES) $(__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X_KCL_WATCH__PODSECURITYPOLICIES) $(_X_KCL__WATCH_ONLY__PODSECURITYPOLICIES)
-
 _kcl_watch_podsecuritypolicies:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-security-policies ...'; $(NORMAL)
 	$(KUBECTL) get podsecuritypolicies $(_X__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X__KCL_WATCH__PODSECURITYPOLICIES) --watch=true $(__KCL_WATCH_ONLY__PODSECURITYPOLICIES)
@@ -157,3 +159,8 @@ _kcl_watch_podsecuritypolicies:
 _kcl_watch_podsecuritypolicies_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-security-policies-set "$(KCL_PODSECURITYPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get podsecuritypolicies $(__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X__KCL_WATCH__PODSECURITYPOLICIES) --watch=true $(__KCL_WATCH_ONLY__PODSECURITYPOLICIES)
+
+_kcl_write_podsecuritypolicy: _kcl_write_podsecuritypolicies
+_kcl_write_podsecuritypolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more pod-security-policies ...'; $(NORMAL)
+	$(WRITER) $(KCL_PODSECURITYPOLICIES_MANIFEST_FILEPATH)

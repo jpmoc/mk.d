@@ -9,6 +9,7 @@ _KUBECTL_SERVICEACCOUNT_MK_VERSION= $(_KUBECTL_MK_VERSION)
 # KCL_SERVICEACCOUNT_NAME?= 
 # KCL_SERVICEACCOUNT_NAMESPACE_NAME?= kube-system
 # KCL_SERVICEACCOUNT_PATCH_CONTENT?= '{\"imagePullSecrets\": [{\"name\": \"myregistrykey\"}]}'
+# KCL_SERVICEACCOUNT_PODS_SELECTOR?= key1=value1
 # KCL_SERVICEACCOUNT_ROLES_SELECTOR?= key1=value1
 # KCL_SERVICEACCOUNT_SECRET_NAME?= my-vault-token-gnvjc
 # KCL_SERVICEACCOUNTS_MANIFEST_DIRPATH?= ./in/
@@ -57,13 +58,13 @@ _kcl_get_serviceaccount_secret_name_NN= $(shell $(KUBECTL) get serviceaccount --
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::ServiceAccount ($(_KUBECTL_SERVICEACCOUNT_MK_VERSION)) macros:'
 	@echo '    _kcl_get_serviceaccount_annotation_value_{|K|KN|KNN}  - Get the value of a service-account annotation (Key,Name,Namespace)'
 	@echo '    _kcl_get_serviceaccount_secret_name_{|N|NN}           - Get the name of a service-account secret (Name,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::ServiceAccount ($(_KUBECTL_SERVICEACCOUNT_MK_VERSION)) parameters:'
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATION_KEY=$(KCL_SERVICEACCOUNT_ANNOTATION_KEY)'
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATION_VALUE=$(KCL_SERVICEACCOUNT_ANNOTATION_VALUE)'
@@ -73,6 +74,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVICEACCOUNT_LABELS_KEYVALUES=$(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)'
 	@echo '    KCL_SERVICEACCOUNT_NAME=$(KCL_SERVICEACCOUNT_NAME)'
 	@echo '    KCL_SERVICEACCOUNT_NAMESPACE_NAME=$(KCL_SERVICEACCOUNT_NAMESPACE_NAME)'
+	@echo '    KCL_SERVICEACCOUNT_PODS_SELECTOR=$(KCL_SERVICEACCOUNT_PODS_SELECTOR)'
 	@echo '    KCL_SERVICEACCOUNT_ROLES_SELECTOR=$(KCL_SERVICEACCOUNT_ROLES_SELECTOR)'
 	@echo '    KCL_SERVICEACCOUNT_SECRET_NAME=$(KCL_SERVICEACCOUNT_SECRET_NAME)'
 	@echo '    KCL_SERVICEACCOUNTS_MANIFEST_DIRPATH=$(KCL_SERVICEACCOUNTS_MANIFEST_DIRPATH)'
@@ -85,7 +87,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVICEACCOUNTS_SET_NAME=$(KCL_SERVICEACCOUNTS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::ServiceAccount ($(_KUBECTL_SERVICEACCOUNT_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_serviceaccount                    - Annotate a service-account'
 	@echo '    _kcl_apply_serviceaccount                       - Apply a manifest for one-or-more service-accounts'
@@ -97,6 +99,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_serviceaccount                        - Edit a service-account'
 	@echo '    _kcl_explain_serviceaccount                     - Explain the service-account object'
 	@echo '    _kcl_label_serviceaccount                       - Label a service-accounts'
+	@echo '    _kcl_list_serviceaccounts                       - List all service-accounts'
+	@echo '    _kcl_list_serviceaccounts_set                   - List a set of service-accounts'
 	@echo '    _kcl_patch_serviceaccount                       - Patch a service-account'
 	@echo '    _kcl_show_serviceaccount                        - Show everything related to a service-account'
 	@echo '    _kcl_show_serviceaccount_clusterrolebindings    - Show cluster-role-bindings referring to a service-account'
@@ -107,10 +111,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_serviceaccount_secrets                - Show the secret of a service-account'
 	@echo '    _kcl_unapply_serviceaccount                     - Un-apply a manifest for one-or-more service-accounts'
 	@echo '    _kcl_unlabel_serviceaccount                     - Un-label a service-accounts'
-	@echo '    _kcl_view_serviceaccounts                       - View service-accounts'
-	@echo '    _kcl_view_serviceaccounts_set                   - View a set of service-accounts'
 	@echo '    _kcl_watch_serviceaccounts                      - Watch all service-accounts'
 	@echo '    _kcl_watch_serviceaccounts_set                  - Watch a set of service-accounts'
+	@echo '    _kcl_write_serviceaccounts                      - Write manifest for one-or-more service-accounts'
 	@echo
 
 #----------------------------------------------------------------------
@@ -166,6 +169,15 @@ _kcl_label_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME) $(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)
 
+_kcl_list_serviceaccounts:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL service-accounts ...'; $(NORMAL)
+	$(KUBECTL) get serviceaccounts --all-namespaces=true $(_X__KCL_SERVICEACCOUNTS_NAMESPACE_NAME)
+
+_kcl_list_serviceaccounts_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing service-accounts-set "$(KCL_SERVICEACCOUNTS_SET_NAME)"  ...'; $(NORMAL)
+	@$(WARN) 'Service-accounts are grouped based on namespace, ...'; $(NORMAL)
+	$(KUBECTL) get serviceaccounts --all-namespaces=false $(__KCL_NAMESPACE__SERVICEACCOUNTS)
+
 _kcl_patch_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Patching service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) patch serviceaccount $(__KCL_PATCH__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME)
@@ -178,7 +190,7 @@ _kcl_show_serviceaccount_clusterrolebindings:
 	$(if $(KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR), \
 		$(KUBECTL) get clusterrolebindings --selector $(KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR) \
 	, \
-		@echo 'KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR not set!' \
+		@echo 'KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR not set' \
 	)
 
 _kcl_show_serviceaccount_description:
@@ -188,7 +200,11 @@ _kcl_show_serviceaccount_description:
 
 _kcl_show_serviceaccount_pods:
 	@$(INFO) '$(KCL_UI_LABEL)Showing pods using service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
-	# To be implemented!
+	$(if $(KCL_SERVICEACCOUNT_PODGS_SELECTOR), \
+		$(KUBECTL) get pods --selector $(KCL_SERVICEACCOUNT_PODS_SELECTOR) \
+	, \
+		@echo 'KCL_SERVICEACCOUNT_PODS_SELECTOR not set' \
+	)
 
 _kcl_show_serviceaccount_rolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Showing cluster-role-bindings refering to service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
@@ -220,17 +236,13 @@ _kcl_unapply_serviceaccounts:
 _kcl_unlabel_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 
-_kcl_view_serviceaccounts:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL service-accounts ...'; $(NORMAL)
-	$(KUBECTL) get serviceaccounts --all-namespaces=true $(_X__KCL_SERVICEACCOUNTS_NAMESPACE_NAME)
-
-_kcl_view_serviceaccounts_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing service-accounts-set "$(KCL_SERVICEACCOUNTS_SET_NAME)"  ...'; $(NORMAL)
-	@$(WARN) 'Service-accounts are grouped based on namespace, ...'; $(NORMAL)
-	$(KUBECTL) get serviceaccounts --all-namespaces=false $(__KCL_NAMESPACE__SERVICEACCOUNTS)
-
 _kcl_watch_serviceaccounts:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL service-accounts ...'; $(NORMAL)
 
 _kcl_watch_serviceaccounts_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching service-accounts-set "$(KCL_SERVICEACCOUNTS_SET_NAME)"  ...'; $(NORMAL)
+
+_kcl_write_serviceaccount: _kcl_write_serviceaccounts
+_kcl_write_serviceaccounts:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more service-accounts ...'; $(NORMAL)
+	$(WRITER) $(KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH)

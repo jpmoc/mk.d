@@ -99,13 +99,13 @@ _kcl_get_service_pod_selector_NN= $(shell $(KUBECTL) get service --namespace $(2
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Service ($(_KUBECTL_SERVICE_MK_VERSION)) macros:'
 	@echo '    _kcl_get_service_loadbalancer_ip_{|N|NN}    - Get the IP of a load-balancer service (Name,Namespace)'
 	@echo '    _kcl_get_service_pod_selector_{|N|NN}       - Get the pod-selector of a service (Name,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Service ($(_KUBECTL_SERVICE_MK_VERSION)) parameters:'
 	@echo '    KCL_SERVICE_DNSNAME=$(KCL_SERVICE_DNSNAME)'
 	@echo '    KCL_SERVICE_DNSNAME_DOMAIN=$(KCL_SERVICE_DNSNAME_DOMAIN)'
@@ -141,7 +141,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVICES_WATCH_ONLY=$(KCL_SERVICES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Service ($(_KUBECTL_SERVICE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_service                - Annotate a service'
 	@echo '    _kcl_apply_services                  - Apply manifest for one-or-more services'
@@ -154,6 +154,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_service                 - Explain the service object'
 	@echo '    _kcl_kustomize_service               - Kustomize one-or-more services'
 	@echo '    _kcl_label_service                   - Label a service'
+	@echo '    _kcl_list_services                   - List all services'
+	@echo '    _kcl_list_services_set               - List a set of services'
 	@echo '    _kcl_portforward_service             - Forward local ports to an endpoint-pod of a service'
 	@echo '    _kcl_show_service                    - Show everything related to a service'
 	@echo '    _kcl_show_service_description        - Show the description of a service'
@@ -164,8 +166,6 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_tail_service                    - Tail the pods of a service'
 	@echo '    _kcl_unapply_services                - Unapply a manifest for one-or-more services'
 	@echo '    _kcl_update_service                  - Update a service'
-	@echo '    _kcl_view_services                   - View all services'
-	@echo '    _kcl_view_services_set               - View a set of services'
 	@echo '    _kcl_watch_services                  - Watch services'
 	@echo '    _kcl_watch_services_set              - Watch a set of services'
 	@echo '    _kcl_write_services                  - Write services'
@@ -226,6 +226,20 @@ _kcl_kustomize_services:
 
 _kcl_label_service:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
+
+_kcl_list_services:
+	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL services ...'; $(NORMAL)
+	@$(WARN) 'At a minimum, this operation returns the service to connect to the K8s API server, i.e. kubernetes.default.svc.cluster.local'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
+	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
+	$(KUBECTL) get services --all-namespaces=true $(_X__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(_X__KCL_SELECTOR__SERVICES)$(__KCL_SHOW_LABELS__SERVICES)
+
+_kcl_list_services_set:
+	@$(INFO) '$(KCL_UI_LABEL)Viewing services-set "$(KCL_SERVICES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
+	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
+	$(KUBECTL) get services --all-namespaces=false $(__KCL_FIELD_SELECTOR__SERVICES) $(__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(__KCL_SELECTOR__SERVICES) $(__KCL_SHOW_LABELS__SERVICES)
 
 _kcl_portforward_service:
 	@$(INFO) '$(KCL_UI_LABEL)Port-forwarding a pod behind service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
@@ -292,20 +306,6 @@ _kcl_unlabel_service:
 _kcl_update_service:
 	@$(INFO) '$(KCL_UI_LABEL)Updating service "$(KCL_SERVICE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_services:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL services ...'; $(NORMAL)
-	@$(WARN) 'At a minimum, this operation returns the service to connect to the K8s API server, i.e. kubernetes.default.svc.cluster.local'; $(NORMAL)
-	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
-	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
-	$(KUBECTL) get services --all-namespaces=true $(_X__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(_X__KCL_SELECTOR__SERVICES)$(__KCL_SHOW_LABELS__SERVICES)
-
-_kcl_view_services_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing services-set "$(KCL_SERVICES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	@$(WARN) 'Ports are reported as CSV of Service_port:Node_port/protocol or Service_port/protocol'; $(NROMAL)
-	@$(WARN) 'To see the target-ports on backends you must describe the services'; $(NORMAL)
-	$(KUBECTL) get services --all-namespaces=false $(__KCL_FIELD_SELECTOR__SERVICES) $(__KCL_NAMESPACE__SERVICES) $(__KCL_OUTPUT__SERVICES) $(__KCL_SELECTOR__SERVICES) $(__KCL_SHOW_LABELS__SERVICES)
-
 _kcl_watch_services:
 	@$(INFO) '$(KCL_UI_LABEL)Watching services ...'; $(NORMAL)
 	@$(WARN) 'At a minimum, this operation returns the service to connect to the K8s API server, i.e. kubernetes.default.svc.cluster.local'; $(NORMAL)
@@ -323,4 +323,4 @@ _kcl_watch_services_set:
 _kcl_write_service: _kcl_write_services
 _kcl_write_services:
 	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more services ...'; $(NORMAL)
-	$(EDITOR) $(KCL_SERVICES_MANIFEST_FILEPATH)
+	$(WRITER) $(KCL_SERVICES_MANIFEST_FILEPATH)

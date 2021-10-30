@@ -46,12 +46,12 @@ _kcl_get_poddisruptionbudgets_names_SN= $(shell $(KUBECTL) get poddisruptionbudg
 # USAGE
 #
 
-_kcl_view_framwork_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::PodDisruptionBudget ($(_KUBECTL_PODDISRUPTIONBUDGET_MK_VERSION)) macros:'
 	@echo '    _kcl_get_poddisruptionbudgets_names_{|I|IN}     - Get names of pod-disruption-budgets (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::PodDisruptionBudget ($(_KUBECTL_PODDISRUPTIONBUDGET_MK_VERSION)) parameters:'
 	@echo '    KCL_PODDISRUPTIONBUDGET_ANNOTATIONS_KEYVALUES=$(KCL_PODDISRUPTIONBUDGET_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_PODDISRUPTIONBUDGET_LABELS_KEYVALUES=$(KCL_PODDISRUPTIONBUDGET_LABELS_KEYVALUES)'
@@ -70,7 +70,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PODDISRUPTIONBUDGETS_WATCH_ONLY=$(KCL_PODDISRUPTIONBUDGETS_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::PodDisruptionBudget ($(_KUBECTL_PODDISRUPTIONBUDGET_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_poddisruptionbudget                     - Annotate a pod-distruption-budget'
 	@echo '    _kcl_apply_poddisruptionbudget                        - Apply manifest for a pod-distruption-budget'
@@ -79,6 +79,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_poddisruptionbudget                         - Edit a pod-distruption-budget'
 	@echo '    _kcl_explain_poddisruptionbudget                      - Explain the pod-distruption-budget object'
 	@echo '    _kcl_label_poddisruptionbudget                        - Label a pod-distruption-budget'
+	@echo '    _kcl_list_poddisruptionbudgets                        - List all pod-disruption-budgets'
+	@echo '    _kcl_list_poddisruptionbudgets_set                    - List a set of pod-disruption-budgets'
 	@echo '    _kcl_show_poddisruptionbudget                         - Show everything related to a pod-distruption-budget'
 	@echo '    _kcl_show_poddisruptionbudget_description             - Show the description of a pod-distruption-budget'
 	@echo '    _kcl_show_poddisruptionbudget_object                  - Show the object of a pod-distruption-budget'
@@ -86,10 +88,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_poddisruptionbudget                      - Un-apply manifest for a pod-distruption-budget'
 	@echo '    _kcl_unlabel_poddisruptionbudget                      - Un-label a pod-distruption-budget'
 	@echo '    _kcl_update_poddisruptionbudget                       - Update a pod-distruption-budget'
-	@echo '    _kcl_view_poddisruptionbudgets                        - View all pod-disruption-budgets'
-	@echo '    _kcl_view_poddisruptionbudgets_set                    - View a set of pod-disruption-budgets'
-	@echo '    _kcl_watch_poddisruptionbudgets                       - Watching pod-disruption-budgets'
-	@echo '    _kcl_watch_poddisruptionbudgets_set                   - Watching a set of pod-disruption-budgets'
+	@echo '    _kcl_watch_poddisruptionbudgets                       - Watch pod-disruption-budgets'
+	@echo '    _kcl_watch_poddisruptionbudgets_set                   - Watch a set of pod-disruption-budgets'
+	@echo '    _kcl_write_poddisruptionbudgets                       - Write a manifest for one-or-more pod-disruption-budgets'
 	@echo
 
 #----------------------------------------------------------------------
@@ -125,7 +126,17 @@ _kcl_label_poddisruptionbudget:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling pod-distruption-budget "$(KCL_PODDISRUPTIONBUDGET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label poddisruptionbudget $(__KCL_NAMESPACE__PODDISRUPTIONBUDGET) $(KCL_PODDISRUPTIONBUDGET_NAME) $(KCL_PODDISRUPTIONBUDGET_LABELS_KEYVALUES)
 
-_kcl_show_poddisruptionbudget: _kcl_show_poddisruptionbudget_object _kcl_show_poddisruptionbudget_state _kcl_show_poddisruptionbudget_description
+_kcl_list_poddisruptionbudgets:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL pod-disruption-budgets ...'; $(NORMAL)
+	$(KUBECTL) get poddisruptionbudget --all-namespaces=true $(_X__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(_X__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH_ONLY__PODDISRUPTIONBUDGETS)
+
+_kcl_list_poddisruptionbudgets_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing pod-disruption-budgets-set "$(KCL_PODDISRUPTIONBUDGETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Pod-disruptoin-budgets are grouped based on the provided namespace, selector'; $(NORMAL)
+	$(KUBECTL) get poddisruptionbudget --all-namespaces=false $(__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(__KCL_OUTPUT__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH__PODDISRUPTIONBUDGETS) $(_X_KCL__WATCH_ONLY__PODDISRUPTIONBUDGETS)
+
+_KCL_SHOW_PODDISRUPTIONBUDGET_TARGETS?= _kcl_show_poddisruptionbudget_object _kcl_show_poddisruptionbudget_state _kcl_show_poddisruptionbudget_description
+_kcl_show_poddisruptionbudget: $(_KCL_SHOW_PODDISRUPTIONBUDGET_TARGETS)
 
 _kcl_show_poddisruptionbudget_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of pod-distruption-budget "$(KCL_PODDISRUPTIONBUDGET_NAME)" ...'; $(NORMAL)
@@ -150,15 +161,6 @@ _kcl_unlabel_poddisruptionbudget:
 _kcl_update_poddisruptionbudget:
 	@$(INFO) '$(KCL_UI_LABEL)Updating pod-distruption-budget "$(KCL_PODDISRUPTIONBUDGET_NAME)" ...'; $(NORMAL)
 
-_kcl_view_poddisruptionbudgets:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL pod-disruption-budgets ...'; $(NORMAL)
-	$(KUBECTL) get poddisruptionbudget --all-namespaces=true $(_X__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(_X__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH_ONLY__PODDISRUPTIONBUDGETS)
-
-_kcl_view_poddisruptionbudgets_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing pod-disruption-budgets-set "$(KCL_PODDISRUPTIONBUDGETS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Pod-disruptoin-budgets are grouped based on the provided namespace, selector'; $(NORMAL)
-	$(KUBECTL) get poddisruptionbudget --all-namespaces=false $(__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(__KCL_OUTPUT__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH__PODDISRUPTIONBUDGETS) $(_X_KCL__WATCH_ONLY__PODDISRUPTIONBUDGETS)
-
 _kcl_watch_poddisruptionbudgets:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-disruption-budgets ...'; $(NORMAL)
 	$(KUBECTL) get poddisruptionbudgets $(_X__KCL_ALL_NAMESPACES__PODDISRUPTIONBUDGETS) --all-namespaces=true $(_X__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(_X__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(_X__KCL_WATCH__PODDISRUPTIONBUDGETS) --watch=true $(__KCL_WATCH_ONLY__PODDISRUPTIONBUDGETS)
@@ -166,3 +168,8 @@ _kcl_watch_poddisruptionbudgets:
 _kcl_watch_poddisruptionbudgets_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-disruption-budgets-set "$(KCL_PODDISRUPTIONBUDGETS_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get poddisruptionbudgets $(__KCL_ALL_NAMESPACES__PODDISRUPTIONBUDGETS) $(__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(_X__KCL_WATCH__PODDISRUPTIONBUDGETS) --watch=true $(__KCL_WATCH_ONLY__PODDISRUPTIONBUDGETS)
+
+_kcl_write_poddisruptionbudget: _kcl_write_poddisruptionbudgets
+_kcl_write_poddisruptionbudgets:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more pod-disruption-budgets ...'; $(NORMAL)
+	$(WRITER) $(KCL_PODDISRUPTIONBUDGETS_MANIFEST_FILEPATH)

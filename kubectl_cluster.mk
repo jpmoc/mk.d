@@ -33,14 +33,14 @@ _kcl_get_cluster_url= $(shell $(KUBECTL) cluster-info | head -1 | cut -d ' ' -f 
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Cluster ($(_KUBECTL_CLUSTER_MK_VERSION)) macros:'
 	@echo '    _kcl_get_cluster_bearertoken                - Get the bearer-token of the active-cluster'
 	@echo '    _kcl_get_cluster_secret_name                - Get the default secret of the active-cluster'
 	@echo '    _kcl_get_cluster_url                        - Get the URL of the active-cluster'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Cluster ($(_KUBECTL_CLUSTER_MK_VERSION)) parameters:'
 	@echo '    KCL_CLUSTER_BEARERTOKEN=$(KCL_CLUSTER_BEARERTOKEN)'
 	@echo '    KCL_CLUSTER_DUMP_DIRPATH=$(KCL_CLUSTER_DUMP_DIRPATH)'
@@ -51,7 +51,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CLUSTER_URL=$(KCL_CLUSTER_URL)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Cluster ($(_KUBECTL_CLUSTER_MK_VERSION)) targets:'
 	@echo '    _kcl_curl_cluster                           - Curl at the cluster'
 	@echo '    _kcl_dump_cluster                           - Dump everything from a cluster (for troubleshooting!)'

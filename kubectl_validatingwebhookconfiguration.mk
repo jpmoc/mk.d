@@ -75,14 +75,14 @@ _kcl_get_validatingwebhookconfig_replicasets_names_SN= $(shell $(KUBECTL) get re
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::MutatingWebhookConfiguration ($(_KUBECTL_VALIDATINGWEBHOOKCONFIGURATION_MK_VERSION)) macros:'
 	@echo '    _kcl_get_validatingwebhookconfig_deployments_names_{|S|SN}      - Get the name of deployments used by a validatingwebhookconfig (Selector,Namespace)'
 	@echo '    _kcl_get_validatingwebhookconfig_pods_names_{|S|SN}             - Get the name of pods used by a validatingwebhookconfig (Selector,Namespace)'
 	@echo '    _kcl_get_validatingwebhookconfig_replicasets_name_{|S|SN}       - Get the name of the replica-sets used by a validatingwebhookconfig (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::MutatingWebhookConfiguration ($(_KUBECTL_VALIDATINGWEBHOOKCONFIGURATION_MK_VERSION)) parameters:'
 	@echo '    KCL_VALIDATINGWEBHOOKCONFIG_DEPLOYMENTS_NAMES=$(KCL_VALIDATINGWEBHOOKCONFIG_DEPLOYMENTS_NAMES)'
 	@echo '    KCL_VALIDATINGWEBHOOKCONFIG_DEPLOYMENTS_FIELDSELECTOR=$(KCL_VALIDATINGWEBHOOKCONFIG_DEPLOYMENTS_FIELDSELECTOR)'
@@ -123,7 +123,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_VALIDATINGWEBHOOKCONFIGS_SORT_BY=$(KCL_VALIDATINGWEBHOOKCONFIGS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::MutatingWebhookConfiguration ($(_KUBECTL_VALIDATINGWEBHOOKCONFIGURATION_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_validatingwebhookconfig                - Annotate a validating-webhook-config'
 	@echo '    _kcl_apply_validatingwebhookconfigs                  - Apply manifest for one-or-more validating-webhook-configs'
@@ -133,6 +133,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_validatingwebhookconfig                    - Edit a validating-webhook-config'
 	@echo '    _kcl_explain_validatingwebhookconfig                 - Explain the validating-webhook-config object'
 	@echo '    _kcl_label_validatingwebhookconfig                   - Label a validating-webhook-config'
+	@echo '    _kcl_list_validatingwebhookconfigs                   - List all validating-webhook-configs'
+	@echo '    _kcl_list_validatingwebhookconfigs_set               - List a set of validating-webhook-configs'
 	@echo '    _kcl_portforward_validatingwebhookconfig             - Port-forward local ports to a validating-webhook-config'
 	@echo '    _kcl_show_validatingwebhookconfig                    - Show everything related to a validating-webhook-config'
 	@echo '    _kcl_show_validatingwebhookconfig_description        - Show the description of a validating-webhook-config'
@@ -144,10 +146,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_validatingwebhookconfigs                - Un-apply manifest for one-or-more validating-webhook-configs'
 	@echo '    _kcl_unlabel_validatingwebhookconfig                 - Un-label manifest for a validating-webhook-config'
 	@echo '    _kcl_update_validatingwebhookconfig                  - Update a validating-webhook-config'
-	@echo '    _kcl_view_validatingwebhookconfigs                   - View all validating-webhook-configs'
-	@echo '    _kcl_view_validatingwebhookconfigs_set               - View a set of validating-webhook-configs'
 	@echo '    _kcl_watch_validatingwebhookconfigs                  - Watching validating-webhook-configs'
 	@echo '    _kcl_watch_validatingwebhookconfigs_set              - Watching a set of validating-webhook-configs'
+	@echo '    _kcl_write_validatingwebhookconfigs                  - Writing manifest for one-or-more validating-webhook-configs'
 	@echo
 
 #----------------------------------------------------------------------
@@ -196,7 +197,17 @@ _kcl_label_validatingwebhookconfig:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling validating-webhook-config "$(KCL_VALIDATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
 
-_kcl_show_validatingwebhookconfig: _kcl_show_validatingwebhookconfig_deployments _kcl_show_validatingwebhookconfig_object _kcl_show_validatingwebhookconfig_pods _kcl_show_validatingwebhookconfig_replicasets _kcl_show_validatingwebhookconfig_services _kcl_show_validatingwebhookconfig_description
+_kcl_list_validatingwebhookconfigs:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL validating-webhook-configs ...'; $(NORMAL)
+	$(KUBECTL) get validatingwebhookconfigurations $(__KCL_OUTPUT_VALIDATINGWEBHOOKCONFIGS) $(_X__KCL_SELECTOR__VALIDATINGWEBHOOKCONFIGS) $(__KCL_SORT_BY__VALIDATINGWEBHOOKCONFIGS)
+
+_kcl_list_validatingwebhookconfigs_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing validating-webhook-configs-set "$(KCL_VALIDATINGWEBHOOKCONFIGS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Mutating-webhook-configs are grouped based on the provided filed-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get validatingwebhookconfigurations $(__KCL_OUTPUT__VALIDATINGWEBHOOKCONFIGS) $(__KCL_SELECTOR__VALIDATINGWEBHOOKCONFIGS)
+
+_KCL_SHOW_VALIDATINGWEBHOOKCONFIG_TARGETS?= _kcl_show_validatingwebhookconfig_deployments _kcl_show_validatingwebhookconfig_object _kcl_show_validatingwebhookconfig_pods _kcl_show_validatingwebhookconfig_replicasets _kcl_show_validatingwebhookconfig_services _kcl_show_validatingwebhookconfig_description
+_kcl_show_validatingwebhookconfig: $(_KCL_SHOW_VALIDATINGWEBHOOKCONFIG_TARGETS)
 
 _kcl_show_validatingwebhookconfig_deployments:
 	@$(INFO) '$(KCL_UI_LABEL)Showing deployments used by validating-webhook-config "$(KCL_VALIDATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
@@ -266,18 +277,14 @@ _kcl_update_validatingwebhookconfig:
 	@$(INFO) '$(KCL_UI_LABEL)Updating validating-webhook-config "$(KCL_VALIDATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) patch ...
 
-_kcl_view_validatingwebhookconfigs:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL validating-webhook-configs ...'; $(NORMAL)
-	$(KUBECTL) get validatingwebhookconfigurations $(__KCL_OUTPUT_VALIDATINGWEBHOOKCONFIGS) $(_X__KCL_SELECTOR__VALIDATINGWEBHOOKCONFIGS) $(__KCL_SORT_BY__VALIDATINGWEBHOOKCONFIGS)
-
-_kcl_view_validatingwebhookconfigs_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing validating-webhook-configs-set "$(KCL_VALIDATINGWEBHOOKCONFIGS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Mutating-webhook-configs are grouped based on the provided filed-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get validatingwebhookconfigurations $(__KCL_OUTPUT__VALIDATINGWEBHOOKCONFIGS) $(__KCL_SELECTOR__VALIDATINGWEBHOOKCONFIGS)
-
 _kcl_watch_validatingwebhookconfigs:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL validating-webhook-configs ...'; $(NORMAL)
 	$(KUBECTL) get validatingwebhookconfigurations --watch 
 
 _kcl_watch_validatingwebhookconfigs_set:
-	@$(INFO) '$(KCL_UI_LABEL)Watching validating-webhook-configs-set "$(KCL_VALIVALIDINGWEBHOOKCONFIGS_SET_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching validating-webhook-configs-set "$(KCL_VALIDINGWEBHOOKCONFIGS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_validatingwebhookconfig: _kcl_write_validatingwebhookconfigs
+_kcl_write_validatingwebhookconfigs:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more validating-webhook-configs ...'; $(NORMAL)
+	$(WRITER) $(KCL_VALIDATINGWEBHOOKCONFIGS_MANIFEST_FILEPATH)

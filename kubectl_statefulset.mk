@@ -42,11 +42,11 @@ _KCL_UNAPPLY_STATEFULSETS_|?= $(_KCL_APPLY_STATEFULSETS_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::StatefulSet ($(_KUBECTL_STATEFULSET_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::StatefulSet ($(_KUBECTL_STATEFULSET_MK_VERSION)) parameters:'
 	@echo '    KCL_STATEFULSET_LABELS_KEYVALUES=$(KCL_STATEFULSET_LABELS_KEYVALUES)'
 	@echo '    KCL_STATEFULSET_NAME=$(KCL_STATEFULSET_NAME)'
@@ -62,7 +62,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_STATEFULSETS_SET_NAME=$(KCL_STATEFULSETS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::StatefulSet ($(_KUBECTL_STATEFULSET_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_statefulset               - Annotate a stateful-set'
 	@echo '    _kcl_apply_statefulsets                 - Apply a manifest for a new stateful-set'
@@ -72,6 +72,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_statefulset                   - Edit a stateful-set'
 	@echo '    _kcl_explain_statefulset                - Explain the stateful-set object'
 	@echo '    _kcl_label_statefulset                  - Label a stateful-set'
+	@echo '    _kcl_list_statefulsets                  - List all stateful-sets'
+	@echo '    _kcl_list_statefulsets_set              - List a set of stateful-sets'
 	@echo '    _kcl_pause_statefulset                  - Pause rollout of a stateful-set'
 	@echo '    _kcl_restart_statefulset                - Restart rollout of a stateful-set'
 	@echo '    _kcl_resume_statefulset                 - Resume rollout of a stateful-set'
@@ -81,13 +83,12 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_statefulset_description       - Show description of a stateful-set'
 	@echo '    _kcl_show_statefulset_rollouthistory    - Show the rollout-history of a stateful-set'
 	@echo '    _kcl_show_statefulset_rolloutstatus     - Show the rollout-status of a stateful-set'
-	@echo '    _kcl_unlabel_statefulset                - Unlabel a stateful-set'
 	@echo '    _kcl_unapply_statefulsets               - Unapply a manifest of a new stateful-set'
+	@echo '    _kcl_unlabel_statefulset                - Unlabel a stateful-set'
 	@echo '    _kcl_update_statefulset                 - Update a stateful-set'
-	@echo '    _kcl_view_statefulsets                  - View stateful-sets'
-	@echo '    _kcl_view_statefulsets_set              - View a set of stateful-sets'
-	@echo '    _kcl_watching_statefulsets              - Watching stateful-sets'
-	@echo '    _kcl_watching_statefulsets_set          - Watching a set of stateful-sets'
+	@echo '    _kcl_watch_statefulsets                 - Watch all stateful-sets'
+	@echo '    _kcl_watch_statefulsets_set             - Watch a set of stateful-sets'
+	@echo '    _kcl_write_statefulsets                 - Write manifest for one-or-more stateful-sets'
 	@echo
 
 #----------------------------------------------------------------------
@@ -135,6 +136,15 @@ _kcl_label_statefulset:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label statefulset $(__KCL_NAMESPACE__STATEFULSET) $(KCL_STATEFULSET_NAME) $(KCL_STATEFULSET_LABELS_KEYVALUES)
 
+_kcl_list_statefulsets:
+	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL stateful-sets ...'; $(NORMAL)
+	$(KUBECTL) get statefulsets --all-namespaces=true $(_X__KCL_STATEFULSETS_NAMESPACE_NAME)
+
+_kcl_list_statefulsets_set:
+	@$(INFO) '$(KCL_UI_LABEL)Viewing stateful-sets-set "$(KCL_STATEFULSETS_SET_NAME)"  ...'; $(NORMAL)
+	@$(WARN) 'Stateful-sets are grouped based on namespace, selector, ...'; $(NORMAL)
+	$(KUBECTL) get statefulsets --all-namespaces=false $(__KCL_NAMESPACE__STATEFULSETS) $(__KCL_SELECTOR__STATEFULSETS)
+
 _kcl_pause_statefulset:
 	@$(INFO) '$(KCL_UI_LABEL)Pausing rollout of stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) rollout pause statefulset $(__KCL_NAMESPACE__STATEFULSET) $(KCL_STATEFULSET_NAME)
@@ -155,7 +165,8 @@ _kcl_scale_statefulset:
 	@$(INFO) '$(KCL_UI_LABEL)Scaling stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) scale statefulset $(__KCL_NAMESPACE__STATEFULSET) $(__KCL_REPLICAS__STATEFULSET) $(KCL_STATEFULSET_NAME)
 
-_kcl_show_statefulset :: _kcl_show_statefulset_rollouthistory _kcl_show_statefulset_rolloutstatus _kcl_show_statefulset_description
+_KCL_SHOW_STATEFULSET_TARGETS?=: _kcl_show_statefulset_rollouthistory _kcl_show_statefulset_rolloutstatus _kcl_show_statefulset_description
+_kcl_show_statefulset :: $(_KCL_SHOW_STATEFULESET_TARGETS)
 
 _kcl_show_statefulset_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)
@@ -184,17 +195,12 @@ _kcl_unlabel_statefulset:
 _kcl_update_statefulset:
 	@$(INFO) '$(KCL_UI_LABEL)Updating stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)
 
-_kcl_view_statefulsets:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing stateful-sets ...'; $(NORMAL)
-	$(KUBECTL) get statefulsets --all-namespaces=true $(_X__KCL_STATEFULSETS_NAMESPACE_NAME)
-
-_kcl_view_statefulsets_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing stateful-sets-set "$(KCL_STATEFULSETS_SET_NAME)"  ...'; $(NORMAL)
-	@$(WARN) 'Stateful-sets are grouped based on namespace, selector, ...'; $(NORMAL)
-	$(KUBECTL) get statefulsets --all-namespaces=false $(__KCL_NAMESPACE__STATEFULSETS) $(__KCL_SELECTOR__STATEFULSETS)
-
 _kcl_watch_statefulsets:
-	@$(INFO) '$(KCL_UI_LABEL)Watching stateful-sets ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL stateful-sets ...'; $(NORMAL)
 
 _kcl_watch_statefulsets_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching stateful-sets-set "$(KCL_STATEFULSETS_SET_NAME)"  ...'; $(NORMAL)
+
+_kcl_write_statefulset: _kcl_write_statefulsets
+_kcl_write_statefulsets:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more stateful-sets ...'; $(NORMAL)

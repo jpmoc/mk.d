@@ -72,11 +72,11 @@ _KCL_UPDATE_CONFIGMAP_|?=
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::ConfigMap ($(_KUBECTL_CONFIGMAP_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::ConfigMap ($(_KUBECTL_CONFIGMAP_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::ConfigMap ($(_KUBECTL_CONFIGMAP_MK_VERSION)) parameters:'
 	@echo '    KCL_CONFIGMAP_DIR_DIRNAME=$(KCL_CONFIGMAP_DIR_DIRNAME)'
 	@echo '    KCL_CONFIGMAP_DIR_DIRPATH=$(KCL_CONFIGMAP_DIR_DIRPATH)'
@@ -107,7 +107,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CONFIGMAPS_SET_NAME=$(KCL_CONFIGMAPS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::ConfigMap ($(_KUBECTL_CONFIGMAP_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_configmap                - Annotate a config-map'
 	@echo '    _kcl_apply_configmaps                  - Apply a manifest for one-or-more config-maps'
@@ -124,10 +124,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_configmaps                - Un-apply a manifest for one-or-more config-maps'
 	@echo '    _kcl_unlabel_configmap                 - Un-label a config-map'
 	@echo '    _kcl_update_configmap                  - Update a config-map'
-	@echo '    _kcl_view_configmaps                   - View all config-maps'
-	@echo '    _kcl_view_configmaps_set               - View a set of config-maps'
+	@echo '    _kcl_list_configmaps                   - List all config-maps'
+	@echo '    _kcl_list_configmaps_set               - List a set of config-maps'
 	@echo '    _kcl_watch_configmaps                  - Watch all config-maps'
 	@echo '    _kcl_watch_configmaps_set              - Watch a set of config-maps'
+	@echo '    _kcl_write_configmaps                  - Write manifest for one-or-more config-maps'
 	@echo
 
 #----------------------------------------------------------------------
@@ -183,7 +184,17 @@ _kcl_kustomize_configmaps:
 _kcl_label_configmap:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling config-map "$(KCL_CONFIGMAP_NAME)" ...'; $(NORMAL)
 
-_kcl_show_configmap: _kcl_show_configmap_object _kcl_show_configmap_description
+_kcl_list_configmaps:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL config-maps ...'; $(NORMAL)
+	$(KUBECTL) get configmap --all-namespaces=true $(_X__KCL_NAMESPACE__CONFIGMAPS)
+
+_kcl_list_configmaps_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing config-maps-set "$(KCL_CONFIGMAPS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Config-maps are grouped based on the provided namespace, ...'; $(NORMAL)
+	$(KUBECTL) get configmaps --all-namespaces=false $(__KCL_NAMESPACE__CONFIGMAPS)
+
+_KCL_SHOW_CONFIGMAP_TARGETS?= _kcl_show_configmap_object _kcl_show_configmap_description
+_kcl_show_configmap: $(_KCL_SHOW_CONFIGMAP_TARGETS)
 
 _kcl_show_configmap_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of config-map "$(KCL_CONFIGMAP_NAME)" ...'; $(NORMAL)
@@ -206,17 +217,13 @@ _kcl_update_configmap:
 	@$(INFO) '$(KCL_UI_LABEL)Updating config-map "$(KCL_CONFIGMAP_NAME)" ...'; $(NORMAL)
 	$(_KCL_UPDATE_CONFIGMAP_|) $(KUBECTL) patch configmap $(__KCL_NAMESPACE__CONFIGMAP) $(__KCL_PATCH__CONFIGMAP) $(__KCL_TYPE__CONFIGMAP) $(KCL_CONFIGMAP_NAME) $(|_KCL_UPDATE_CONFIGMAP)
 
-_kcl_view_configmaps:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL config-maps ...'; $(NORMAL)
-	$(KUBECTL) get configmap --all-namespaces=true $(_X__KCL_NAMESPACE__CONFIGMAPS)
-
-_kcl_view_configmaps_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing config-maps-set "$(KCL_CONFIGMAPS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Config-maps are grouped based on the provided namespace, ...'; $(NORMAL)
-	$(KUBECTL) get configmaps --all-namespaces=false $(__KCL_NAMESPACE__CONFIGMAPS)
-
 _kcl_watch_configmaps:
 	@$(INFO) '$(KCL_UI_LABEL)Watching config-maps ...'; $(NORMAL)
 
 _kcl_watch_configmaps_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching config-maps-set "$(KCL_CONFIGMAPS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_configmaps:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-o-rmore config-maps ...'; $(NORMAL)
+	$(WRITER) $(KCL_CONFIGMAPS_MANIFEST_FILEPATH)
+

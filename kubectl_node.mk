@@ -67,11 +67,11 @@ __KCL_WINDOWS_LINE_ENDINGS==
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Node ($(_KUBECTL_NODE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Node ($(_KUBECTL_NODE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Node ($(_KUBECTL_NODE_MK_VERSION)) parameters:'
 	@echo '    KCL_NODE_DRYRUN_ENABLE=$(KCL_NODE_DRYRUN_ENABLE)'
 	@echo '    KCL_NODE_HEAPSTER_NAMESPACE=$(KCL_NODE_HEAPSTER_NAMESPACE)'
@@ -93,7 +93,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_NODES_WATCH_ONLY=$(KCL_NODES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Node ($(_KUBECTL_NODE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_node                     - Annotate node'
 	@echo '    _kcl_cordon_node                       - Cordon a node'
@@ -101,6 +101,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_node                         - Edit node object'
 	@echo '    _kcl_explain_node                      - Explain node object'
 	@echo '    _kcl_label_node                        - Label a node'
+	@echo '    _kcl_list_nodes                        - List all nodes'
+	@echo '    _kcl_list_nodes_set                    - List a set of nodes'
 	@echo '    _kcl_show_node                         - Show everything related to a node'
 	@echo '    _kcl_show_node_consumedresources       - Show consumed-resources on a node'
 	@echo '    _kcl_show_node_description             - Show description of a node'
@@ -109,10 +111,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unlabel_node                      - Remove labels from a node'
 	@echo '    _kcl_untaint_node                      - Untaint a node'
 	@echo '    _kcl_update_node                       - Update a node'
-	@echo '    _kcl_view_nodes                        - View all nodes'
-	@echo '    _kcl_view_nodes_set                    - View a set of nodes'
 	@echo '    _kcl_watch_nodes                       - Watch nodes'
 	@echo '    _kcl_watch_nodes_set                   - Watch a set of nodes'
+	@#echo '    _kcl_write_nodes                       - Write manifest for one-or-more nodes'
 	@echo
 
 #----------------------------------------------------------------------
@@ -147,9 +148,16 @@ _kcl_label_node:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling node "$(KCL_NODE_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label nodes $(KCL_NODE_NAME) $(KCL_NODE_LABELS_KEYVALUES)
 
-_kcl_patch_node:
+_kcl_list_nodes:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL nodes ...'; $(NORMAL)
+	$(KUBECTL) get nodes $(strip $(_X__KCL_ALL_NAMESPACES) $(__KCL_ALLOW_MISSING_TEMPLATE_KEYS) $(__KCL_CHUNK_SIZE) $(__KCL_EXPORT) $(__KCL_FIELD_SELECTOR) $(__KCL_FILENAME) $(__KCL_IGNORE_NOT_FOUND) $(__KCL_INCLUDE_UNINITIALIZED) $(__KCL_LABEL_COLUMNS) $(__KCL_NO_HEADERS__NODES) $(__KCL_OUTPUT__NODES) $(__KCL_RAW) $(__KCL_RECURSIVE) $(__KCL_SELECTOR__NODES) $(__KCL_SERVER_PRINT) $(__KCL_SHOW_KIND__NODES) $(__KCL_SHOW_LABELS__NODES) $(__KCL_SORT_BY__NODES) $(__KCL_TEMPLATE) $(__KCL_USE_OPENAPI_PRINT_COLUMNS) $(_X__KCL_WATCH__NODES) $(_X__KCL_WATCH_ONLY__NODES) )
 
-_kcl_show_node: _kcl_show_node_consumedresources _kcl_show_node_objectrepresentation _kcl_show_node_description
+_kcl_list_nodes_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing nodes-set "$(KCL_NODES_SET_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) get nodes $(strip $(_X__KCL_ALL_NAMESPACES) $(__KCL_ALLOW_MISSING_TEMPLATE_KEYS) $(__KCL_CHUNK_SIZE) $(__KCL_EXPORT) $(__KCL_FIELD_SELECTOR) $(__KCL_FILENAME) $(__KCL_IGNORE_NOT_FOUND) $(__KCL_INCLUDE_UNINITIALIZED) $(__KCL_LABEL_COLUMNS) $(__KCL_NO_HEADERS__NODES) $(__KCL_OUTPUT__NODES) $(__KCL_RAW) $(__KCL_RECURSIVE) $(__KCL_SELECTOR__NODES) $(__KCL_SERVER_PRINT) $(__KCL_SHOW_KIND__NODES) $(__KCL_SHOW_LABELS__NODES) $(__KCL_SORT_BY__NODES) $(__KCL_TEMPLATE) $(__KCL_USE_OPENAPI_PRINT_COLUMNS) $(_X__KCL_WATCH__NODES) $(_X__KCL_WATCH_ONLY__NODES) )
+
+_KCL_SHOW_NODE_TARGETS?= _kcl_show_node_consumedresources _kcl_show_node_objectrepresentation _kcl_show_node_description
+_kcl_show_node: $(_KCL_SHOW_NODE_TARGETS)
 
 _kcl_show_node_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description node "$(KCL_NODE_NAME)" ...'; $(NORMAL)
@@ -184,14 +192,6 @@ _kcl_untaint_node:
 
 _kcl_update_node:
 
-_kcl_view_nodes:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL nodes ...'; $(NORMAL)
-	$(KUBECTL) get nodes $(strip $(_X__KCL_ALL_NAMESPACES) $(__KCL_ALLOW_MISSING_TEMPLATE_KEYS) $(__KCL_CHUNK_SIZE) $(__KCL_EXPORT) $(__KCL_FIELD_SELECTOR) $(__KCL_FILENAME) $(__KCL_IGNORE_NOT_FOUND) $(__KCL_INCLUDE_UNINITIALIZED) $(__KCL_LABEL_COLUMNS) $(__KCL_NO_HEADERS__NODES) $(__KCL_OUTPUT__NODES) $(__KCL_RAW) $(__KCL_RECURSIVE) $(__KCL_SELECTOR__NODES) $(__KCL_SERVER_PRINT) $(__KCL_SHOW_KIND__NODES) $(__KCL_SHOW_LABELS__NODES) $(__KCL_SORT_BY__NODES) $(__KCL_TEMPLATE) $(__KCL_USE_OPENAPI_PRINT_COLUMNS) $(_X__KCL_WATCH__NODES) $(_X__KCL_WATCH_ONLY__NODES) )
-
-_kcl_view_nodes_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing nodes-set "$(KCL_NODES_SET_NAME)" ...'; $(NORMAL)
-	$(KUBECTL) get nodes $(strip $(_X__KCL_ALL_NAMESPACES) $(__KCL_ALLOW_MISSING_TEMPLATE_KEYS) $(__KCL_CHUNK_SIZE) $(__KCL_EXPORT) $(__KCL_FIELD_SELECTOR) $(__KCL_FILENAME) $(__KCL_IGNORE_NOT_FOUND) $(__KCL_INCLUDE_UNINITIALIZED) $(__KCL_LABEL_COLUMNS) $(__KCL_NO_HEADERS__NODES) $(__KCL_OUTPUT__NODES) $(__KCL_RAW) $(__KCL_RECURSIVE) $(__KCL_SELECTOR__NODES) $(__KCL_SERVER_PRINT) $(__KCL_SHOW_KIND__NODES) $(__KCL_SHOW_LABELS__NODES) $(__KCL_SORT_BY__NODES) $(__KCL_TEMPLATE) $(__KCL_USE_OPENAPI_PRINT_COLUMNS) $(_X__KCL_WATCH__NODES) $(_X__KCL_WATCH_ONLY__NODES) )
-
 _kcl_watch_nodes:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL nodes ...'; $(NORMAL)
 	$(KUBECTL) get nodes $(strip $(_X__KCL_ALL_NAMESPACES) $(__KCL_ALLOW_MISSING_TEMPLATE_KEYS) $(__KCL_CHUNK_SIZE) $(__KCL_EXPORT) $(__KCL_FIELD_SELECTOR) $(__KCL_FILENAME) $(__KCL_IGNORE_NOT_FOUND) $(__KCL_INCLUDE_UNINITIALIZED) $(__KCL_LABEL) $(__KCL_NO_HEADERS__NODES) $(__KCL_OUTPUT__NODES) $(__KCL_RAW) $(__KCL_RECURSIVE) $(__KCL_SELECTOR__NODES) $(__KCL_SERVER_PRINT) $(__KCL_SHOW_KIND__NODES) $(__KCL_SHOW_LABELS__NODES) $(__KCL_SORT_BY__NODES) $(__KCL_TEMPLATE) $(__KCL_USE_OPENAPI_PRINT_COLUMNS) $(_X__KCL_WATCH__NODES) --watch=true $(__KCL_WATCH_ONLY__NODES) )
@@ -199,3 +199,6 @@ _kcl_watch_nodes:
 _kcl_watch_nodes_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching nodes-set "$(KCL_NODES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get nodes $(strip $(_X__KCL_ALL_NAMESPACES) $(__KCL_ALLOW_MISSING_TEMPLATE_KEYS) $(__KCL_CHUNK_SIZE) $(__KCL_EXPORT) $(__KCL_FIELD_SELECTOR) $(__KCL_FILENAME) $(__KCL_IGNORE_NOT_FOUND) $(__KCL_INCLUDE_UNINITIALIZED) $(__KCL_LABEL) $(__KCL_NO_HEADERS__NODES) $(__KCL_OUTPUT__NODES) $(__KCL_RAW) $(__KCL_RECURSIVE) $(__KCL_SELECTOR__NODES) $(__KCL_SERVER_PRINT) $(__KCL_SHOW_KIND__NODES) $(__KCL_SHOW_LABELS__NODES) $(__KCL_SORT_BY__NODES) $(__KCL_TEMPLATE) $(__KCL_USE_OPENAPI_PRINT_COLUMNS) $(_X__KCL_WATCH__NODES) --watch=true $(__KCL_WATCH_ONLY__NODES) )
+
+_kcl_write_nodes:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more nodes ...'; $(NORMAL)

@@ -41,11 +41,11 @@ _KCL_UNAPPLY_CLUSTERROLEBINDINGS_|?= $(_KCL_APPLY_CLUSTERROLEBINDINGS_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::ClusterRoleBinding ($(_KUBECTL_CLUSTERROLEBINDING_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::ClusterRoleBinding ($(_KUBECTL_CLUSTERROLEBINDING_MK_VERSION)) parameters:'
 	@echo '    KCL_CLUSTERROLEBINDING_CLUSTERROLE_NAME=$(KCL_CLUSTERROLEBINDING_CLUSTERROLE_NAME)'
 	@echo '    KCL_CLUSTERROLEBINDING_GROUP_NAMES=$(KCL_CLUSTERROLEBINDING_GROUP_NAMES)'
@@ -62,7 +62,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CLUSTERROLEBINDINGS_SET_NAME=$(KCL_CLUSTERROLEBINDINGS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::ClusterRoleBinding ($(_KUBECTL_CLUSTERROLEBINDING_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_clusterrolebinding               - Annotate a cluster-role-binding'
 	@echo '    _kcl_apply_clusterrolebindings                 - Applying manifest for one-or-more cluster-role-bindings'
@@ -71,15 +71,16 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_clusterrolebindings                  - Diff current-state with manifest for one-or-more cluster-role-bindings'
 	@echo '    _kcl_edit_clusterrolebinding                   - Edit a cluster-role-binding'
 	@echo '    _kcl_explain_clusterrolebinding                - Explain the cluster-role-binding object'
+	@echo '    _kcl_list_clusterrolebindings                  - List all cluster-role-bindings'
+	@echo '    _kcl_list_clusterrolebindings_set              - List a set of cluster-role-bindings'
 	@echo '    _kcl_show_clusterrolebinding                   - Show everything related to a cluster-role-binding'
 	@echo '    _kcl_show_clusterrolebinding_description       - Show description of a cluster-role-binding'
 	@echo '    _kcl_show_clusterrolebinding_object            - Show object of a cluster-role-binding'
 	@echo '    _kcl_show_clusterrolebinding                   - Show everything related to a cluster-role-binding'
 	@echo '    _kcl_unapply_clusterrolebindings               - Unpplying manifest for one-or-more cluster-role-bindings'
-	@echo '    _kcl_view_clusterrolebindings                  - View all cluster-role-bindings'
-	@echo '    _kcl_view_clusterrolebindings_set              - View a set of cluster-role-bindings'
-	@echo '    _kcl_view_clusterrolebindings                  - Watch all cluster-role-bindings'
-	@echo '    _kcl_view_clusterrolebindings_set              - Watch a set of cluster-role-bindings'
+	@echo '    _kcl_watch_clusterrolebindings                 - Watch all cluster-role-bindings'
+	@echo '    _kcl_watch_clusterrolebindings_set             - Watch a set of cluster-role-bindings'
+	@echo '    _kcl_write_clusterrolebindings                 - Write manifest for one-or-more cluster-role-bindings'
 	@echo
 
 #----------------------------------------------------------------------
@@ -128,7 +129,17 @@ _kcl_label_clusterrolebinding:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling cluster-role-binding "$(KCL_CLUSTERROLEBINDING_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) label clusterrolebinding $(KCL_CLUSTERROLEBINDING_NAME) $(KCL_CLUSTERROLEBINDING_LABELS_KEYVALUES)
 
-_kcl_show_clusterrolebinding: _kcl_show_clusterrolebinding_object _kcl_show_clusterrolebinding_description
+_kcl_list_clusterrolebindings:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL cluster-role-bindings ...'; $(NORMAL)
+	$(KUBECTL) get clusterrolebindings
+
+_kcl_list_clusterrolebindings_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing cluster-role-bindings-set "$(KCL_CLUSTERROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
+	@$(WARN) 'Cluster-role-bindings are grouped based on selector, ...'; $(NORMAL)
+	$(KUBECTL) get clusterrolebindings $(__KCL_SELECTOR__CLUSTERROLEBINDINGS)
+
+_KCL_SHOW_CLUSTERROLEBINDING_TARGETS?= _kcl_show_clusterrolebinding_object _kcl_show_clusterrolebinding_description
+_kcl_show_clusterrolebinding: $(_KCL_SHOW_CLUSTERROLEBINDING_TARGETS)
 
 _kcl_show_clusterrolebinding_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of cluster-role-binding "$(KCL_CLUSTERROLEBINDING_NAME)" ...'; $(NORMAL)
@@ -147,18 +158,13 @@ _kcl_unapply_clusterrolebindings:
 	# ls -al $(KCL_CLUSTERROLEBINDINGS_MANIFESTS_DIRPATH)
 	$(_KCL_UNAPPLY_CLUSTERROLEBINDINGS_|)$(KUBECTL) delete $(__KCL_FILENAME__CLUSTERROLEBINDINGS)
 
-_kcl_view_clusterrolebindings:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL cluster-role-bindings ...'; $(NORMAL)
-	$(KUBECTL) get clusterrolebindings
-
-_kcl_view_clusterrolebindings_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing cluster-role-bindings-set "$(KCL_CLUSTERROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
-	@$(WARN) 'Cluster-role-bindings are grouped based on selector, ...'; $(NORMAL)
-	$(KUBECTL) get clusterrolebindings $(__KCL_SELECTOR__CLUSTERROLEBINDINGS)
-
 _kcl_watch_clusterrolebindings:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL cluster-role-bindings ...'; $(NORMAL)
 
 _kcl_watch_clusterrolebindings_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching cluster-role-bindings-set "$(KCL_CLUSTERROLEBINDINGS_SET_NAME)"  ...'; $(NORMAL)
 	@$(WARN) 'Cluster-role-bindings are grouped based on selector, ...'; $(NORMAL)
+
+_kcl_write_clusterrolebindings:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more cluster-role-bindings ...'; $(NORMAL)
+	$(WRITER) $(KCL_CLUSTERROLEBINDINGS_MANIFEST_FILEPATH)

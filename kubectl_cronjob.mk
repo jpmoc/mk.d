@@ -44,13 +44,13 @@ _kcl_get_cronjob_lastpod_name_SN= $(shell $(KUBECTL) get pods --all-namespaces=f
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Cronjob ($(_KUBECTL_CRONJOB_MK_VERSION)) macros:'
 	@echo '    _kcl_get_cronjob_lastjob_name_{|S|SN}           - Get the name of the last-job spawned by a cronjob (Selector,Namespace)'
 	@echo '    _kcl_get_cronjob_lastpod_name_{|S|SN}           - Get the name of the pod spawned by the last-job of a cronjob (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Cronjob ($(_KUBECTL_CRONJOB_MK_VERSION)) parameters:'
 	@echo '    KCL_CRONJOB_COMMAND=$(KCL_CRONJOB_COMMAND)'
 	@echo '    KCL_CRONJOB_FOLLOW_LOGS=$(KCL_CRONJOB_FOLLOW_LOGS)'
@@ -65,7 +65,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CRONJOBS_SET_NAME=$(KCL_CRONJOBS_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Cronjob ($(_KUBECTL_CRONJOB_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_cronjob                - Annotate a cronjob'
 	@echo '    _kcl_apply_cronjobs                  - Apply manifest for one-or-more cronjobs'
@@ -74,16 +74,17 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_cronjobs                   - Diff a manifest for one-or-more cronjobs'
 	@echo '    _kcl_edit_cronjob                    - Edit a cronjob'
 	@echo '    _kcl_explain_cronjob                 - Explain the cronjob object'
+	@echo '    _kcl_list_cronjobs                   - List all cronjobs'
+	@echo '    _kcl_list_cronjobs_set               - List a set of cronjobs'
 	@echo '    _kcl_show_cronjob                    - Show everything related to a cronjob'
 	@echo '    _kcl_show_cronjob_description        - Show the description of a cronjob'
 	@echo '    _kcl_tail_cronjob                    - Tail pods of a cronjob'
 	@echo '    _kcl_unapply_cronjobs                - Un-apply a manifest for one-or-more cronjobs'
 	@echo '    _kcl_unlabel_cronjob                 - Un-label a cronjob'
 	@echo '    _kcl_update_cronjob                  - Update a cronjob'
-	@echo '    _kcl_view_cronjobs                   - View all cronjobs'
-	@echo '    _kcl_view_cronjobs_set               - View a set of cronjobs'
-	@echo '    _kcl_watch_cronjobs                  - Watching cronjobs/jobs'
-	@echo '    _kcl_watch_cronjobs_set              - Watching a set of cronjobs/jobs'
+	@echo '    _kcl_watch_cronjobs                  - Watching all cronjobs'
+	@echo '    _kcl_watch_cronjobs_set              - Watching a set of cronjobs'
+	@echo '    _kcl_write_cronjobs                  - Writing manifest for one-or-more cronjobs'
 	@echo
 
 #----------------------------------------------------------------------
@@ -119,7 +120,17 @@ _kcl_explain_cronjob:
 _kcl_label_cronjob:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling cronjob "$(KCL_CRONJOB_NAME)" ...'; $(NORMAL)
 
-_kcl_show_cronjob: _kcl_show_cronjob_description
+_kcl_list_cronjobs:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL cronjobs ...'; $(NORMAL)
+	$(KUBECTL) get cronjob --all-namespaces=true $(_X__KCL_NAMESPACE__CRONJOBS)
+
+_kcl_list_cronjobs_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing cronjobs-set "$(KCL_CRONJOBS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Cronjobs are grouped based on the provided namespace and selector'; $(NORMAL)
+	$(KUBECTL) get cronjob --all-namespaces=false $(__KCL_NAMESPACE__CRONJOBS)
+
+_KCL_SHOW_CRONJOB_TARGETS?= _kcl_show_cronjob_description
+_kcl_show_cronjob: $(_KCL_SHOW_CRONJOB_TARGETS)
 
 _kcl_show_cronjob_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description cronjob "$(KCL_CRONJOB_NAME)" ...'; $(NORMAL)
@@ -141,18 +152,14 @@ _kcl_test_cronjob_macros:
 
 _kcl_update_cronjob:
 
-_kcl_view_cronjobs:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL cronjobs ...'; $(NORMAL)
-	$(KUBECTL) get cronjob --all-namespaces=true $(_X__KCL_NAMESPACE__CRONJOBS)
-
-_kcl_view_cronjobs_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing cronjobs-set "$(KCL_CRONJOBS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Cronjobs are grouped based on the provided namespace and selector'; $(NORMAL)
-	$(KUBECTL) get cronjob --all-namespaces=false $(__KCL_NAMESPACE__CRONJOBS)
-
 _kcl_watch_cronjobs:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL cronjobs ...'; $(NORMAL)
 
 _kcl_watch_cronjobs_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching cronjobs-set "$(KCL_CRONJOBS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Cronjobs are grouped based on the provided namespace and selector'; $(NORMAL)
+
+_kcl_write_cronjobs:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more cronjobs ...'; $(NORMAL)
+	$(WRITER) $(KCL_CRONJOBS_MANIFEST_FILEPATH)
+
