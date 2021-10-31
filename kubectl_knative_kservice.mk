@@ -116,12 +116,12 @@ _KCL_UNAPPLY_KSERVICES_|?= $(_KCL_APPLY_KSERVICES_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::KService ($(_KUBECTL_KNATIVE_KSERVICE_MK_VERSION)) macros:'
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::KService ($(_KUBECTL_KNATIVE_KSERVICE_MK_VERSION)) macros:'
 	@#echo '    _kcl_get_kservice_pod_selector_{|N|NN}       - Get the pod-selector of a service (Name,Namespace)'
-	@echo
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::KService ($(_KUBECTL_KNATIVE_KSERVICE_MK_VERSION)) parameters:'
 	@echo '    KCL_KSERVICE_CONFIGURATIONS_NAME=$(KCL_KSERVICE_CONFIGURATIONS_NAME)'
 	@echo '    KCL_KSERVICE_CONFIGURATIONS_SELECTOR=$(KCL_KSERVICE_CONFIGURATIONS_SELECTOR)'
@@ -168,7 +168,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_KSERVICES_WATCH_ONLY=$(KCL_KSERVICES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::KService ($(_KUBECTL_KNATIVE_KSERVICE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_kservice                - Annotate a knative-service'
 	@echo '    _kcl_apply_kservices                  - Apply manifest for one-or-more knative-services'
@@ -181,6 +181,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_kservice                 - Explain the knative-service object'
 	@echo '    _kcl_kustomize_kservices              - Kustomize one-or-more knative-services'
 	@echo '    _kcl_label_kservice                   - Label a knative-service'
+	@echo '    _kcl_list_kservices                   - List all knative-services'
+	@echo '    _kcl_list_kservices_set               - List a set of knative-services'
 	@echo '    _kcl_show_kservice                    - Show everything related to a knative-service'
 	@echo '    _kcl_show_kservice_configuration      - Show the configuration of a knative-service'
 	@echo '    _kcl_show_kservice_deployments        - Show the deployments of a knative-service'
@@ -198,10 +200,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_kservice_state              - Show the state of a knative-service'
 	@echo '    _kcl_unapply_kservices                - Unapply a manifest for one-or-more knative-services'
 	@echo '    _kcl_update_kservice                  - Update a knative-service'
-	@echo '    _kcl_view_kservices                   - View all knative-services'
-	@echo '    _kcl_view_kservices_set               - View a set of knative-services'
 	@echo '    _kcl_watch_kservices                  - Watch knative-services'
 	@echo '    _kcl_watch_kservices_set              - Watch a set of knative-services'
+	@echo '    _kcl_write_kservices                  - Write a manifest for one-or-more knative-services'
 	@echo
 
 #----------------------------------------------------------------------
@@ -260,6 +261,15 @@ _kcl_kustomize_kservices:
 
 _kcl_label_kservice:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-service "$(KCL_KSERVICE_NAME)" ...'; $(NORMAL)
+
+_kcl_list_kservices:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-services ...'; $(NORMAL)
+	$(KUBECTL) get kservice --all-namespaces=true $(_X__KCL_NAMESPACE__KSERVICES) $(__KCL_OUTPUT__KSERVICES) $(_X__KCL_SELECTOR__KSERVICES)$(__KCL_SHOW_LABELS__KSERVICES)
+
+_kcl_list_kservices_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-services-set "$(KCL_KSERVICES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get kservice --all-namespaces=false $(__KCL_FIELD_SELECTOR__KSERVICES) $(__KCL_NAMESPACE__KSERVICES) $(__KCL_OUTPUT__KSERVICES) $(__KCL_SELECTOR__KSERVICES) $(__KCL_SHOW_LABELS__KSERVICES)
 
 _KCL_SHOW_KSERVICE_TARGETS?= _kcl_show_kservice_configuration _kcl_show_kservice_deployments _kcl_show_kservice_images _kcl_show_kservice_kingress _kcl_show_kservice_metrics _kcl_show_kservice_object _kcl_show_kservice_podautoscalers _kcl_show_kservice_pods _kcl_show_kservice_replicasets _kcl_show_kservice_revisions _kcl_show_kservice_route _kcl_show_kservice_serverlessservices _kcl_show_kservice_services _kcl_show_kservice_state _kcl_show_kservice_description
 _kcl_show_kservice: $(_KCL_SHOW_KSERVICE_TARGETS)
@@ -360,15 +370,6 @@ _kcl_unlabel_kservice:
 _kcl_update_kservice:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-service "$(KCL_KSERVICE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_kservices:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-services ...'; $(NORMAL)
-	$(KUBECTL) get kservice --all-namespaces=true $(_X__KCL_NAMESPACE__KSERVICES) $(__KCL_OUTPUT__KSERVICES) $(_X__KCL_SELECTOR__KSERVICES)$(__KCL_SHOW_LABELS__KSERVICES)
-
-_kcl_view_kservices_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-services-set "$(KCL_KSERVICES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get kservice --all-namespaces=false $(__KCL_FIELD_SELECTOR__KSERVICES) $(__KCL_NAMESPACE__KSERVICES) $(__KCL_OUTPUT__KSERVICES) $(__KCL_SELECTOR__KSERVICES) $(__KCL_SHOW_LABELS__KSERVICES)
-
 _kcl_watch_kservices:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-services ...'; $(NORMAL)
 	$(KUBECTL) get kservice $(strip $(_X__KCL_ALL_NAMESPACES__KSERVICES) --all-namespaces=true $(_X__KCL_NAMESPACE__KSERVICES) $(__KCL_OUTPUT__KSERVICES) $(_X__KCL_SELECTOR__KSERVICES) $(_X__KCL_WATCH__KSERVICES) --watch=true $(__KCL_WATCH_ONLY__KSERVICES) )
@@ -376,3 +377,8 @@ _kcl_watch_kservices:
 _kcl_watch_kservices_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-services-set "$(KCL_KSERVICES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get kservice $(strip $(__KCL_ALL_NAMESPACES__KSERVICES) $(__KCL_NAMESPACE__KSERVICES) $(__KCL_OUTPUT__KSERVICES) $(__KCL_SELECTOR__KSERVICES) $(_X__KCL_WATCH__KSERVICES) --watch=true $(__KCL_WATCH_ONLY__KSERVICES) )
+
+_kcl_write_kservice: _kcl_write_kservices
+_kcl_write_kservices:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-services ...'; $(NORMAL)
+	$(WRITER) $(KCL_KSERVICES_MANIFEST_FILEPATH)

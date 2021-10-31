@@ -35,11 +35,12 @@ _icl_get_prometheus_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) 
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::Prometheus ($(_ISTIOCTL_PROMETHEUS_MK_VERSION)) macros:'
+	@echo '   _icl_get_prometheus_pods_names_{|S|SN}   - Get the names of the prometheus pods (Selector,Namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Prometheus ($(_ISTIOCTL_PROMETHEUS_MK_VERSION)) variables:'
 	@echo '    ICL_PROMETHEUS_HOST=$(ICL_PROMETHEUS_HOST)'
 	@echo '    ICL_PROMETHEUS_IP=$(ICL_PROMETHEUS_IP)'
@@ -54,7 +55,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_PROMETHEUS_URL=$(ICL_PROMETHEUS_URL)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Prometheus ($(_ISTIOCTL_PROMETHEUS_MK_VERSION)) targets:'
 	@echo '    _icl_open_prometheus                 - Open a prometheus-dashboard'
 	@echo '    _icl_show_prometheus                 - Show everything related to a prometheus-dahsboard'

@@ -35,11 +35,12 @@ _icl_get_grafana_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --o
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::Grafana ($(_ISTIOCTL_GRAFANA_MK_VERSION)) macros:'
+	@echo '    _icl_get_grafana_pods_names_{|S|SN}  - Get the names of the grafana pods (Selector,Namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Grafana ($(_ISTIOCTL_GRAFANA_MK_VERSION)) variables:'
 	@echo '    ICL_GRAFANA_HOST=$(ICL_GRAFANA_HOST)'
 	@echo '    ICL_GRAFANA_IP=$(ICL_GRAFANA_IP)'
@@ -55,7 +56,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_DASHBOARDS_SET_NAME=$(ICL_DASHBOARDS_SET_NAME)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Grafana ($(_ISTIOCTL_GRAFANA_MK_VERSION)) targets:'
 	@echo '    _icl_open_grafana                 - Open a grafana-dashboard'
 	@echo '    _icl_show_grafana                 - Show everything related to a grafana-dahsboard'

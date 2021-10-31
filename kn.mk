@@ -26,23 +26,23 @@ KN?= $(strip $(__KN_ENVIRONMENT) $(KN_ENVIRONMENT) $(KN_BIN) $(__KN_OPTIONS) $(K
 # USAGE
 #
 
-_view_framework_macros :: _kn_view_framework_macros
-_kn_view_framework_macros ::
+_list_macros :: _kn_list_macros
+_kn_list_macros ::
 	@#echo 'KN ($(_KN_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _kn_view_framework_parameters
-_kn_view_framework_parameters ::
+_list_parameters :: _kn_list_parameters
+_kn_list_parameters ::
 	@echo 'KN ($(_KN_MK_VERSION)) parameters:'
 	@echo '    KN_DNSNAME_DOMAIN=$(KN_DNSNAME_DOMAIN)'
 	@echo '    KN_NAMESPACE_NAME=$(KN_NAMESPACE_NAME)'
 	@echo
 
-_view_framework_targets :: _kn_view_framework_targets
-_kn_view_framework_targets ::
+_list_targets :: _kn_list_targets
+_kn_list_targets ::
 	@echo 'KN ($(_KN_MK_VERSION)) targets:'
 	@echo '    _kn_install_dependencies              - Install dependencies'
-	@echo '    _kn_view_sourcetypes                  - View available source types'
+	@echo '    _kn_list_sourcetypes                  - List available source types'
 	@echo '    _kn_view_versions                     - View versions of dependencies'
 	@echo
 
@@ -64,18 +64,18 @@ MK_DIR?= .
 # PUBLIC TARGETS
 #
 
-_install_framework_dependencies :: _kn_install_dependencies
+_install_dependencies :: _kn_install_dependencies
 _kn_install_dependencies ::
 	@$(INFO) '$(KN_UI_LABEL)Installing dependencies ...'; $(NORMAL)
 	@$(WARN) 'Install docs @ https://knative.dev/docs/install/install-kn/'; $(NORMAL)
 	which kn
 	kn version
 
-_kn_view_sourcetypes:
-	@$(INFO) '$(KN_UI_LABEL)Viewing source-types ...'; $(NORMAL)
+_kn_list_sourcetypes:
+	@$(INFO) '$(KN_UI_LABEL)Listing ALL source-types ...'; $(NORMAL)
 	$(KN) source list-types
 
-_view_versions :: _kn_view_versions
-_kn_view_versions ::
-	@$(INFO) '$(KN_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
+_view_versions :: _kn_show_versions
+_kn_show_versions ::
+	@$(INFO) '$(KN_UI_LABEL)Showing versions of dependencies ...'; $(NORMAL)
 	kn version

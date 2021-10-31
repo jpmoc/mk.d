@@ -66,11 +66,11 @@ _KCL_UNAPPLY_TRIGGERS_|?= $(_KCL_APPLY_TRIGGERS_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Trigger ($(_KUBECTL_KNATIVE_TRIGGER_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Trigger ($(_KUBECTL_KNATIVE_TRIGGER_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Trigger ($(_KUBECTL_KNATIVE_TRIGGER_MK_VERSION)) parameters:'
 	@echo '    KCL_TRIGGER_ANNOTATIONS_KEYS=$(KCL_TRIGGER_ANNOTATIONS_KEYS)'
 	@echo '    KCL_TRIGGER_ANNOTATIONS_KEYS=$(KCL_TRIGGER_ANNOTATIONS_KEYS)'
@@ -99,7 +99,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_TRIGGERS_SORT_BY=$(KCL_TRIGGERS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Trigger ($(_KUBECTL_KNATIVE_TRIGGER_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_trigger                - Annotate a trigger'
 	@echo '    _kcl_apply_triggers                  - Apply manifest for one-por-more triggers'
@@ -110,6 +110,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_trigger                 - Explain the trigger object'
 	@echo '    _kcl_kustomize_trigger               - Kustomize one-or-more triggers'
 	@echo '    _kcl_label_trigger                   - Label a trigger'
+	@echo '    _kcl_list_triggers                   - List all triggers'
+	@echo '    _kcl_list_triggers_set               - List a set of triggers'
 	@echo '    _kcl_show_trigger                    - Show everything related to a trigger'
 	@echo '    _kcl_show_trigger_broker             - Show the broker of a trigger'
 	@echo '    _kcl_show_trigger_description        - Show the description of a trigger'
@@ -119,10 +121,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_triggers                - Un-apply manifest for one-or-more triggers'
 	@echo '    _kcl_unlabel_trigger                 - Un-label manifest for a trigger'
 	@echo '    _kcl_update_trigger                  - Update a trigger'
-	@echo '    _kcl_view_triggers                   - View all triggers'
-	@echo '    _kcl_view_triggers_set               - View a set of triggers'
-	@echo '    _kcl_watch_triggers                  - Watching triggers'
-	@echo '    _kcl_watch_triggers_set              - Watching a set of triggers'
+	@echo '    _kcl_watch_triggers                  - Watch triggers'
+	@echo '    _kcl_watch_triggers_set              - Watch a set of triggers'
+	@echo '    _kcl_write_triggers                  - Write mannifest for one-or-more triggers'
 	@echo
 
 #----------------------------------------------------------------------
@@ -176,7 +177,17 @@ _kcl_label_trigger:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling trigger "$(KCL_TRIGGER_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
 
-_kcl_show_trigger: _kcl_show_trigger_broker _kcl_show_trigger_object _kcl_show_trigger_state _kcl_show_trigger_subscriber _kcl_show_trigger_description
+_kcl_list_triggers:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL triggers ...'; $(NORMAL)
+	$(KUBECTL) get triggers --all-namespaces=true $(_X__KCL_NAMESPACE__TRIGGERS) $(__KCL_OUTPUT_TRIGGERS) $(_X__KCL_SELECTOR__TRIGGERS) $(__KCL_SORT_BY__TRIGGERS)
+
+_kcl_list_triggers_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing triggers-set "$(KCL_TRIGGERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Triggers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get triggers --all-namespaces=false $(__KCL_NAMESPACE__TRIGGERS) $(__KCL_OUTPUT__TRIGGERS) $(__KCL_SELECTOR__TRIGGERS) $(__KCL_SORT_BY__TRIGGERS)
+
+_KCL_SHOW_TRIGGER_TARGETS?= _kcl_show_trigger_broker _kcl_show_trigger_object _kcl_show_trigger_state _kcl_show_trigger_subscriber _kcl_show_trigger_description
+_kcl_show_trigger: $(_KCL_SHOW_TRIGGER_TARGETS)
 
 _kcl_show_trigger_broker:
 	@$(INFO) '$(KCL_UI_LABEL)Showing broker of trigger "$(KCL_TRIGGER_NAME)" ...'; $(NORMAL)
@@ -219,15 +230,6 @@ _kcl_update_trigger:
 	@$(INFO) '$(KCL_UI_LABEL)Updating trigger "$(KCL_TRIGGER_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) patch ...
 
-_kcl_view_triggers:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL triggers ...'; $(NORMAL)
-	$(KUBECTL) get triggers --all-namespaces=true $(_X__KCL_NAMESPACE__TRIGGERS) $(__KCL_OUTPUT_TRIGGERS) $(_X__KCL_SELECTOR__TRIGGERS) $(__KCL_SORT_BY__TRIGGERS)
-
-_kcl_view_triggers_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing triggers-set "$(KCL_TRIGGERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Triggers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get triggers --all-namespaces=false $(__KCL_NAMESPACE__TRIGGERS) $(__KCL_OUTPUT__TRIGGERS) $(__KCL_SELECTOR__TRIGGERS) $(__KCL_SORT_BY__TRIGGERS)
-
 _kcl_watch_triggers:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL triggers ...'; $(NORMAL)
 	$(KUBECTL) get triggers --all-namespaces=true --watch 
@@ -235,3 +237,8 @@ _kcl_watch_triggers:
 _kcl_watch_triggers_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching triggers-set "$(KCL_TRIGGERS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Triggers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+
+_kcl_write_trigger: _kcl_write_triggers
+_kcl_write_triggers:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more triggers ...'; $(NORMAL)
+	$(WRITER) $(KCL_TRIGGERS_MANIFEST_FILEPATH)

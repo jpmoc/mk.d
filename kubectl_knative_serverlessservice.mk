@@ -96,12 +96,12 @@ __KCL_WATCH_ONLY__SERVERLESSSERVICES= $(if $(KCL_SERVERLESSSERVICES_WATCH_ONLY),
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::ServerlessService ($(_KUBECTL_KNATIVE_SERVERLESSSERVICE_MK_VERSION)) macros:'
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::ServerlessService ($(_KUBECTL_KNATIVE_SERVERLESSSERVICE_MK_VERSION)) macros:'
 	@#echo '    _kcl_get_serverlessservice_pod_selector_{|N|NN}       - Get the pod-selector of a service (Name,Namespace)'
-	@echo
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::ServerlessService ($(_KUBECTL_KNATIVE_SERVERLESSSERVICE_MK_VERSION)) parameters:'
 	@echo '    KCL_SERVERLESSSERVICE_CONFIGURATIONS_SELECTOR=$(KCL_SERVERLESSSERVICE_CONFIGURATIONS_SELECTOR)'
 	@echo '    KCL_SERVERLESSSERVICE_DEPLOYMENTS_SELECTOR=$(KCL_SERVERLESSSERVICE_DEPLOYMENTS_SELECTOR)'
@@ -142,7 +142,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVERLESSSERVICES_WATCH_ONLY=$(KCL_SERVERLESSSERVICES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::ServerlessService ($(_KUBECTL_KNATIVE_SERVERLESSSERVICE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_serverlessservice                - Annotate a serverless-service'
 	@echo '    _kcl_apply_serverlessservices                  - Apply manifest for one-or-more serverless-services'
@@ -156,6 +156,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_serverlessservice                 - Explain the serverless-service object'
 	@echo '    _kcl_kustomize_serverlessservices              - Kustomize one-or-more serverless-services'
 	@echo '    _kcl_label_serverlessservice                   - Label a serverless-service'
+	@echo '    _kcl_list_serverlessservices                   - List all serverless-services'
+	@echo '    _kcl_list_serverlessservices_set               - List a set of serverless-services'
 	@echo '    _kcl_show_serverlessservice                    - Show everything related to a serverless-service'
 	@echo '    _kcl_show_serverlessservice_configurations     - Show the configurations of a serverless-service'
 	@echo '    _kcl_show_serverlessservice_deployments        - Show the deployments of a serverless-service'
@@ -167,12 +169,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_serverlessservice_serverlessservices - Show the serverless-services of a serverless-service'
 	@echo '    _kcl_show_serverlessservice_services           - Show the services of a serverless-service'
 	@echo '    _kcl_show_serverlessservice_state              - Show the state of a serverless-service'
-	@echo '    _kcl_unapply_serverlessservices                - Unapply amnifest for one-or-more serverless-services'
+	@echo '    _kcl_unapply_serverlessservices                - Un-apply manifest for one-or-more serverless-services'
 	@echo '    _kcl_update_serverlessservice                  - Update a serverless-service'
-	@echo '    _kcl_view_serverlessservices                   - View all serverless-services'
-	@echo '    _kcl_view_serverlessservices_set               - View a set of serverless-services'
 	@echo '    _kcl_watch_serverlessservices                  - Watch serverless-services'
 	@echo '    _kcl_watch_serverlessservices_set              - Watch a set of serverless-services'
+	@echo '    _kcl_write_serverlessservices                  - Write manifest for one-or-more serverless-services'
 	@echo
 
 #----------------------------------------------------------------------
@@ -233,6 +234,15 @@ _kcl_kustomize_serverlessservices:
 
 _kcl_label_serverlessservice:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-serverless-service "$(KCL_SERVERLESSSERVICE_NAME)" ...'; $(NORMAL)
+
+_kcl_list_serverlessservices:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-serverless-services ...'; $(NORMAL)
+	$(KUBECTL) get serverlessservices --all-namespaces=true $(_X__KCL_NAMESPACE__SERVERLESSSERVICES) $(__KCL_OUTPUT__SERVERLESSSERVICES) $(_X__KCL_SELECTOR__SERVERLESSSERVICES)$(__KCL_SHOW_LABELS__SERVERLESSSERVICES)
+
+_kcl_list_serverlessservices_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-serverless-services-set "$(KCL_SERVERLESSSERVICES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-serverless-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get serverlessservices --all-namespaces=false $(__KCL_FIELD_SELECTOR__SERVERLESSSERVICES) $(__KCL_NAMESPACE__SERVERLESSSERVICES) $(__KCL_OUTPUT__SERVERLESSSERVICES) $(__KCL_SELECTOR__SERVERLESSSERVICES) $(__KCL_SHOW_LABELS__SERVERLESSSERVICES)
 
 _KCL_SHOW_SERVERLESSSERVICE_TARGETS?= _kcl_show_serverlessservice_deployments _kcl_show_serverlessservice_object _kcl_show_serverlessservice_pods _kcl_show_serverlessservice_replicasets _kcl_show_serverlessservice_serverlessservice _kcl_show_serverlessservice_services _kcl_show_serverlessservice_state _kcl_show_serverlessservice_description
 _kcl_show_serverlessservice :: $(_KCL_SHOW_SERVERLESSSERVICE_TARGETS)
@@ -304,15 +314,6 @@ _kcl_unlabel_serverlessservice:
 _kcl_update_serverlessservice:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-serverless-service "$(KCL_SERVERLESSSERVICE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_serverlessservices:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-serverless-services ...'; $(NORMAL)
-	$(KUBECTL) get serverlessservices --all-namespaces=true $(_X__KCL_NAMESPACE__SERVERLESSSERVICES) $(__KCL_OUTPUT__SERVERLESSSERVICES) $(_X__KCL_SELECTOR__SERVERLESSSERVICES)$(__KCL_SHOW_LABELS__SERVERLESSSERVICES)
-
-_kcl_view_serverlessservices_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-serverless-services-set "$(KCL_SERVERLESSSERVICES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-serverless-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get serverlessservices --all-namespaces=false $(__KCL_FIELD_SELECTOR__SERVERLESSSERVICES) $(__KCL_NAMESPACE__SERVERLESSSERVICES) $(__KCL_OUTPUT__SERVERLESSSERVICES) $(__KCL_SELECTOR__SERVERLESSSERVICES) $(__KCL_SHOW_LABELS__SERVERLESSSERVICES)
-
 _kcl_watch_serverlessservices:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-serverless-services ...'; $(NORMAL)
 	$(KUBECTL) get serverlessservices $(strip $(_X__KCL_ALL_NAMESPACES__SERVERLESSSERVICES) --all-namespaces=true $(_X__KCL_NAMESPACE__SERVERLESSSERVICES) $(__KCL_OUTPUT__SERVERLESSSERVICES) $(_X__KCL_SELECTOR__SERVERLESSSERVICES) $(_X__KCL_WATCH__SERVERLESSSERVICES) --watch=true $(__KCL_WATCH_ONLY__SERVERLESSSERVICES) )
@@ -320,3 +321,8 @@ _kcl_watch_serverlessservices:
 _kcl_watch_serverlessservices_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-serverless-services-set "$(KCL_SERVERLESSSERVICES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get serverlessservices $(strip $(__KCL_ALL_NAMESPACES__SERVERLESSSERVICES) $(__KCL_NAMESPACE__SERVERLESSSERVICES) $(__KCL_OUTPUT__SERVERLESSSERVICES) $(__KCL_SELECTOR__SERVERLESSSERVICES) $(_X__KCL_WATCH__SERVERLESSSERVICES) --watch=true $(__KCL_WATCH_ONLY__SERVERLESSSERVICES) )
+
+_kcl_write_serverlessservice: _kcl_write_serverlessservices
+_kcl_write_serverlessservices:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-serverless-services ...'; $(NORMAL)
+	$(WRITER) $(KCL_SERVERLESSSERVICES_MANIFEST_FILEPATH)

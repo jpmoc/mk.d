@@ -33,12 +33,12 @@ _icl_get_kiali_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --out
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::Kiali ($(_ISTIOCTL_KIALI_MK_VERSION)) macros:'
 	@echo '    _icl_get_kiali_pods_names_{|S|SN}     - Get the names of the kiali pods (Selector,Namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Kiali ($(_ISTIOCTL_KIALI_MK_VERSION)) variables:'
 	@echo '    ICL_KIALI_HOST=$(ICL_KIALI_HOST)'
 	@echo '    ICL_KIALI_IP=$(ICL_KIALI_IP)'
@@ -52,7 +52,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_KIALI_URL=$(ICL_KIALI_URL)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Kiali ($(_ISTIOCTL_KIALI_MK_VERSION)) targets:'
 	@echo '    _icl_open_kiali                 - Open the kiali-dashboard'
 	@echo '    _icl_portforward_kiali          - Port-forward to the kiali-dashboard'

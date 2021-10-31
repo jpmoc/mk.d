@@ -55,11 +55,11 @@ __KCL_SORT_BY__GLOBALNETWORKPOLICIES= $(if $(KCL_GLOBALNETWORKPOLICIES_SORT_BY),
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Calico:;GlobalNetworkPolicy ($(_KUBECTL_CALICO_GLOBALNETWORKPOLICY_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Calico:;GlobalNetworkPolicy ($(_KUBECTL_CALICO_GLOBALNETWORKPOLICY_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Calico::GlobalNetworkPolicy ($(_KUBECTL_CALICO_GLOBALNETWORKPOLICY_MK_VERSION)) parameters:'
 	@echo '    KCL_GLOBALNETWORKPOLICY_KUSTOMIZATION_DIRPATH=$(KCL_GLOBALNETWORKPOLICY_KUSTOMIZATION_DIRPATH)'
 	@echo '    KCL_GLOBALNETWORKPOLICY_LABELS_KEYS=$(KCL_GLOBALNETWORKPOLICY_LABELS_KEYS)'
@@ -81,28 +81,29 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_GLOBALNETWORKPOLICIES_SORT_BY=$(KCL_GLOBALNETWORKPOLICIES_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Calico::GlobalNetworkPolicy ($(_KUBECTL_CALICO_GLOBALNETWORKPOLICY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_globalnetworkpolicy                - Annotate a global-network-policy'
-	@echo '    _kcl_apply_globalnetworkpolicies                  - Apply manifest for one-por-more global-network-policies'
+	@echo '    _kcl_apply_globalnetworkpolicies                 - Apply manifest for one-or-more global-network-policies'
 	@echo '    _kcl_create_globalnetworkpolicy                  - Create a new global-network-policy'
 	@echo '    _kcl_delete_globalnetworkpolicy                  - Delete an existing global-network-policy'
-	@echo '    _kcl_diff_globalnetworkpolicies                   - Diff a manifest with one-or-more existing global-network-policies'
+	@echo '    _kcl_diff_globalnetworkpolicies                  - Diff a manifest with one-or-more existing global-network-policies'
 	@echo '    _kcl_edit_globalnetworkpolicy                    - Edit a global-network-policy'
 	@echo '    _kcl_explain_globalnetworkpolicy                 - Explain the global-network-policy object'
 	@echo '    _kcl_kustomize_globalnetworkpolicy               - Kustomize one-or-more global-network-policies'
 	@echo '    _kcl_label_globalnetworkpolicy                   - Label a global-network-policy'
+	@echo '    _kcl_list_globalnetworkpolicies                  - List all global-network-policies'
+	@echo '    _kcl_list_globalnetworkpolicies_set              - List a set of global-network-policies'
 	@echo '    _kcl_show_globalnetworkpolicy                    - Show everything related to a global-network-policy'
 	@echo '    _kcl_show_globalnetworkpolicy_description        - Show the description of a global-network-policy'
 	@echo '    _kcl_show_globalnetworkpolicy_object             - Show the object of a global-network-policy'
 	@echo '    _kcl_show_globalnetworkpolicy_state              - Show state of a global-network-policy'
-	@echo '    _kcl_unapply_globalnetworkpolicies                - Un-apply manifest for one-or-more global-network-policies'
+	@echo '    _kcl_unapply_globalnetworkpolicies               - Un-apply manifest for one-or-more global-network-policies'
 	@echo '    _kcl_unlabel_globalnetworkpolicy                 - Un-label manifest for a global-network-policy'
 	@echo '    _kcl_update_globalnetworkpolicy                  - Update a global-network-policy'
-	@echo '    _kcl_view_globalnetworkpolicies                   - View all global-network-policies'
-	@echo '    _kcl_view_globalnetworkpolicies_set               - View a set of global-network-policies'
-	@echo '    _kcl_watch_globalnetworkpolicies                  - Watching global-network-policies'
-	@echo '    _kcl_watch_globalnetworkpolicies_set              - Watching a set of global-network-policies'
+	@echo '    _kcl_watch_globalnetworkpolicies                 - Watching global-network-policies'
+	@echo '    _kcl_watch_globalnetworkpolicies_set             - Watching a set of global-network-policies'
+	@echo '    _kcl_write_globalnetworkpolicies                 - Write manifest for one-or-more global-network-policies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -152,6 +153,15 @@ _kcl_kustomize_globalnetworkpolicies:
 _kcl_label_globalnetworkpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling global-network-policy "$(KCL_GLOBALNETWORKPOLICY_NAME)" ...'; $(NORMAL)
 
+_kcl_list_globalnetworkpolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL global-network-policies ...'; $(NORMAL)
+	$(KUBECTL) get globalnetworkpolicies --all-namespaces=true $(_X__KCL_NAMESPACE__GLOBALNETWORKPOLICIES) $(__KCL_OUTPUT_GLOBALNETWORKPOLICIES) $(_X__KCL_SELECTOR__GLOBALNETWORKPOLICIES) $(__KCL_SORT_BY__GLOBALNETWORKPOLICIES)
+
+_kcl_list_globalnetworkpolicies_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing global-network-policies-set "$(KCL_GLOBALNETWORKPOLICIES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Global-network-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get globalnetworkpolicies --all-namespaces=false $(__KCL_NAMESPACE__GLOBALNETWORKPOLICIES) $(__KCL_OUTPUT__GLOBALNETWORKPOLICIES) $(__KCL_SELECTOR__GLOBALNETWORKPOLICIES) $(__KCL_SORT_BY__GLOBALNETWORKPOLICIES)
+
 _kcl_show_globalnetworkpolicy: _kcl_show_globalnetworkpolicy_object _kcl_show_globalnetworkpolicy_state _kcl_show_globalnetworkpolicy_description
 
 _kcl_show_globalnetworkpolicy_description:
@@ -180,18 +190,14 @@ _kcl_unlabel_globalnetworkpolicy:
 _kcl_update_globalnetworkpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Updating global-network-policy "$(KCL_GLOBALNETWORKPOLICY_NAME)" ...'; $(NORMAL)
 
-_kcl_view_globalnetworkpolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL global-network-policies ...'; $(NORMAL)
-	$(KUBECTL) get globalnetworkpolicies --all-namespaces=true $(_X__KCL_NAMESPACE__GLOBALNETWORKPOLICIES) $(__KCL_OUTPUT_GLOBALNETWORKPOLICIES) $(_X__KCL_SELECTOR__GLOBALNETWORKPOLICIES) $(__KCL_SORT_BY__GLOBALNETWORKPOLICIES)
-
-_kcl_view_globalnetworkpolicies_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing global-network-policies-set "$(KCL_GLOBALNETWORKPOLICIES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Global-network-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get globalnetworkpolicies --all-namespaces=false $(__KCL_NAMESPACE__GLOBALNETWORKPOLICIES) $(__KCL_OUTPUT__GLOBALNETWORKPOLICIES) $(__KCL_SELECTOR__GLOBALNETWORKPOLICIES) $(__KCL_SORT_BY__GLOBALNETWORKPOLICIES)
-
 _kcl_watch_globalnetworkpolicies:
 	@$(INFO) '$(KCL_UI_LABEL)Watching global-network-policies ...'; $(NORMAL)
 	$(KUBECTL) get globalnetworkpolicies --all-namespaces=true --watch 
 
 _kcl_watch_globalnetworkpolicies_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching global-network-policies-set "$(KCL_GLOBALNETWORKPOLICIES_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_globalnetworkpolicy: _kcl_write_globalnetworkpolicies
+_kcl_write_globalnetworkpolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more global-network-policies ...'; $(NORMAL)
+	$(WRITER) $(KCL_GLOBALNETWORKPOLICIES_MANIFEST_FILEPATH)

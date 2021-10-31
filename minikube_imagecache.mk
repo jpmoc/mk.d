@@ -16,16 +16,16 @@ _MINIKUBE_IMAGECACHE_MK_VERSION= $(_MINIKUBE_MK_VERSION)
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::ImageCache ($(_MINIKUBE_IMAGECACHE_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::ImageCache ($(_MINIKUBE_IMAGECACHE_MK_VERSION)) parameters:'
 	@echo '    MKE_IMAGECACHE_IMAGE_CNAME=$(MKE_IMAGECACHE_IMAGE_CNAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::ImageCache ($(_MINIKUBE_IMAGECACHE_MK_VERSION)) targets:'
 	@echo '    _mke_add_imagecache_image               - Add image to image-cache'
 	@echo '    _mke_remove_imagecache_image            - Remove image to image-cache'

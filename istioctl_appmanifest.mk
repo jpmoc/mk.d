@@ -37,11 +37,11 @@ __ICL_NAMESPACE__APPMANIFEST?= $(if $(ICL_APPMANIFEST_NAMESPACE_NAME),--namespac
 # USAGE
 #
 
-_icl_view_framework_macros ::
-	@echo 'IstioCtL::AppManifest ($(_ISTIOCTL_APPMANIFEST_MK_VERSION)) macros:'
-	@echo
+_icl_list_macros ::
+	@#echo 'IstioCtL::AppManifest ($(_ISTIOCTL_APPMANIFEST_MK_VERSION)) macros:'
+	@#echo
 
-_icl_view_framework_parameters ::
+_icl_list_framework_parameters ::
 	@echo 'IstioCtl::AppManifest ($(_ISTIOCTL_APPMANIFEST_MK_VERSION)) variables:'
 	@echo '    ICL_APPMANIFEST_DIRPATH=$(ICL_APPMANIFEST_DIRPATH)'
 	@echo '    ICL_APPMANIFEST_FILENAME=$(ICL_APPMANIFEST_FILENAME)'
@@ -56,15 +56,15 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_APPMANIFESTS_SET_NAME=$(ICL_APPMANIFESTS_SET_NAME)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_framework_targets ::
 	@echo 'IstioCtl::AppManifest ($(_ISTIOCTL_APPMANIFEST_MK_VERSION)) targets:'
 	@echo '    _icl_apply_appmanifest          - Apply an app-manifest'
 	@echo '    _icl_create_appmanifest         - Create app-manifest'
 	@echo '    _icl_delete_appmanifest         - Delete app-manifest'
 	@echo '    _icl_show_appmanifest           - Show app-manifest'
 	@echo '    _icl_unapply_appmanifest        - Unapply an app-manifest'
-	@echo '    _icl_view_appmanifests          - View app-manifests'
-	@echo '    _icl_view_appmanifests_set      - View set of app-manifests'
+	@echo '    _icl_list_appmanifests          - List all app-manifests'
+	@echo '    _icl_list_appmanifests_set      - List set of app-manifests'
 	@echo
 
 #----------------------------------------------------------------------
@@ -102,10 +102,10 @@ _icl_unapply_appmanifest:
 	@$(INFO) '$(ICL_UI_LABEL)Unapplying app-manifest "$(ICL_APPMANIFEST_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) apply $(__ICL_FILENAME__APPMANIFEST) $(__ICL_NAMESPACE__APPMANIFEST)
 
-_icl_view_appmanifests:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing app-manifests ...'; $(NORMAL)
+_icl_list_appmanifests:
+	@$(INFO) '$(ICL_UI_LABEL)Listing all app-manifests ...'; $(NORMAL)
 	ls -ls $(ICL_APPMANIFESTS_DIRPATH)
 
-_icl_view_appmanifests_set:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing app-manifests-set "$(ICL_APPMANIFESTS_SET_NAME)" ...'; $(NORMAL)
+_icl_list_appmanifests_set:
+	@$(INFO) '$(ICL_UI_LABEL)Listing app-manifests-set "$(ICL_APPMANIFESTS_SET_NAME)" ...'; $(NORMAL)
 	ls -ls $(ICL_APPMANIFESTS_DIRPATH)$(ICL_APPMANIFESTS_REGEX)

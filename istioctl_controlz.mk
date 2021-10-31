@@ -32,11 +32,12 @@ _icl_get_controlz_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::Envoy ($(_ISTIOCTL_CONTROLZ_MK_VERSION)) macros:'
+	@echo '    _icl_get_controlz_pods_names_{|S|SN}   - Get the names of the controlz pods (Selector,Namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Envoy ($(_ISTIOCTL_CONTROLZ_MK_VERSION)) variables:'
 	@echo '    ICL_CONTROLZ_NAME=$(ICL_CONTROLZ_NAME)'
 	@echo '    ICL_CONTROLZ_NAMESPACE_NAME=$(ICL_CONTROLZ_NAMESPACE_NAME)'
@@ -48,7 +49,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_CONTROLZ_URL=$(ICL_CONTROLZ_URL)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Envoy ($(_ISTIOCTL_CONTROLZ_MK_VERSION)) targets:'
 	@echo '    _icl_open_controlz                 - Open an controlz-dashboard'
 	@echo '    _icl_portfoward_controlz           - Port-forward to an controlz-dashboard'

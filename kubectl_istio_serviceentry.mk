@@ -35,11 +35,11 @@ __KCL_SORT_BY__SERVICEENTRIES= $(if $(KCL_SERVICEENTRIES_SORTBY),--sort-by=$(KCL
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio::ServiceEntry ($(_KUBECTL_ISTIO_SERVICEENTRY_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio::ServiceEntry ($(_KUBECTL_ISTIO_SERVICEENTRY_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::ServiceEntry ($(_KUBECTL_ISTIO_SERVICEENTRY_MK_VERSION)) parameters:'
 	@echo '    KCL_SERVICEENTRY_LABELS_KEYVALUES=$(KCL_SERVICEENTRY_LABELS_KEYVALUES)'
 	@echo '    KCL_SERVICEENTRY_MANIFEST_DIRPATH=$(KCL_SERVICEENTRY_MANIFEST_DIRPATH)'
@@ -54,7 +54,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SERVICEENTRIES_SORTBY=$(KCL_SERVICEENTRIES_SORTBY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::ServiceEntry ($(_KUBECTL_ISTIO_SERVICEENTRY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_serviceentry                - Annotate a service-entry'
 	@echo '    _kcl_apply_serviceentry                   - Apply a service-entry'
@@ -63,14 +63,14 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_serviceentry                    - Edit a service-entry'
 	@echo '    _kcl_explain_serviceentry                 - Explain service-entry'
 	@echo '    _kcl_label_serviceentry                   - Label a service-entry'
+	@echo '    _kcl_list_serviceentries                  - List all service-entries'
+	@echo '    _kcl_list_serviceentries_set              - List a set of service-entries'
 	@echo '    _kcl_show_serviceentry                    - Show everything related to a service-entry'
 	@echo '    _kcl_show_serviceentry_description        - Show description of a service-entry'
 	@echo '    _kcl_show_serviceentry_object             - Show object of a service-entry'
 	@echo '    _kcl_show_serviceentry_state              - Show state of a service-entry'
 	@echo '    _kcl_unapply_serviceentry                 - Unapply a manifest for a service-entry'
 	@echo '    _kcl_unlabel_serviceentry                 - Unlabel a service-entry'
-	@echo '    _kcl_view_serviceentries                  - View all service-entries'
-	@echo '    _kcl_view_serviceentries_set              - View a set of service-entries'
 	@echo '    _kcl_watch_serviceentries                 - Watch service-entries'
 	@echo '    _kcl_watch_serviceentries_set             - Watch a set of service-entries'
 	@echo
@@ -127,18 +127,23 @@ _kcl_unapply_serviceentry:
 _kcl_unlabel_serviceentry:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling service-entry "$(KCL_SERVICEENTRY_NAME)" ...'; $(NORMAL)
 
-_kcl_view_serviceentries:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL service-entries ...'; $(NORMAL)
+_kcl_list_serviceentries:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL service-entries ...'; $(NORMAL)
 	$(KUBECTL) get serviceentries --all-namespaces=true $(__KCL_OUTPUT__SERVICEENTRIES) $(_X__KCL_SELECTOR__SERVICEENTRIES) $(__KCL_SORT_BY__SERVICEENTRIES)
 
-_kcl_view_serviceentries_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing service-entries-set "$(KCL_SERVICEENTRIES_SET_NAME)" ...'; $(NORMAL)
+_kcl_list_serviceentries_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing service-entries-set "$(KCL_SERVICEENTRIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Service-entries are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get serviceentries --all-namespaces=false $(__KCL_OUTPUT__SERVICEENTRIES) $(__KCL_SELECTOR__SERVICEENTRIES) $(__KCL_SORT_BY__SERVICEENTRIES)
 
 _kcl_watch_serviceentries:
-	@$(INFO) '$(KCL_UI_LABEL)Watching service-entries ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL service-entries ...'; $(NORMAL)
 	$(KUBECTL) get serviceentries --all-namespaces=true --watch 
 
 _kcl_watch_serviceentries_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching service-entries-set "$(KCL_SERVICEENTRIES_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_serviceentry: _kcl_write_serviceentries
+_kcl_write_serviceentries:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more service-entries ...'; $(NORMAL)
+	$(WRITER) $(KCL_SERVICEENTRIES_MANIFEST_FILEPATH)

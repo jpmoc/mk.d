@@ -53,11 +53,11 @@ __KN_NAMESPACE__TRIGGERS= $(if $(KN_TRIGGERS_NAMESPACE_NAME),--namespace $(KN_TR
 # USAGE
 #
 
-_kn_view_framework_macros ::
-	@echo 'KN::Trigger ($(_KN_TRIGGER_MK_VERSION)) macros:'
-	@echo
+_kn_list_macros ::
+	@#echo 'KN::Trigger ($(_KN_TRIGGER_MK_VERSION)) macros:'
+	@#echo
 
-_kn_view_framework_parameters ::
+_kn_list_parameters ::
 	@echo 'KN::Trigger ($(_KN_TRIGGER_MK_VERSION)) parameters:'
 	@echo '    KN_TRIGGER_CURL=$(KN_TRIGGER_CURL)'
 	@echo '    KN_TRIGGER_DNSNAME=$(KN_TRIGGER_DNSNAME)'
@@ -81,16 +81,16 @@ _kn_view_framework_parameters ::
 	@#echo '    KN_TRIGGERS_WATCH_ONLY=$(KN_TRIGGERS_WATCH_ONLY)'
 	@echo
 
-_kn_view_framework_targets ::
+_kn_list_targets ::
 	@echo 'KN::Trigger ($(_KN_TRIGGER_MK_VERSION)) targets:'
 	@echo '    _kn_create_trigger                  - Create a new trigger'
 	@echo '    _kn_curl_trigger                    - Curl a trigger'
 	@echo '    _kn_dig_trigger                     - Dig a trigger'
 	@#echo '    _kn_delete_trigger                  - Delete an existing trigger'
+	@echo '    _kn_list_triggers                   - List all triggers'
+	@echo '    _kn_list_triggers_set               - List a set of triggers'
 	@echo '    _kn_show_trigger                    - Show everything related to a trigger'
 	@echo '    _kn_show_trigger_description        - Show the description of a trigger'
-	@echo '    _kn_view_triggers                   - View all triggers'
-	@echo '    _kn_view_triggers_set               - View a set of triggers'
 	@#echo '    _kn_watch_triggers                  - Watch triggers'
 	@#echo '    _kn_watch_triggers_set              - Watch a set of triggers'
 	@echo
@@ -115,7 +115,17 @@ _kn_dig_trigger:
 	@$(INFO) '$(KN_UI_LABEL)Dig-ing trigger "$(KN_TRIGGER_NAME)" ...'; $(NORMAL)
 	$(KN_TRIGGER_DIG) $(KN_TRIGGER_DNSNAME) 
 
-_kn_show_trigger: _kn_show_trigger_description
+_kn_list_triggers:
+	@$(INFO) '$(KN_UI_LABEL)Listing ALL triggers ...'; $(NORMAL)
+	$(KN) trigger list --all-namespaces=true $(_X__KN_NAMESPACE__TRIGGERS) $(__KN_TARGET__TRIGGERS)
+
+_kn_list_triggers_set:
+	@$(INFO) '$(KN_UI_LABEL)Listing triggers-set "$(KN_TRIGGERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'triggers are grouped based on the provided namespace, and ...'; $(NORMAL)
+	$(KN) trigger list --all-namespaces=false $(__KN_NAMESPACE__TRIGGERS) $(__KN_TARGET__TRIGGERS)
+
+_KN_SHOW_TRIGGER_TARGETS?= _kn_show_trigger_description
+_kn_show_trigger: $(_KN_SHOW_TRIGGER_TARGETS)
 
 _kn_show_trigger_description:
 	@$(INFO) '$(KN_UI_LABEL)Showing description trigger "$(KN_TRIGGER_NAME)" ...'; $(NORMAL)
@@ -128,17 +138,8 @@ _kn_show_trigger_state:
 _kn_update_trigger:
 	@$(INFO) '$(KN_UI_LABEL)Updating trigger "$(KN_TRIGGER_NAME)" ...'; $(NORMAL)
 
-_kn_view_triggers:
-	@$(INFO) '$(KN_UI_LABEL)Viewing triggers ...'; $(NORMAL)
-	$(KN) trigger list --all-namespaces=true $(_X__KN_NAMESPACE__TRIGGERS) $(__KN_TARGET__TRIGGERS)
-
-_kn_view_triggers_set:
-	@$(INFO) '$(KN_UI_LABEL)Viewing triggers-set "$(KN_TRIGGERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'triggers are grouped based on the provided namespace, and ...'; $(NORMAL)
-	$(KN) trigger list --all-namespaces=false $(__KN_NAMESPACE__TRIGGERS) $(__KN_TARGET__TRIGGERS)
-
 _kn_watch_triggers:
-	@$(INFO) '$(KN_UI_LABEL)Watching triggers ...'; $(NORMAL)
+	@$(INFO) '$(KN_UI_LABEL)Watching ALL triggers ...'; $(NORMAL)
 
 _kn_watch_triggers_set:
 	@$(INFO) '$(KN_UI_LABEL)Watching triggers ...'; $(NORMAL)

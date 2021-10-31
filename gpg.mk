@@ -22,22 +22,22 @@ GPG?= $(strip $(__GPG_ENVIRONMENT) $(GPG_ENVIRONMENT) $(GPG_BIN) $(__GPG_OPTIONS
 # USAGE
 #
 
-_install_framework_dependencies :: _gpg_install_framework_dependencies
-_gpg_install_framework_dependencies ::
+_install_dependencies :: _gpg_install_dependencies
+_gpg_install_dependencies ::
 
-_view_framework_macros :: _gpg_view_framework_macros
-_gpg_view_framework_macros ::
+_list_macros :: _gpg_list_macros
+_gpg_list_macros ::
 	@#echo 'GPG:: ($(_GPG_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _gpg_view_framework_parameters
-_gpg_view_framework_parameters ::
+_list_parameters :: _gpg_list_parameters
+_gpg_list_parameters ::
 	@echo 'GPG:: ($(_GPG_MK_VERSION)) variables:'
 	@echo '    GPG=$(GPG)'
 	@echo
 
-_view_framework_targets :: _gpg_view_framework_targets
-_gpg_view_framework_targets ::
+_list_targets :: _gpg_list_targets
+_gpg_list_targets ::
 	@echo 'GPG:: ($(_GPG_MK_VERSION)) targets:'
 	@echo
 

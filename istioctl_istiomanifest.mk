@@ -50,11 +50,11 @@ _ICL_SHOW_ISTIOMANIFEST_DESCRIPTION_|?= [ ! -f $(ICL_ISTIOMANIFEST_FILEPATH) ] |
 # USAGE
 #
 
-_icl_view_framework_macros ::
-	@echo 'IstioCtL::IstioManifest ($(_ISTIOCTL_ISTIOMANIFEST_MK_VERSION)) macros:'
-	@echo
+_icl_list_macros ::
+	@#echo 'IstioCtL::IstioManifest ($(_ISTIOCTL_ISTIOMANIFEST_MK_VERSION)) macros:'
+	@#echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::IstioManifest ($(_ISTIOCTL_ISTIOMANIFEST_MK_VERSION)) variables:'
 	@echo '    ICL_ISTIOMANIFEST_COMPONENT_NAME=$(ICL_ISTIOMANIFEST_COMPONENT_NAME)'
 	@echo '    ICL_ISTIOMANIFEST_CONFIG_DIRPATH=$(ICL_ISTIOMANIFEST_CONFIG_DIRPATH)'
@@ -72,18 +72,18 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_ISTIOMANIFESTS_SET_NAME=$(ICL_ISTIOMANIFESTS_SET_NAME)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::IstioManifest ($(_ISTIOCTL_ISTIOMANIFEST_MK_VERSION)) targets:'
 	@echo '    _icl_apply_istiomanifest              - Apply an istio-manifest'
 	@echo '    _icl_check_istiomanifest_install      - Check installation of istio-manifest'
 	@echo '    _icl_delete_istiomanifest             - Delete istio-manifest'
 	@echo '    _icl_dump_istiomanifest               - Dump istio-manifest'
+	@echo '    _icl_list_istiomanifests              - List all istio-manifests'
+	@echo '    _icl_list_istiomanifests_set          - List set of istio-manifests'
 	@echo '    _icl_show_istiomanifest               - Show everything related to an istio-manifest'
 	@echo '    _icl_show_istiomanifest_content       - Show the content of an istio-manifest'
 	@echo '    _icl_show_istiomanifest_description   - Show the description of an istio-manifest'
 	@echo '    _icl_unapply_istiomanifest            - Un-apply a istio-manifest'
-	@echo '    _icl_view_istiomanifests              - View all istio-manifests'
-	@echo '    _icl_view_istiomanifests_set          - View set of istio-manifests'
 	@echo '    _icl_watch_istiomanifests             - Watch all istio-manifests'
 	@echo '    _icl_watch_istiomanifests_set         - Watch set of istio-manifests'
 	@echo
@@ -130,12 +130,12 @@ _icl_unapply_istiomanifest:
 	@$(INFO) '$(ICL_UI_LABEL)Un-applying the istio-manifest "$(ICL_ISTIOMANIFEST_NAME)" ...'; $(NORMAL)
 	$(ISTIOCTL) manifest generate $(__ICL_COMPONENT) $(__ICL_REVISION) $(__ICL_SET) $(__ICL_CONFIG_FILENAME) | $(KUBECTL) delete -f -
 
-_icl_view_istiomanifests:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing ALL istio-manifests ...'; $(NORMAL)
+_icl_list_istiomanifests:
+	@$(INFO) '$(ICL_UI_LABEL)Listing ALL istio-manifests ...'; $(NORMAL)
 	ls -ls $(ICL_ISTIOMANIFESTS_DIRPATH)
 
-_icl_view_istiomanifests_set:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing istio-manifests-set "$(ICL_ISTIOMANIFESTS_SET_NAME)" ...'; $(NORMAL)
+_icl_list_istiomanifests_set:
+	@$(INFO) '$(ICL_UI_LABEL)Listing istio-manifests-set "$(ICL_ISTIOMANIFESTS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Istio-manifests are group by directory and regex'; $(NORMAL)
 	ls -ls $(ICL_ISTIOMANIFESTS_DIRPATH)$(ICL_ISTIOMANIFESTS_REGEX)
 

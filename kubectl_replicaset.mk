@@ -44,8 +44,8 @@ _kcl_get_replicaset_pod_name_SN= $(shell $(KUBECTL) get pods --namespace $(2) --
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::ReplicaSet ($(_KUBECTL_REPLICASET_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::ReplicaSet ($(_KUBECTL_REPLICASET_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::ReplicaSet ($(_KUBECTL_REPLICASET_MK_VERSION)) parameters:'

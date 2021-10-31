@@ -78,13 +78,13 @@ _osl_get_certificate_publickey_F= $(shell openssl x509 -in $(1) -pubkey -noout )
 # INTERFACE
 #
 
-_osl_view_framework_macros ::
+_osl_list_macros ::
 	@echo 'OpenSSL::Certificate ($(_OPENSSL_CERTIFICATE_MK_VERSION)) macros:'
 	@echo '    _osl_get_certificate_modulus_{|F}               - Get modulus of certificate'
 	@echo '    _osl_get_certificate_publickey_{|F}             - Get public-key of certificate'
 	@echo
 
-_osl_view_framework_parameters ::
+_osl_list_parameters ::
 	@echo 'OpenSSL::Certificate ($(_OPENSSL_CERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    OSL_CERTIFICATE_CACHAIN_FILEPATH=$(OSL_CERTIFICATE_CACHAIN_FILEPATH)'
 	@echo '    OSL_CERTIFICATE_CAKEY_DIRPATH=$(OSL_CERTIFICATE_CAKEY_DIRPATH)'
@@ -113,12 +113,14 @@ _osl_view_framework_parameters ::
 	@echo '    OSL_CERTIFICATES_SET_NAME=$(OSL_CERTIFICATES_SET_NAME)'
 	@echo
 
-_osl_view_framework_targets ::
+_osl_list_targets ::
 	@echo 'OpenSSL::Certificate ($(_OPENSSL_CERTIFICATE_MK_VERSION)) targets:'
 	@echo '    _osl_check_certificate                   - Check everything about a certificate'
 	@echo '    _osl_check_certificate_modulus           - Check the modulus of a certificate'
 	@echo '    _osl_create_certificate                  - Create a certificate'
 	@echo '    _osl_delete_certificate                  - Delete a certificate'
+	@echo '    _osl_list_certificates                   - List all certificates'
+	@echo '    _osl_list_certificates_set               - List a set of certificates'
 	@echo '    _osl_selfsign_certificate                - Self-sign a certificate'
 	@echo '    _osl_show_certificate                    - Show everything related to a certificate'
 	@echo '    _osl_show_certificate_content            - Show content of a certificate'
@@ -127,8 +129,6 @@ _osl_view_framework_targets ::
 	@echo '    _osl_show_certificate_encodedcontent     - Show encoded-content of a certificate'
 	@echo '    _osl_show_certificate_modulus            - Show modulus of a certificate'
 	@echo '    _osl_show_certificate_publickey          - Show public-key embedded in a certificate'
-	@echo '    _osl_view_certificates                   - View certificates'
-	@echo '    _osl_view_certificates_set               - View a set of certificates'
 	@echo
 
 #----------------------------------------------------------------------
@@ -194,11 +194,11 @@ _osl_show_certificate_publickey:
 	@$(INFO) '$(OSL_UI_LABEL)Showing public-key of certificate "$(OSL_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(OPENSSL) x509 $(__OSL_IN__CERTIFICATE) $(__OSL_INFORM__CERTIFICATE) -pubkey -noout $(|_OSL_SHOW_CERTIFICATE_PUBLICKEY)
 
-_osl_view_certificates:
-	@$(INFO) '$(OSL_UI_LABEL)View certificates ...'; $(NORMAL)
+_osl_list_certificates:
+	@$(INFO) '$(OSL_UI_LABEL)Listing ALL certificates ...'; $(NORMAL)
 	ls -al $(OSL_CERTIFICATES_DIRPATH)*.crt
 
-_osl_view_certificates_set:
-	@$(INFO) '$(OSL_UI_LABEL)View certificates-set "$(OSL_CERTIFICATES_SET_NAME)" ...'; $(NORMAL)
+_osl_list_certificates_set:
+	@$(INFO) '$(OSL_UI_LABEL)Listing certificates-set "$(OSL_CERTIFICATES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Certificates are grouped based on the provided directory and regex'; $(NORMAL)
 	ls -al $(OSL_CERTIFICATES_DIRPATH)$(OSL_CERTIFICATES_REGEX)

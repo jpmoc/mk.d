@@ -32,11 +32,12 @@ _icl_get_envoy_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --out
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::Envoy ($(_ISTIOCTL_ENVOY_MK_VERSION)) macros:'
+	@echo '    _icl_get_envoy_pods_names_{|S|S|SN}   - Get the names of the envoy pods (Selector,Namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Envoy ($(_ISTIOCTL_ENVOY_MK_VERSION)) variables:'
 	@echo '    ICL_ENVOY_NAME=$(ICL_ENVOY_NAME)'
 	@echo '    ICL_ENVOY_NAMESPACE_NAME=$(ICL_ENVOY_NAMESPACE_NAME)'
@@ -48,7 +49,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_ENVOY_URL=$(ICL_ENVOY_URL)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Envoy ($(_ISTIOCTL_ENVOY_MK_VERSION)) targets:'
 	@echo '    _icl_open_envoy                 - Open an envoy-dashboard'
 	@echo '    _icl_portfoward_envoy           - Port-forward to an envoy-dashboard'

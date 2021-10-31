@@ -22,8 +22,8 @@ YQ?= $(strip $(__YQ_ENVIRONMENT) $(YQ_ENVIRONMENT) $(YQ_BIN) $(__YQ_OPTIONS) $(Y
 
 _list_macros :: _yq_list_macros
 _yq_list_macros ::
-	@echo 'YQ:: ($(_YQ_MK_VERSION)) macros:'
-	@echo
+	@#echo 'YQ:: ($(_YQ_MK_VERSION)) macros:'
+	@#echo
 
 _list_parameters :: _yq_list_parameters
 _yq_list_parameters ::

@@ -80,12 +80,12 @@ __KCL_WATCH_ONLY__PINGSOURCES= $(if $(KCL_PINGSOURCES_WATCH_ONLY),--watch-only=$
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::PingSource ($(_KUBECTL_KNATIVE_PINGSOURCE_MK_VERSION)) macros:'
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::PingSource ($(_KUBECTL_KNATIVE_PINGSOURCE_MK_VERSION)) macros:'
 	@#echo '    _kcl_get_pingsource_pod_selector_{|N|NN}       - Get the pod-selector of a service (Name,Namespace)'
-	@echo
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::PingSource ($(_KUBECTL_KNATIVE_PINGSOURCE_MK_VERSION)) parameters:'
 	@echo '    KCL_PINGSOURCE_CONFIGURATIONS_SELECTOR=$(KCL_PINGSOURCE_CONFIGURATIONS_SELECTOR)'
 	@echo '    KCL_PINGSOURCE_CURL_BIN=$(KCL_PINGSOURCE_CURL_BIN)'
@@ -118,7 +118,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PINGSOURCES_WATCH_ONLY=$(KCL_PINGSOURCES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::PingSource ($(_KUBECTL_KNATIVE_PINGSOURCE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_pingsource                - Annotate a knative-ping-source'
 	@echo '    _kcl_apply_pingsource                   - Apply manifest for one-or-more knative-ping-sources'
@@ -144,8 +144,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_pingsource_state              - Show the state of a knative-ping-source'
 	@echo '    _kcl_unapply_pingsource                 - Unapply a knative-ping-source'
 	@echo '    _kcl_update_pingsource                  - Update a knative-ping-source'
-	@echo '    _kcl_view_pingsources                   - View all knative-ping-sources'
-	@echo '    _kcl_view_pingsources_set               - View a set of knative-ping-sources'
+	@echo '    _kcl_list_pingsources                   - List all knative-ping-sources'
+	@echo '    _kcl_list_pingsources_set               - List a set of knative-ping-sources'
 	@echo '    _kcl_watch_pingsources                  - Watch knative-ping-sources'
 	@echo '    _kcl_watch_pingsources_set              - Watch a set of knative-ping-sources'
 	@echo
@@ -200,8 +200,19 @@ _kcl_kustomize_pingsources:
 
 _kcl_label_pingsource:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-ping-source "$(KCL_PINGSOURCE_NAME)" ...'; $(NORMAL)
+	#$(KUBECTL) label ...
 
-_kcl_show_pingsource: _kcl_show_pingsource_configurations _kcl_show_pingsource_deployments _kcl_show_pingsource_object _kcl_show_pingsource_pods _kcl_show_pingsource_replicasets _kcl_show_pingsource_revisions _kcl_show_pingsource_routes _kcl_show_pingsource_services _kcl_show_pingsource_state _kcl_show_pingsource_description
+_kcl_list_pingsources:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-ping-sources ...'; $(NORMAL)
+	$(KUBECTL) get pingsource --all-namespaces=true $(_X__KCL_NAMESPACE__PINGSOURCES) $(__KCL_OUTPUT__PINGSOURCES) $(_X__KCL_SELECTOR__PINGSOURCES)$(__KCL_SHOW_LABELS__PINGSOURCES)
+
+_kcl_list_pingsources_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-ping-sources-set "$(KCL_PINGSOURCES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-ping-sources are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get pingsource --all-namespaces=false $(__KCL_FIELD_SELECTOR__PINGSOURCES) $(__KCL_NAMESPACE__PINGSOURCES) $(__KCL_OUTPUT__PINGSOURCES) $(__KCL_SELECTOR__PINGSOURCES) $(__KCL_SHOW_LABELS__PINGSOURCES)
+
+_KCL_SHOW_PINGSOURCE_TARGETS?= _kcl_show_pingsource_configurations _kcl_show_pingsource_deployments _kcl_show_pingsource_object _kcl_show_pingsource_pods _kcl_show_pingsource_replicasets _kcl_show_pingsource_revisions _kcl_show_pingsource_routes _kcl_show_pingsource_services _kcl_show_pingsource_state _kcl_show_pingsource_description
+_kcl_show_pingsource: $(_KCL_SHOW_PINGSOURCE_TARGETS)
 
 _kcl_show_pingsource_configurations:
 	@$(INFO) '$(KCL_UI_LABEL)Showing configurations of knative-ping-source "$(KCL_PINGSOURCE_NAME)" ...'; $(NORMAL)
@@ -274,15 +285,6 @@ _kcl_unlabel_pingsource:
 _kcl_update_pingsource:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-ping-source "$(KCL_PINGSOURCE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_pingsources:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-ping-sources ...'; $(NORMAL)
-	$(KUBECTL) get pingsource --all-namespaces=true $(_X__KCL_NAMESPACE__PINGSOURCES) $(__KCL_OUTPUT__PINGSOURCES) $(_X__KCL_SELECTOR__PINGSOURCES)$(__KCL_SHOW_LABELS__PINGSOURCES)
-
-_kcl_view_pingsources_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-ping-sources-set "$(KCL_PINGSOURCES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-ping-sources are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get pingsource --all-namespaces=false $(__KCL_FIELD_SELECTOR__PINGSOURCES) $(__KCL_NAMESPACE__PINGSOURCES) $(__KCL_OUTPUT__PINGSOURCES) $(__KCL_SELECTOR__PINGSOURCES) $(__KCL_SHOW_LABELS__PINGSOURCES)
-
 _kcl_watch_pingsources:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-ping-sources ...'; $(NORMAL)
 	$(KUBECTL) get pingsource $(strip $(_X__KCL_ALL_NAMESPACES__PINGSOURCES) --all-namespaces=true $(_X__KCL_NAMESPACE__PINGSOURCES) $(__KCL_OUTPUT__PINGSOURCES) $(_X__KCL_SELECTOR__PINGSOURCES) $(_X__KCL_WATCH__PINGSOURCES) --watch=true $(__KCL_WATCH_ONLY__PINGSOURCES) )
@@ -290,3 +292,8 @@ _kcl_watch_pingsources:
 _kcl_watch_pingsources_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-ping-sources-set "$(KCL_PINGSOURCES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get pingsource $(strip $(__KCL_ALL_NAMESPACES__PINGSOURCES) $(__KCL_NAMESPACE__PINGSOURCES) $(__KCL_OUTPUT__PINGSOURCES) $(__KCL_SELECTOR__PINGSOURCES) $(_X__KCL_WATCH__PINGSOURCES) --watch=true $(__KCL_WATCH_ONLY__PINGSOURCES) )
+
+_kcl_write_pingsource: _kcl_write_pingsources
+_kcl_write_pingsources:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-ping-sources ...'; $(NORMAL)
+	$(WRITER) $(KCL_PINGSOURCES_MANIFEST_FILEPATH)

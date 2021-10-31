@@ -117,12 +117,12 @@ __KCL_WATCH_ONLY__REVISIONS= $(if $(KCL_REVISIONS_WATCH_ONLY),--watch-only=$(KCL
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Revision ($(_KUBECTL_KNATIVE_REVISION_MK_VERSION)) macros:'
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Revision ($(_KUBECTL_KNATIVE_REVISION_MK_VERSION)) macros:'
 	@#echo '    _kcl_get_revision_pod_selector_{|N|NN}       - Get the pod-selector of a service (Name,Namespace)'
-	@echo
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Revision ($(_KUBECTL_KNATIVE_REVISION_MK_VERSION)) parameters:'
 	@echo '    KCL_REVISION_CONFIGURATION_NAME=$(KCL_REVISION_CONFIGURATION_NAME)'
 	@echo '    KCL_REVISION_CONFIGURATIONS_SELECTOR=$(KCL_REVISION_CONFIGURATIONS_SELECTOR)'
@@ -175,7 +175,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_REVISIONS_WATCH_ONLY=$(KCL_REVISIONS_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Revision ($(_KUBECTL_KNATIVE_REVISION_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_revision                - Annotate a knative-revision'
 	@echo '    _kcl_apply_revisions                  - Apply manifest for one-or-more knative-revisions'
@@ -189,6 +189,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_revision                 - Explain the knative-revision object'
 	@echo '    _kcl_kustomize_revisions              - Kustomize one-or-more knative-revisions'
 	@echo '    _kcl_label_revision                   - Label a knative-revision'
+	@echo '    _kcl_list_revisions                   - List all knative-revisions'
+	@echo '    _kcl_list_revisions_set               - List a set of knative-revisions'
 	@echo '    _kcl_show_revision                    - Show everything related to a knative-revision'
 	@echo '    _kcl_show_revision_configurations     - Show the configurations of a knative-revision'
 	@echo '    _kcl_show_revision_deployments        - Show the deployments of a knative-revision'
@@ -203,10 +205,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_revision_serverlessservices - Show the serverless-services of a knative-revision'
 	@echo '    _kcl_show_revision_services           - Show the services of a knative-revision'
 	@echo '    _kcl_show_revision_state              - Show the state of a knative-revision'
-	@echo '    _kcl_unapply_revisions                - Unapply amnifest for one-or-more knative-revisions'
+	@echo '    _kcl_unapply_revisions                - Un-apply manifest for one-or-more knative-revisions'
 	@echo '    _kcl_update_revision                  - Update a knative-revision'
-	@echo '    _kcl_view_revisions                   - View all knative-revisions'
-	@echo '    _kcl_view_revisions_set               - View a set of knative-revisions'
 	@echo '    _kcl_watch_revisions                  - Watch knative-revisions'
 	@echo '    _kcl_watch_revisions_set              - Watch a set of knative-revisions'
 	@echo
@@ -269,6 +269,15 @@ _kcl_kustomize_revisions:
 
 _kcl_label_revision:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-revision "$(KCL_REVISION_NAME)" ...'; $(NORMAL)
+
+_kcl_list_revisions:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-revisions ...'; $(NORMAL)
+	$(KUBECTL) get revisions --all-namespaces=true $(_X__KCL_NAMESPACE__REVISIONS) $(__KCL_OUTPUT__REVISIONS) $(_X__KCL_SELECTOR__REVISIONS)$(__KCL_SHOW_LABELS__REVISIONS)
+
+_kcl_list_revisions_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-revisions-set "$(KCL_REVISIONS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-revisions are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get revisions --all-namespaces=false $(__KCL_FIELD_SELECTOR__REVISIONS) $(__KCL_NAMESPACE__REVISIONS) $(__KCL_OUTPUT__REVISIONS) $(__KCL_SELECTOR__REVISIONS) $(__KCL_SHOW_LABELS__REVISIONS)
 
 _KCL_SHOW_REVISION_TARGETS?= _kcl_show_revision_deployment _kcl_show_revision_image _kcl_show_revision_metric _kcl_show_revision_object _kcl_show_revision_podautoscaler _kcl_show_revision_pods _kcl_show_revision_replicaset _kcl_show_revision_serverlessservice _kcl_show_revision_services _kcl_show_revision_state _kcl_show_revision_description
 _kcl_show_revision :: $(_KCL_SHOW_REVISION_TARGETS)
@@ -356,15 +365,6 @@ _kcl_unlabel_revision:
 _kcl_update_revision:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-revision "$(KCL_REVISION_NAME)" ...'; $(NORMAL)
 
-_kcl_view_revisions:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-revisions ...'; $(NORMAL)
-	$(KUBECTL) get revisions --all-namespaces=true $(_X__KCL_NAMESPACE__REVISIONS) $(__KCL_OUTPUT__REVISIONS) $(_X__KCL_SELECTOR__REVISIONS)$(__KCL_SHOW_LABELS__REVISIONS)
-
-_kcl_view_revisions_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-revisions-set "$(KCL_REVISIONS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-revisions are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get revisions --all-namespaces=false $(__KCL_FIELD_SELECTOR__REVISIONS) $(__KCL_NAMESPACE__REVISIONS) $(__KCL_OUTPUT__REVISIONS) $(__KCL_SELECTOR__REVISIONS) $(__KCL_SHOW_LABELS__REVISIONS)
-
 _kcl_watch_revisions:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-revisions ...'; $(NORMAL)
 	$(KUBECTL) get revisions $(strip $(_X__KCL_ALL_NAMESPACES__REVISIONS) --all-namespaces=true $(_X__KCL_NAMESPACE__REVISIONS) $(__KCL_OUTPUT__REVISIONS) $(_X__KCL_SELECTOR__REVISIONS) $(_X__KCL_WATCH__REVISIONS) --watch=true $(__KCL_WATCH_ONLY__REVISIONS) )
@@ -372,3 +372,8 @@ _kcl_watch_revisions:
 _kcl_watch_revisions_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-revisions-set "$(KCL_REVISIONS_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get revisions $(strip $(__KCL_ALL_NAMESPACES__REVISIONS) $(__KCL_NAMESPACE__REVISIONS) $(__KCL_OUTPUT__REVISIONS) $(__KCL_SELECTOR__REVISIONS) $(_X__KCL_WATCH__REVISIONS) --watch=true $(__KCL_WATCH_ONLY__REVISIONS) )
+
+_kcl_write_revision: _kcl_write_revisions
+_kcl_write_revisions:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-revisions ...'; $(NORMAL)
+	$(WRITER) $(KCL_REVISIONS_MANIFEST_FILEPATH)

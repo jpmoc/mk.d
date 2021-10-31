@@ -35,11 +35,11 @@ _icl_get_zipkin_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --ou
 # USAGE
 #
 
-_icl_view_framework_macros ::
-	@echo 'IstioCtL::Zipkin ($(_ISTIOCTL_ZIPKIN_MK_VERSION)) macros:'
-	@echo
+_icl_list_macros ::
+	@#echo 'IstioCtL::Zipkin ($(_ISTIOCTL_ZIPKIN_MK_VERSION)) macros:'
+	@#echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Zipkin ($(_ISTIOCTL_ZIPKIN_MK_VERSION)) variables:'
 	@echo '    ICL_ZIPKIN_HOST=$(ICL_ZIPKIN_HOST)'
 	@echo '    ICL_ZIPKIN_IP=$(ICL_ZIPKIN_IP)'
@@ -54,7 +54,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_ZIPKIN_URL=$(ICL_ZIPKIN_URL)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Zipkin ($(_ISTIOCTL_ZIPKIN_MK_VERSION)) targets:'
 	@echo '    _icl_open_zipkin                 - Open a zipkin-dashboard'
 	@echo '    _icl_show_zipkin                 - Show everything related to a zipkin-dahsboard'

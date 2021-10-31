@@ -64,11 +64,11 @@ _KCL_UNAPPLY_GATEWAYS_|?= #-
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Istio::Gateway ($(_KUBECTL_ISTIO_GATEWAY_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::Gateway ($(_KUBECTL_ISTIO_GATEWAY_MK_VERSION)) parameters:'
 	@echo '    KCL_GATEWAY_DNSNAME=$(KCL_GATEWAY_DNSNAME)'
 	@echo '    KCL_GATEWAY_DNSNAME_DOMAIN=$(KCL_GATEWAY_DNSNAME_DOMAIN)'
@@ -99,7 +99,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_GATEWAYS_WATCHONLY_FLAG=$(KCL_GATEWAYS_WATCHONLY_FLAG)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::Gateway ($(_KUBECTL_ISTIO_GATEWAY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_gateway                - Annotate a gateway'
 	@echo '    _kcl_apply_gateways                  - Apply manifest for one-or-more gateways'
@@ -109,6 +109,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_dig_gateway                     - Dig a gateway'
 	@echo '    _kcl_edit_gateway                    - Edit a gateway'
 	@echo '    _kcl_explain_gateway                 - Explain gateway resource'
+	@echo '    _kcl_list_gateways                   - List all gateways'
+	@echo '    _kcl_list_gateways_set               - List set of gateways'
 	@echo '    _kcl_show_gateway                    - Show everything related to a gateway'
 	@echo '    _kcl_show_gateway_certificate        - Show certificate used by a gateway'
 	@echo '    _kcl_show_gateway_description        - Show description of a gateway'
@@ -119,11 +121,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_gateway_virtualservices    - Show the virtual-services bound to a gateway'
 	@echo '    _kcl_unapply_gateways                - Unapply mannifest for one-or-more gateways'
 	@echo '    _kcl_unlabel_gateway                 - Unlabelling a gateway'
-	@echo '    _kcl_view_gateways                   - View all gateways'
-	@echo '    _kcl_view_gateways_set               - View set of gateways'
 	@echo '    _kcl_watch_gateways                  - Watch gateways'
 	@echo '    _kcl_watch_gateways_set              - Watch a set of gateways'
-	@echo '    _kcl_write_gateways                  - Edit manifest for one-or-more gateways'
+	@echo '    _kcl_write_gateways                  - Write manifest for one-or-more gateways'
 	@echo
 
 #----------------------------------------------------------------------
@@ -173,6 +173,15 @@ _kcl_explain_gateway:
 
 _kcl_label_gateway:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling gateway "$(KCL_GATEWAY_NAME)" ...'; $(NORMAL)
+
+_kcl_list_gateways:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL gateways ...'; $(NORMAL)
+	$(KUBECTL) get gateway --all-namespaces=true $(_X__KCL_NAMESPACE__GATEWAYS) $(__KCL_OUTPUT_GATEWAYS) $(_X__KCL_SELECTOR__GATEWAYS) $(__KCL_SORT_BY__GATEWAYS)
+
+_kcl_list_gateways_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing gateways-set "$(KCL_GATEWAYS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Gateways are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get gateway --all-namespaces=false $(__KCL_NAMESPACE__GATEWAYS) $(__KCL_OUTPUT__GATEWAYS) $(__KCL_SELECTOR__GATEWAYS) $(__KCL_SORT_BY__GATEWAYS)
 
 _KCL_SHOW_GATEWAY_TARGETS?= _kcl_show_gateway_certificate _kcl_show_gateway_object _kcl_show_gateway_pods _kcl_show_gateway_services _kcl_show_gateway_state _kcl_show_gateway_virtualservices _kcl_show_gateway_description
 _kcl_show_gateway: $(_KCL_SHOW_GATEWAY_TARGETS)
@@ -247,15 +256,6 @@ _kcl_unapply_gateways:
 
 _kcl_unlabel_gateway:
 	@$(INFO) '$(KCL_UI_LABEL)Removing labels from gateway "$(KCL_GATEWAY_NAME)" ...'; $(NORMAL)
-
-_kcl_view_gateways:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL gateways ...'; $(NORMAL)
-	$(KUBECTL) get gateway --all-namespaces=true $(_X__KCL_NAMESPACE__GATEWAYS) $(__KCL_OUTPUT_GATEWAYS) $(_X__KCL_SELECTOR__GATEWAYS) $(__KCL_SORT_BY__GATEWAYS)
-
-_kcl_view_gateways_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing gateways-set "$(KCL_GATEWAYS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Gateways are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get gateway --all-namespaces=false $(__KCL_NAMESPACE__GATEWAYS) $(__KCL_OUTPUT__GATEWAYS) $(__KCL_SELECTOR__GATEWAYS) $(__KCL_SORT_BY__GATEWAYS)
 
 _kcl_watch_gateways:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL gateways ...'; $(NORMAL)

@@ -16,16 +16,16 @@ _MINIKUBE_EXTERNALREGISTRY_MK_VERSION= $(_MINIKUBE_MK_VERSION)
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::ExternalRegistry ($(_MINIKUBE_EXTERNALREGISTRY_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::ExternalRegistry ($(_MINIKUBE_EXTERNALREGISTRY_MK_VERSION)) parameters:'
 	@echo '    MKE_EXTERNALREGISTRY_NAME=$(MKE_MOUNT_NAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::ExternalRegistry ($(_MINIKUBE_EXTERNALREGISTRY_MK_VERSION)) targets:'
 	@echo '    _mke_config_externalregistry               - Configure access to an external registry' 
 	@echo '    _mke_enable_externalregistry               - Enable access to an external registry' 

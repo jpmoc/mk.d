@@ -46,13 +46,13 @@ _kcl_get_istioingressgateway_ip_N= $(shell $(KUBECTL) get service --namespace $(
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Istio::IngressGateway ($(_KUBECTL_ISTIO_MK_VERSION)) macros:'
 	@echo '    _kcl_get_istioingress_dnsname_{|N}          - Get the DNS-name of the istio-ingress-gateway (Namespace)'
 	@echo '    _kcl_get_istioingress_ip_{|N}               - Get the IP of the istio-ingress-gateway (Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::IngressGateway ($(_KUBECTL_ISTIO_MK_VERSION)) parameters:'
 	@echo '    KCL_ISTIOINGRESSGATEWAY_DEPLOYMENT_NAME=$(KCL_ISTIOINGRESSGATEWAY_DEPLOYMENT_NAME)'
 	@echo '    KCL_ISTIOINGRESSGATEWAY_DNSNAME=$(KCL_ISTIOINGRESSGATEWAY_DNSNAME)'
@@ -73,8 +73,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_ISTIOINGRESSGATEWAYCONFIG_URL=$(KCL_ISTIOINGRESSGATEWAYCONFIG_URL)'
 	@echo
 
-_view_framework_targets :: _kcl_view_framework_targets
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::IngressGateway ($(_KUBECTL_ISTIO_MK_VERSION)) targets:'
 	@echo '    dig_istioingressgateway           - Dig the ingress gateway'
 	@#echo '    portforward_istioingressgateway   - Port-forward to the ingress gateway'

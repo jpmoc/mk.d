@@ -53,11 +53,11 @@ __KCL_WATCH_ONLY__PODAUTOSCALERS= $(if $(KCL_PODAUTOSCALERS_WATCH_ONLY),--watch-
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::PodAutoscaler ($(_KUBECTL_KNATIVE_PODAUTOSCALER_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::PodAutoscaler ($(_KUBECTL_KNATIVE_PODAUTOSCALER_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::PodAutoscaler ($(_KUBECTL_KNATIVE_PODAUTOSCALER_MK_VERSION)) parameters:'
 	@echo '    KCL_PODAUTOSCALER_NAME=$(KCL_PODAUTOSCALER_NAME)'
 	@echo '    KCL_PODAUTOSCALER_NAMESPACE_NAME=$(KCL_PODAUTOSCALER_NAMESPACE_NAME)'
@@ -77,7 +77,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_PODAUTOSCALERS_WATCH_ONLY=$(KCL_PODAUTOSCALERS_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::PodAutoscaler ($(_KUBECTL_KNATIVE_PODAUTOSCALER_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_podautoscaler                 - Annotate a pod-autoscaler'
 	@echo '    _kcl_apply_podautoscalers                   - Apply manifest for one-or-more pod-autoscalers'
@@ -88,16 +88,17 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_podautoscaler                  - Explain the pod-autoscaler object'
 	@echo '    _kcl_kustomize_podautoscaler                - Kustomize one-or-more pod-autoscalers'
 	@echo '    _kcl_label_podautoscaler                    - Label a pod-autoscaler'
+	@echo '    _kcl_list_podautoscalers                    - List all pod-autoscalers'
+	@echo '    _kcl_list_podautoscalers_set                - List a set of pod-autoscalers'
 	@echo '    _kcl_show_podautoscaler                     - Show everything related to a pod-autoscaler'
 	@echo '    _kcl_show_podautoscaler_description         - Show the description of a pod-autoscaler'
 	@echo '    _kcl_show_podautoscaler_object              - Show the object of a pod-autoscaler'
 	@echo '    _kcl_show_podautoscaler_revision            - Show the revision of a pod-autoscaler'
-	@echo '    _kcl_unapply_podautoscalers                 - Unapply amnifest for one-or-more pod-autoscalers'
+	@echo '    _kcl_unapply_podautoscalers                 - Un-apply manifest for one-or-more pod-autoscalers'
 	@echo '    _kcl_update_podautoscaler                   - Update a pod-autoscaler'
-	@echo '    _kcl_view_podautoscalers                    - View all pod-autoscalers'
-	@echo '    _kcl_view_podautoscalers_set                - View a set of pod-autoscalers'
 	@echo '    _kcl_watch_podautoscalers                   - Watch pod-autoscalers'
 	@echo '    _kcl_watch_podautoscalers_set               - Watch a set of pod-autoscalers'
+	@echo '    _kcl_write_podautoscalers                   - Write manifest for one-or-more pod-autoscalers'
 	@echo
 
 #----------------------------------------------------------------------
@@ -148,6 +149,15 @@ _kcl_kustomize_podautoscalers:
 _kcl_label_podautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling pod-autoscaler "$(KCL_PODAUTOSCALER_NAME)" ...'; $(NORMAL)
 
+_kcl_list_podautoscalers:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL pod-autoscalers ...'; $(NORMAL)
+	$(KUBECTL) get podautoscalers --all-namespaces=true $(_X__KCL_NAMESPACE__PODAUTOSCALERS) $(__KCL_OUTPUT__PODAUTOSCALERS) $(_X__KCL_SELECTOR__PODAUTOSCALERS)$(__KCL_SHOW_LABELS__PODAUTOSCALERS)
+
+_kcl_list_podautoscalers_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing pod-autoscalers-set "$(KCL_PODAUTOSCALERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Pod-autoscalers are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get podautoscalers --all-namespaces=false $(__KCL_FIELD_SELECTOR__PODAUTOSCALERS) $(__KCL_NAMESPACE__PODAUTOSCALERS) $(__KCL_OUTPUT__PODAUTOSCALERS) $(__KCL_SELECTOR__PODAUTOSCALERS) $(__KCL_SHOW_LABELS__PODAUTOSCALERS)
+
 _KCL_SHOW_PODAUTOSCALER_TARGETS?= _kcl_show_podautoscaler_object _kcl_show_podautoscaler_state _kcl_show_podautoscaler_description
 _kcl_show_podautoscaler :: $(_KCL_SHOW_PODAUTOSCALER_TARGETS)
 
@@ -175,15 +185,6 @@ _kcl_unlabel_podautoscaler:
 _kcl_update_podautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Updating pod-autoscaler "$(KCL_PODAUTOSCALER_NAME)" ...'; $(NORMAL)
 
-_kcl_view_podautoscalers:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL pod-autoscalers ...'; $(NORMAL)
-	$(KUBECTL) get podautoscalers --all-namespaces=true $(_X__KCL_NAMESPACE__PODAUTOSCALERS) $(__KCL_OUTPUT__PODAUTOSCALERS) $(_X__KCL_SELECTOR__PODAUTOSCALERS)$(__KCL_SHOW_LABELS__PODAUTOSCALERS)
-
-_kcl_view_podautoscalers_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing pod-autoscalers-set "$(KCL_PODAUTOSCALERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Pod-autoscalers are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get podautoscalers --all-namespaces=false $(__KCL_FIELD_SELECTOR__PODAUTOSCALERS) $(__KCL_NAMESPACE__PODAUTOSCALERS) $(__KCL_OUTPUT__PODAUTOSCALERS) $(__KCL_SELECTOR__PODAUTOSCALERS) $(__KCL_SHOW_LABELS__PODAUTOSCALERS)
-
 _kcl_watch__podautoscalers:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL pod-autoscalers ...'; $(NORMAL)
 	$(KUBECTL) get podautoscalers $(strip $(_X__KCL_ALL_NAMESPACES__PODAUTOSCALERS) --all-namespaces=true $(_X__KCL_NAMESPACE__PODAUTOSCALERS) $(__KCL_OUTPUT__PODAUTOSCALERS) $(_X__KCL_SELECTOR__PODAUTOSCALERS) $(_X__KCL_WATCH__PODAUTOSCALERS) --watch=true $(__KCL_WATCH_ONLY__PODAUTOSCALERS) )
@@ -192,3 +193,8 @@ _kcl_watch_podautoscalers_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-autoscalers-set "$(KCL_PODAUTOSCALERS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Pod-autoscalers are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get podautoscalers $(strip $(__KCL_ALL_NAMESPACES__PODAUTOSCALERS) $(__KCL_NAMESPACE__PODAUTOSCALERS) $(__KCL_OUTPUT__PODAUTOSCALERS) $(__KCL_SELECTOR__PODAUTOSCALERS) $(_X__KCL_WATCH__PODAUTOSCALERS) --watch=true $(__KCL_WATCH_ONLY__PODAUTOSCALERS) )
+
+_kcl_write_podautoscaler: _kcl_write_podautoscalers
+_kcl_write_podautoscalers:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more pod-autoscalers ...'; $(NORMAL)
+	$(WRITER) $(KCL_PODAUTOSCALERS_MANIFEST_FILEPATH)

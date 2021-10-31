@@ -10,7 +10,7 @@ _KUBECTL_KNATIVE_ROUTE_MK_VERSION= $(_KUBECTL_KNATIVE_MK_VERSION)
 # KCL_ROUTE_NAME?= go-helloworld
 # KCL_ROUTE_NAMESPACE_NAME?= default
 # KCL_ROUTE_SERVICES_SELECTOR?= serving.knative.dev/route=go-helloworld
-# KCL_ROUTE_VIRTUALSERVICES_NAMES?= go-helloworld-ingress make view_virtu	
+# KCL_ROUTE_VIRTUALSERVICES_NAMES?= go-helloworld-ingress ...
 # KCL_ROUTE_VIRTUALSERVICES_SELECTOR?= serving.knative.dev/route=go-helloworld
 # KCL_ROUTES_FIELDSELECTOR?= metadata.name=my-route
 # KCL_ROUTES_MANIFEST_DIRPATH?= ./in/
@@ -72,11 +72,11 @@ _KCL_UNAPPLY_ROUTES_|?= $(_KCL_APPLY_ROUTES_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@#echo 'KubeCtL::Knative::Route ($(_KUBECTL_KNATIVE_ROUTE_MK_VERSION)) macros:'
 	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Route ($(_KUBECTL_KNATIVE_ROUTE_MK_VERSION)) parameters:'
 	@echo '    KCL_ROUTE_ISTIOINGRESSGATEWAY_NAME=$(KCL_ROUTE_ISTIOINGRESSGATEWAY_NAME)'
 	@echo '    KCL_ROUTE_ISTIOINGRESSGATEWAY_NAMESPACE=$(KCL_ROUTE_ISTIOINGRESSGATEWAY_NAMESPACE)'
@@ -101,7 +101,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_ROUTES_WATCH_ONLY=$(KCL_ROUTES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Route ($(_KUBECTL_KNATIVE_ROUTE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_route                 - Annotate a knative-route'
 	@echo '    _kcl_apply_routes                   - Apply manifest for one-or-more knative-routes'
@@ -124,10 +124,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_route_virtualservices     - Show the istio virtual-services of a knative-route'
 	@echo '    _kcl_unapply_routes                 - Unapply a manifest for one-or-more knative-route'
 	@echo '    _kcl_update_route                   - Update a knative-route'
-	@echo '    _kcl_view_routes                    - View all knative-routes'
-	@echo '    _kcl_view_routes_set                - View a set of knative-routes'
+	@echo '    _kcl_list_routes                    - List all knative-routes'
+	@echo '    _kcl_list_routes_set                - List a set of knative-routes'
 	@echo '    _kcl_watch_routes                   - Watch knative-routes'
 	@echo '    _kcl_watch_routes_set               - Watch a set of knative-routes'
+	@echo '    _kcl_write_routes                   - Write a manifest for one-or-more knative-routes'
 	@echo
 
 #----------------------------------------------------------------------
@@ -181,6 +182,15 @@ _kcl_kustomize_routes:
 _kcl_label_route:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-route "$(KCL_ROUTE_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
+
+_kcl_list_routes:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-routes ...'; $(NORMAL)
+	$(KUBECTL) get route --all-namespaces=true $(_X__KCL_NAMESPACE__ROUTES) $(__KCL_OUTPUT__ROUTES) $(_X__KCL_SELECTOR__ROUTES)$(__KCL_SHOW_LABELS__ROUTES)
+
+_kcl_list_routes_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-routes-set "$(KCL_ROUTES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-routes are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get route --all-namespaces=false $(__KCL_FIELD_SELECTOR__ROUTES) $(__KCL_NAMESPACE__ROUTES) $(__KCL_OUTPUT__ROUTES) $(__KCL_SELECTOR__ROUTES) $(__KCL_SHOW_LABELS__ROUTES)
 
 # ifeq (KN_KNATIVESERVING_NETWORKLAYER_TYPE, istio)
 _KCL_SHOW_ROUTE_TARGETS?= _kcl_show_route_istioingressgateway _kcl_show_route_kingress _kcl_show_route_kservice _kcl_show_route_object _kcl_show_route_state _kcl_show_route_virtualservices  _kcl_show_route_description
@@ -242,15 +252,6 @@ _kcl_update_route:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-route "$(KCL_ROUTE_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) patch ...
 
-_kcl_view_routes:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-routes ...'; $(NORMAL)
-	$(KUBECTL) get route --all-namespaces=true $(_X__KCL_NAMESPACE__ROUTES) $(__KCL_OUTPUT__ROUTES) $(_X__KCL_SELECTOR__ROUTES)$(__KCL_SHOW_LABELS__ROUTES)
-
-_kcl_view_routes_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-routes-set "$(KCL_ROUTES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-routes are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get route --all-namespaces=false $(__KCL_FIELD_SELECTOR__ROUTES) $(__KCL_NAMESPACE__ROUTES) $(__KCL_OUTPUT__ROUTES) $(__KCL_SELECTOR__ROUTES) $(__KCL_SHOW_LABELS__ROUTES)
-
 _kcl_watch_routes:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-routes ...'; $(NORMAL)
 	$(KUBECTL) get route $(strip $(_X__KCL_ALL_NAMESPACES__ROUTES) --all-namespaces=true $(_X__KCL_NAMESPACE__ROUTES) $(__KCL_OUTPUT__ROUTES) $(_X__KCL_SELECTOR__ROUTES) $(_X__KCL_WATCH__ROUTES) --watch=true $(__KCL_WATCH_ONLY__ROUTES) )
@@ -259,3 +260,8 @@ _kcl_watch_routes_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-routes-set "$(KCL_ROUTES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Knative-routes are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get route $(strip $(__KCL_ALL_NAMESPACES__ROUTES) $(__KCL_NAMESPACE__ROUTES) $(__KCL_OUTPUT__ROUTES) $(__KCL_SELECTOR__ROUTES) $(_X__KCL_WATCH__ROUTES) --watch=true $(__KCL_WATCH_ONLY__ROUTES) )
+
+_kcl_write_route: _kcl_write_routes
+_kcl_write_routes:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-routes ...'; $(NORMAL)
+	$(WRITER) $(KCL_ROUTES_MANIFEST_FILEPATH)

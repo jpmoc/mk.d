@@ -215,9 +215,9 @@ _kcl_list_secrettypes:
 	@echo 'Type: kubernetes.io/tls                   ~~> HTTPS certificate for ingress-pods'; $(NORMAL)
 	@echo
 
-_view_versions :: _kcl_view_versions
-_kcl_view_versions:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
+_view_versions :: _kcl_show_versions
+_kcl_show_versions ::
+	@$(INFO) '$(KCL_UI_LABEL)Showing versions of dependencies ...'; $(NORMAL)
 	kubectl version --short --client
 	# Latest version of kubectl ...
 	curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt

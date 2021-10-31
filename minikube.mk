@@ -41,13 +41,13 @@ MINIKUBE_VERSION?= v1.20.0
 # USAGE
 #
 
-_view_framework_macros :: _mke_view_framework_macros
-_mke_view_framework_macros ::
+_list_macros :: _mke_list_macros
+_mke_list_macros ::
 	@#echo 'MiniKubE ($(_MINIKUBE_MK_VERSION)) targets:'
 	@#echo
 
-_view_framework_parameters :: _mke_view_framework_parameters
-_mke_view_framework_parameters ::
+_list_parameters :: _mke_list_parameters
+_mke_list_parameters ::
 	@echo 'MiniKubE ($(_MINIKUBE_MK_VERSION)) parameters:'
 	@echo '    MINIKUBE=$(MINIKUBE)'
 	@echo '    MINIKUBE_ALSOLOGTOSTDERR=$(MINIKUBE_ALSOLOGTOSTDERR)'
@@ -62,8 +62,8 @@ _mke_view_framework_parameters ::
 	@echo '    MKE_MINIKUBE_ISO_URL=$(MKE_MINIKUBE_ISO_URL)'
 	@echo
 
-_view_framework_targets :: _mke_view_framework_targets
-_mke_view_framework_targets ::
+_list_targets :: _mke_list_targets
+_mke_list_targets ::
 	@echo 'MiniKubE ($(_MINIKUBE_MK_VERSION)) targets:'
 	@echo '    _mke_install_dependencies        - Install depedencies'
 	@echo '    _mke_view_versions               - View versions'
@@ -100,7 +100,7 @@ _mke_install_dependencies:
 	brew install tree
 	brew install helm@2# Otherwise helm3 will be installed!
 
-_view_versions :: _mke_view_versions
-_mke_view_versions:
-	@$(INFO) '$(MKE_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
+_view_versions :: _mke_show_versions
+_mke_show_versions:
+	@$(INFO) '$(MKE_UI_LABEL)Showing versions of dependencies ...'; $(NORMAL)
 	minikube version

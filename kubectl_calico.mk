@@ -17,18 +17,18 @@ KCL_CALICO_VERSION?= v3.17.1
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Calico ($(_KUBECTL_CALICO_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Calico ($(_KUBECTL_CALICO_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Calico ($(_KUBECTL_CALICO_MK_VERSION)) parameters:'
 	@echo '    KCL_CALICO_NAMESPACE_NAME=$(KCL_CALICO_NAMESPACE_NAME)'
 	@echo '    KCL_CALICO_VERSION=$(KCL_CALICO_VERSION)'
 	@echo
 
-_view_framework_targets :: _kcl_view_framework_targets
-_kcl_view_framework_targets ::
+_list_targets :: _kcl_list_targets
+_kcl_list_targets ::
 	@echo 'KubeCtL::Calico ($(_KUBECTL_CALICO_MK_VERSION)) targets:'
 	@echo
 

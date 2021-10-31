@@ -80,11 +80,11 @@ __KCL_SORT_BY__BROKERS= $(if $(KCL_BROKERS_SORT_BY),--sort-by=$(KCL_BROKERS_SORT
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Broker ($(_KUBECTL_KNATIVE_BROKER_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Broker ($(_KUBECTL_KNATIVE_BROKER_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Broker ($(_KUBECTL_KNATIVE_BROKER_MK_VERSION)) parameters:'
 	@echo '    KCL_BROKER_CLOUDEVENT_CONTENTTYPE=$(KCL_BROKER_CLOUDEVENT_CONTENTTYPE)'
 	@echo '    KCL_BROKER_CLOUDEVENT_ID=$(KCL_BROKER_CLOUDEVENT_ID)'
@@ -119,7 +119,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_BROKERS_SORT_BY=$(KCL_BROKERS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Broker ($(_KUBECTL_KNATIVE_BROKER_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_broker                - Annotate a broker'
 	@echo '    _kcl_apply_brokers                  - Apply manifest for one-por-more brokers'
@@ -132,6 +132,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_broker                 - Explain the broker object'
 	@echo '    _kcl_kustomize_broker               - Kustomize one-or-more brokers'
 	@echo '    _kcl_label_broker                   - Label a broker'
+	@echo '    _kcl_list_brokers                   - List all brokers'
+	@echo '    _kcl_list_brokers_set               - List a set of brokers'
 	@echo '    _kcl_show_broker                    - Show everything related to a broker'
 	@echo '    _kcl_show_broker_description        - Show the description of a broker'
 	@echo '    _kcl_show_broker_object             - Show the object of a broker'
@@ -140,10 +142,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_brokers                - Un-apply manifest for one-or-more brokers'
 	@echo '    _kcl_unlabel_broker                 - Un-label manifest for a broker'
 	@echo '    _kcl_update_broker                  - Update a broker'
-	@echo '    _kcl_view_brokers                   - View all brokers'
-	@echo '    _kcl_view_brokers_set               - View a set of brokers'
 	@echo '    _kcl_watch_brokers                  - Watching brokers'
 	@echo '    _kcl_watch_brokers_set              - Watching a set of brokers'
+	@echo '    _kcl_write_brokers                  - Write manifest for one-or-more brokers'
 	@echo
 
 #----------------------------------------------------------------------
@@ -201,8 +202,19 @@ _kcl_kustomize_brokers:
 
 _kcl_label_broker:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling broker "$(KCL_BROKER_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) label ...
 
-_kcl_show_broker: _kcl_show_broker_object _kcl_show_broker_state _kcl_show_broker_triggers _kcl_show_broker_description
+_kcl_list_brokers:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL brokers ...'; $(NORMAL)
+	$(KUBECTL) get brokers --all-namespaces=true $(_X__KCL_NAMESPACE__BROKERS) $(__KCL_OUTPUT_BROKERS) $(_X__KCL_SELECTOR__BROKERS) $(__KCL_SORT_BY__BROKERS)
+
+_kcl_list_brokers_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing brokers-set "$(KCL_BROKERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'brokers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get brokers --all-namespaces=false $(__KCL_NAMESPACE__BROKERS) $(__KCL_OUTPUT__BROKERS) $(__KCL_SELECTOR__BROKERS) $(__KCL_SORT_BY__BROKERS)
+
+_KCL_SHOW_BROKER_TARGETS?= _kcl_show_broker_object _kcl_show_broker_state _kcl_show_broker_triggers _kcl_show_broker_description
+_kcl_show_broker: $(_KCL_SHOW_BROKER_TARGETS)
 
 _kcl_show_broker_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description broker "$(KCL_BROKER_NAME)" ...'; $(NORMAL)
@@ -236,18 +248,13 @@ _kcl_unlabel_broker:
 _kcl_update_broker:
 	@$(INFO) '$(KCL_UI_LABEL)Updating broker "$(KCL_BROKER_NAME)" ...'; $(NORMAL)
 
-_kcl_view_brokers:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL brokers ...'; $(NORMAL)
-	$(KUBECTL) get brokers --all-namespaces=true $(_X__KCL_NAMESPACE__BROKERS) $(__KCL_OUTPUT_BROKERS) $(_X__KCL_SELECTOR__BROKERS) $(__KCL_SORT_BY__BROKERS)
-
-_kcl_view_brokers_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing brokers-set "$(KCL_BROKERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'brokers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get brokers --all-namespaces=false $(__KCL_NAMESPACE__BROKERS) $(__KCL_OUTPUT__BROKERS) $(__KCL_SELECTOR__BROKERS) $(__KCL_SORT_BY__BROKERS)
-
 _kcl_watch_brokers:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL brokers ...'; $(NORMAL)
 	$(KUBECTL) get brokers --all-namespaces=true --watch 
 
 _kcl_watch_brokers_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching brokers-set "$(KCL_BROKERS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_broker: _kcl_write_brokers
+_kcl_write_brokers:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more brokers ...'; $(NORMAL)

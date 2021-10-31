@@ -77,11 +77,11 @@ __KCL_WATCH_ONLY__KCERTIFICATES= $(if $(KCL_KCERTIFICATES_WATCH_ONLY),--watch-on
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::KCertificate ($(_KUBECTL_KNATIVE_KCERTIFICATE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::KCertificate ($(_KUBECTL_KNATIVE_KCERTIFICATE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::KCertificate ($(_KUBECTL_KNATIVE_KCERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    KCL_KCERTIFICATE_DNSNAME=$(KCL_KCERTIFICATE_DNSNAME)'
 	@echo '    KCL_KCERTIFICATE_DNSNAME_DOMAIN=$(KCL_KCERTIFICATE_DNSNAME_DOMAIN)'
@@ -113,7 +113,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_KCERTIFICATES_WATCH_ONLY=$(KCL_KCERTIFICATES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::KCertificate ($(_KUBECTL_KNATIVE_KCERTIFICATE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_kcertificate                 - Annotate a knative-certificate'
 	@echo '    _kcl_apply_kcertificates                   - Apply manifest for one-or-more knative-certificates'
@@ -126,6 +126,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_kcertificate                  - Explain the knative-certificate object'
 	@echo '    _kcl_kustomize_kcertificate                - Kustomize one-or-more knative-certificates'
 	@echo '    _kcl_label_kcertificate                    - Label a knative-certificate'
+	@echo '    _kcl_list_kcertificates                    - List all knative-certificates'
+	@echo '    _kcl_list_kcertificates_set                - List a set of knative-certificates'
 	@echo '    _kcl_show_kcertificate                     - Show everything related to a knative-certificate'
 	@echo '    _kcl_show_kcertificate_configurations      - Show the configurations of a knative-certificate'
 	@echo '    _kcl_show_kcertificate_deployments         - Show the deployments of a knative-certificate'
@@ -137,12 +139,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_kcertificate_serverlessservices  - Show the serverless-services of a knative-certificate'
 	@echo '    _kcl_show_kcertificate_services            - Show the services of a knative-certificate'
 	@echo '    _kcl_show_kcertificate_state               - Show the state of a knative-certificate'
-	@echo '    _kcl_unapply_kcertificates                 - Unapply amnifest for one-or-more knative-certificates'
+	@echo '    _kcl_unapply_kcertificates                 - Unapply manifest for one-or-more knative-certificates'
 	@echo '    _kcl_update_kcertificate                   - Update a knative-certificate'
-	@echo '    _kcl_view_kcertificates                    - View all knative-certificates'
-	@echo '    _kcl_view_kcertificates_set                - View a set of knative-certificates'
-	@echo '    _kcl_watch_kcertificates                   - Watch knative-certificates'
+	@echo '    _kcl_watch_kcertificates                   - Watch all knative-certificates'
 	@echo '    _kcl_watch_kcertificates_set               - Watch a set of knative-certificates'
+	@echo '    _kcl_write_kcertificates                   - Write manifest for one-or-more knative-certificates'
 	@echo
 
 #----------------------------------------------------------------------
@@ -203,6 +204,16 @@ _kcl_kustomize_kcertificates:
 
 _kcl_label_kcertificate:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-certificate "$(KCL_KCERTIFICATE_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) label ...
+
+_kcl_list_kcertificates:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-certificates ...'; $(NORMAL)
+	$(KUBECTL) get king --all-namespaces=true $(_X__KCL_NAMESPACE__KCERTIFICATES) $(__KCL_OUTPUT__KCERTIFICATES) $(_X__KCL_SELECTOR__KCERTIFICATES)$(__KCL_SHOW_LABELS__KCERTIFICATES)
+
+_kcl_list_kcertificates_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-certificates-set "$(KCL_KCERTIFICATES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-serverless-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get king --all-namespaces=false $(__KCL_FIELD_SELECTOR__KCERTIFICATES) $(__KCL_NAMESPACE__KCERTIFICATES) $(__KCL_OUTPUT__KCERTIFICATES) $(__KCL_SELECTOR__KCERTIFICATES) $(__KCL_SHOW_LABELS__KCERTIFICATES)
 
 _KCL_SHOW_KCERTIFICATE_TARGETS?= _kcl_show_kcertificate_deployments _kcl_show_kcertificate_object _kcl_show_kcertificate_pods _kcl_show_kcertificate_replicasets _kcl_show_kcertificate_kingress _kcl_show_kcertificate_services _kcl_show_kcertificate_state _kcl_show_kcertificate_description
 _kcl_show_kcertificate :: $(_KCL_SHOW_KCERTIFICATE_TARGETS)
@@ -261,15 +272,6 @@ _kcl_unlabel_kcertificate:
 _kcl_update_kcertificate:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-serverless-service "$(KCL_KCERTIFICATE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_kcertificates:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-certificates ...'; $(NORMAL)
-	$(KUBECTL) get king --all-namespaces=true $(_X__KCL_NAMESPACE__KCERTIFICATES) $(__KCL_OUTPUT__KCERTIFICATES) $(_X__KCL_SELECTOR__KCERTIFICATES)$(__KCL_SHOW_LABELS__KCERTIFICATES)
-
-_kcl_view_kcertificates_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-certificates-set "$(KCL_KCERTIFICATES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-serverless-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get king --all-namespaces=false $(__KCL_FIELD_SELECTOR__KCERTIFICATES) $(__KCL_NAMESPACE__KCERTIFICATES) $(__KCL_OUTPUT__KCERTIFICATES) $(__KCL_SELECTOR__KCERTIFICATES) $(__KCL_SHOW_LABELS__KCERTIFICATES)
-
 _kcl_watch__kcertificates:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-certificates ...'; $(NORMAL)
 	$(KUBECTL) get king $(strip $(_X__KCL_ALL_NAMESPACES__KCERTIFICATES) --all-namespaces=true $(_X__KCL_NAMESPACE__KCERTIFICATES) $(__KCL_OUTPUT__KCERTIFICATES) $(_X__KCL_SELECTOR__KCERTIFICATES) $(_X__KCL_WATCH__KCERTIFICATES) --watch=true $(__KCL_WATCH_ONLY__KCERTIFICATES) )
@@ -277,3 +279,8 @@ _kcl_watch__kcertificates:
 _kcl_watch_kcertificates_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-certificates-set "$(KCL_KCERTIFICATES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get king $(strip $(__KCL_ALL_NAMESPACES__KCERTIFICATES) $(__KCL_NAMESPACE__KCERTIFICATES) $(__KCL_OUTPUT__KCERTIFICATES) $(__KCL_SELECTOR__KCERTIFICATES) $(_X__KCL_WATCH__KCERTIFICATES) --watch=true $(__KCL_WATCH_ONLY__KCERTIFICATES) )
+
+_kcl_write_kcertificate: _kcl_write_kcertificates
+_kcl_write_kcertificates:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-serverless-services ...'; $(NORMAL)
+	$(WRITER) $(KCL_KCERTIFICATES_MANIFEST_FILENAME)

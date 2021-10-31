@@ -69,11 +69,11 @@ __MKE_XHYVE_DISK_DRIVER=
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::Cluster ($(_MINIKUBE_CLUSTER_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::Cluster ($(_MINIKUBE_CLUSTER_MK_VERSION)) parameters:'
 	@echo '    MKE_CLUSTER_CACHEIMAGES_FLAG=$(MKE_CLUSTER_CACHEIMAGES_FLAG)'
 	@echo '    MKE_CLUSTER_CNI_TYPE=$(MKE_CLUSTER_CNI_TYPE)'
@@ -94,7 +94,7 @@ _mke_view_framework_parameters ::
 	@echo '    MKE_CLUSTERS_SET_NAME=$(MKE_CLUSTERS_SET_NAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::Cluster ($(_MINIKUBE_CLUSTER_MK_VERSION)) targets:'
 	@echo '    _mke_create_cluster             - Create a new cluster'
 	@echo '    _mke_delete_cluster             - Delete an existing cluster'
@@ -104,8 +104,8 @@ _mke_view_framework_targets ::
 	@echo '    _mke_show_cluster_status        - Show the status of a cluster'
 	@echo '    _mke_start_cluster              - Start a new cluster'
 	@echo '    _mke_stop_cluster               - Stop a running cluster'
-	@echo '    _mke_view_clusters              - View all clusters'
-	@echo '    _mke_view_clusters_set          - View a set of clusters'
+	@echo '    _mke_list_clusters              - List all clusters'
+	@echo '    _mke_list_clusters_set          - List a set of clusters'
 	@echo
 
 #-----------------------------------------------------------------------
@@ -126,7 +126,16 @@ _mke_delete_cluster:
 	@$(INFO) '$(MKE_UI_LABEL)Deleting cluster "$(MKE_CLUSTER_NAME)" ...'; $(NORMAL)
 	$(MINIKUBE) delete
 
-_mke_show_cluster :: _mke_show_cluster_status
+_mke_list_clusters:
+	@$(INFO) '$(MKE_UI_LABEL)Listing ALL clusters ...'; $(NORMAL)
+	$(MINIKUBE) profile list
+
+_mke_list_clusters_set:
+	@$(INFO) '$(MKE_UI_LABEL)Listing clusters-set "$(MKE_CLUSTERS_SET_NAME)" ...'; $(NORMAL)
+	# $(MINIKUBE) profile list
+
+_MKE_SHOW_CLUSTER_TARGETS: _mke_show_cluster_status
+_mke_show_cluster: $(_MKE_SHOW_CLUSTER_TARGETS)
 
 _mke_show_cluster_dashboard:
 	@$(INFO) '$(MKE_UI_LABEL)Showing dashboard-url of cluster "$(MKE_CLUSTER_NAME)" ...'; $(NORMAL)
@@ -141,10 +150,3 @@ _mke_start_cluster: _mke_create_cluster
 _mke_stop_cluster:
 	@$(INFO) '$(MKE_UI_LABEL)Stopping cluster "$(MKE_CLUSTER_NAME)" ...'; $(NORMAL)
 	$(MINIKUBE) stop $(_X__HELP)
-
-_mke_view_clusters:
-	@$(INFO) '$(MKE_UI_LABEL)Viewing ALL clusters ...'; $(NORMAL)
-	$(MINIKUBE) profile list
-
-_mke_view_clusters_set:
-	@$(INFO) '$(MKE_UI_LABEL)Viewing clusters-set "$(MKE_CLUSTERS_SET_NAME)" ...'; $(NORMAL)

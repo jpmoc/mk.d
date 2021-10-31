@@ -22,20 +22,20 @@ CALICOCTL?= $(strip $(__CALICOCTL_ENVIRONMENT) $(CALICOCTL_ENVIRONMENT) $(CALICO
 # USAGE
 #
 
-_view_framework_macros :: _ccl_view_framework_macros
-_ccl_view_framework_macros ::
+_list_macros :: _ccl_list_macros
+_ccl_list_macros ::
 	@#echo 'CalicoCtL ($(_CALICOCTL_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _ccl_view_framework_parameters
-_ccl_view_framework_parameters ::
+_list_parameters :: _ccl_list_parameters
+_ccl_list_parameters ::
 	@echo 'CalicoCtL ($(_CALICOCTL_MK_VERSION)) parameters:'
 	@echo '    CCL_AS_GROUP=$(CCL_AS_GROUP)'
 	@echo '    CCL_AS_USER=$(CCL_AS_USER)'
 	@echo
 
-_view_framework_targets :: _ccl_view_framework_targets
-_ccl_view_framework_targets ::
+_list_targets :: _ccl_list_targets
+_ccl_list_targets ::
 	@echo 'CalicoCtL ($(_CALICOCTL_MK_VERSION)) targets:'
 	@echo '    _ccl_install_dependencies              - Install dependencies'
 	@echo '    _ccl_view_versions                     - View versions of dependencies'
@@ -60,6 +60,6 @@ _ccl_install_dependencies ::
 	calicoctl version
 
 _view_versions :: _ccl_view_versions
-_ccl_view_versions ::
-	@$(INFO) '$(CCL_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
+_ccl_show_versions ::
+	@$(INFO) '$(CCL_UI_LABEL)Showing versions of dependencies ...'; $(NORMAL)
 	calicoctl version

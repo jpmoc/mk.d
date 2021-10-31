@@ -58,11 +58,11 @@ __KN_NAMESPACE__SERVICES= $(if $(KN_SERVICES_NAMESPACE_NAME),--namespace $(KN_SE
 # USAGE
 #
 
-_kn_view_framework_macros ::
-	@echo 'KN::Service ($(_KN_SERVICE_MK_VERSION)) macros:'
-	@echo
+_kn_list_macros ::
+	@#echo 'KN::Service ($(_KN_SERVICE_MK_VERSION)) macros:'
+	@#echo
 
-_kn_view_framework_parameters ::
+_kn_list_parameters ::
 	@echo 'KN::Service ($(_KN_SERVICE_MK_VERSION)) parameters:'
 	@echo '    KN_SERVICE_DNSNAME=$(KN_SERVICE_DNSNAME)'
 	@echo '    KN_SERVICE_DNSNAME_DOMAIN=$(KN_SERVICE_DNSNAME_DOMAIN)'
@@ -93,7 +93,7 @@ _kn_view_framework_parameters ::
 	@#echo '    KN_SERVICES_WATCH_ONLY=$(KN_SERVICES_WATCH_ONLY)'
 	@echo
 
-_kn_view_framework_targets ::
+_kn_list_targets ::
 	@echo 'KN::Service ($(_KN_SERVICE_MK_VERSION)) targets:'
 	@#echo '    _kn_annotate_service                - Annotate a service'
 	@#echo '    _kn_apply_service                   - Apply manifest for one-or-more services'
@@ -106,6 +106,8 @@ _kn_view_framework_targets ::
 	@#echo '    _kn_explain_service                 - Explain the service object'
 	@#echo '    _kn_kustomize_service               - Kustomize one-or-more services'
 	@#echo '    _kn_label_service                   - Label a service'
+	@echo '    _kn_list_services                   - List all services'
+	@echo '    _kn_list_services_set               - List a set of services'
 	@#echo '    _kn_portforward_service             - Forward local ports to an endpoint-pod of a service'
 	@echo '    _kn_show_service                    - Show everything related to a service'
 	@echo '    _kn_show_service_description        - Show the description of a service'
@@ -115,8 +117,6 @@ _kn_view_framework_targets ::
 	@#echo '    _kn_show_service_state              - Show the state of a service'
 	@#echo '    _kn_unapply_service                 - Unapply a service'
 	@#echo '    _kn_update_service                  - Update a service'
-	@echo '    _kn_view_services                   - View all services'
-	@echo '    _kn_view_services_set               - View a set of services'
 	@#echo '    _kn_watch_services                  - Watch services'
 	@#echo '    _kn_watch_services_set              - Watch a set of services'
 	@echo
@@ -174,6 +174,15 @@ _kn_kustomize_services:
 _kn_label_service:
 	@$(INFO) '$(KN_UI_LABEL)Labeling service "$(KN_SERVICE_NAME)" ...'; $(NORMAL)
 
+_kn_list_services:
+	@$(INFO) '$(KN_UI_LABEL)Listing ALL services ...'; $(NORMAL)
+	$(KN) service list --all-namespaces=true $(_X__KN_NAMESPACE__SERVICES) $(__KN_TARGET__SERVICES)
+
+_kn_list_services_set:
+	@$(INFO) '$(KN_UI_LABEL)Listing services-set "$(KN_SERVICES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Services are grouped based on the provided namespace, and ...'; $(NORMAL)
+	$(KN) service list --all-namespaces=false $(__KN_NAMESPACE__SERVICES) $(__KN_TARGET__SERVICES)
+
 _kn_portforward_service:
 	@$(INFO) '$(KN_UI_LABEL)Forwarding ports of a pod behind service "$(KN_SERVICE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation binds ports to 127.0.0.1 (host-port:container-port) but does NOT allow for bind addresses'; $(NORMAL)
@@ -228,15 +237,6 @@ _kn_unlabel_service:
 
 _kn_update_service:
 	@$(INFO) '$(KN_UI_LABEL)Updating service "$(KN_SERVICE_NAME)" ...'; $(NORMAL)
-
-_kn_view_services:
-	@$(INFO) '$(KN_UI_LABEL)Viewing ALL services ...'; $(NORMAL)
-	$(KN) service list --all-namespaces=true $(_X__KN_NAMESPACE__SERVICES) $(__KN_TARGET__SERVICES)
-
-_kn_view_services_set:
-	@$(INFO) '$(KN_UI_LABEL)Viewing services-set "$(KN_SERVICES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Services are grouped based on the provided namespace, and ...'; $(NORMAL)
-	$(KN) service list --all-namespaces=false $(__KN_NAMESPACE__SERVICES) $(__KN_TARGET__SERVICES)
 
 _kn_watch_services:
 	@$(INFO) '$(KN_UI_LABEL)Watching services ...'; $(NORMAL)

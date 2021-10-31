@@ -33,11 +33,11 @@ __KZE_SELECTOR= $(if $(KZE_MANIFEST_SELECTOR),--selector $(KZE_MANIFEST_SELECTOR
 # USAGE
 #
 
-_kze_view_framework_macros ::
-	@echo 'KustomiZE::Manifest ($(_KUSTOMIZE_MANIFEST_MK_VERSION)) macros:'
-	@echo
+_kze_list_macros ::
+	@#echo 'KustomiZE::Manifest ($(_KUSTOMIZE_MANIFEST_MK_VERSION)) macros:'
+	@#echo
 
-_kze_view_framework_parameters ::
+_kze_list_parameters ::
 	@echo 'KustomiZE::Manifest ($(_KUSTOMIZE_MANIFEST_MK_VERSION)) parameters:'
 	@echo '    KZE_MANIFEST_DIRPATH=$(KZE_MANIFEST_DIRPATH)'
 	@echo '    KZE_MANIFEST_FILENAME=$(KZE_MANIFEST_FILENAME)'
@@ -52,18 +52,18 @@ _kze_view_framework_parameters ::
 	@#echo '    KZE_MANIFESTS_SET_NAME=$(KZE_MANIFESTS_SET_NAME)'
 	@echo
 
-_kze_view_framework_targets ::
+_kze_list_targets ::
 	@echo 'KustomiZE::Manifest ($(_KUSTOMIZE_MANIFEST_MK_VERSION)) targets:'
 	@echo '    _kze_apply_manifest                   - Create resources in a manifest'
 	@echo '    _kze_create_manifest                  - Create resources in a manifest'
 	@echo '    _kze_delete_manifest                  - Delete resources in a manifest'
+	@#echo '    _kze_list_manifests                   - List all manifests'
+	@#echo '    _kze_list_manifests_set               - List a set of manifests'
 	@echo '    _kze_show_manifest                    - Show everything related to a manifest'
 	@echo '    _kze_show_manifest_content            - Show everything related to a manifest'
 	@echo '    _kze_show_manifest_description        - Show description of manifest'
 	@echo '    _kze_show_manifest_kustomization      - Show kustomization of a manifest'
 	@echo '    _kze_unapply_manifest                 - Unapply a manifest'
-	@#echo '    _kze_view_manifests                   - View manifests'
-	@#echo '    _kze_view_manifests_set               - View set of manifests'
 	@echo
 
 #----------------------------------------------------------------------
@@ -83,6 +83,12 @@ _kze_delete_manifest:
 	@$(INFO) '$(KZE_UI_LABEL)Deleting manifest "$(KZE_MANIFEST_NAME)" ...'; $(NORMAL)
 	rm $(KZE_MANIFEST_FILEPATH)	
 
+_kze_list_manifests:
+	@$(INFO) '$(KZE_UI_LABEL)Listing manifests ...'; $(NORMAL)
+
+_kze_list_manifests_set:
+	@$(INFO) '$(KZE_UI_LABEL)Listing manifests-set "$(KZE_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
+
 _kze_show_manifest :: _kze_show_manifest_content _kze_show_manifest_kustomization _kze_show_manifest_description
 
 _kze_show_manifest_content:
@@ -100,9 +106,3 @@ _kze_show_manifest_kustomization:
 _kze_unapply_manifest:
 	@$(INFO) '$(KZE_UI_LABEL)Un-applying manifest "$(KZE_MANIFEST_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) delete $(__KZE_FILENAME) $(__KZE_NAMESPACE) $(__KZE_SELECTOR)
-
-_kze_view_manifests:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing manifests ...'; $(NORMAL)
-
-_kze_view_manifests_set:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing manifests-set "$(KZE_MANIFESTS_SET_NAME)" ...'; $(NORMAL)

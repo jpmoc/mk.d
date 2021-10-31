@@ -23,11 +23,11 @@ __KCL_POD_RUNNING_TIMEOUT__DASHBOARD=
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio::Dashboard ($(_KUBECTL_ISTIO_DASHBOARD_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio::Dashboard ($(_KUBECTL_ISTIO_DASHBOARD_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::Dashboard ($(_KUBECTL_ISTIO_DASHBOARD_MK_VERSION)) parameters:'
 	@echo '    KCL_DASHBOARD_GRAPHANA_PORTS=$(KCL_DASHBOARD_GRAPHANA_PORTS)'
 	@echo '    KCL_DASHBOARD_JAEGER_PORTS=$(KCL_DASHBOARD_JAEGER_PORTS)'
@@ -37,7 +37,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_DASHBOARD_ZIPKIN_PORTS=$(KCL_DASHBOARD_ZIPKIN_PORTS)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::Dashboard ($(_KUBECTL_ISTIO_DASHBOARD_MK_VERSION)) targets:'
 	@echo '    _kcl_portforward_graphana             - Port-forward to graphana'
 	@echo '    _kcl_portforward_jaeger               - Port-forward to jaeger'

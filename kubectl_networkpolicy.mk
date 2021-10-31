@@ -39,8 +39,8 @@ _KCL_UNAPPLY_NETWORKPOLICIES_|?= $(_KCL_APPLY_NETWORKPOLICIES_|)
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::NetworkPolicy ($(_KUBECTL_NETWORKPOLICY_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::NetworkPolicy ($(_KUBECTL_NETWORKPOLICY_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::NetworkPolicy ($(_KUBECTL_NETWORKPOLICY_MK_VERSION)) parameters:'

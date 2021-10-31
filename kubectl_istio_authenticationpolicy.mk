@@ -43,11 +43,11 @@ _kcl_get_authenticationpolicy_destinationrules_names_SN= $(shell $(KUBECTL) get 
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Istio::AuthenticationPolicy ($(_KUBECTL_ISTIO_AUTHENTICATIONPOLICY_MK_VERSION)) macros:'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::AuthenticationPolicy ($(_KUBECTL_ISTIO_AUTHENTICATIONPOLICY_MK_VERSION)) parameters:'
 	@echo '    KCL_AUTHENTICATIONPOLICY_DESTINATIONRULES_FIELDSELECTOR=$(KCL_AUTHENTICATIONPOLICY_DESTINATIONRULES_FIELDSELECTOR)'
 	@echo '    KCL_AUTHENTICATIONPOLICY_DESTINATIONRULES_NAMES=$(KCL_AUTHENTICATIONPOLICY_DESTINATIONRULES_NAMES)'
@@ -66,7 +66,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_AUTHENTICATIONPOLICIES_SORTBY=$(KCL_AUTHENTICATIONPOLICIES_SORTBY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::AuthenticationPolicy ($(_KUBECTL_ISTIO_AUTHENTICATIONPOLICY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_authenticationpolicy                - Annotate an authentication-policy'
 	@echo '    _kcl_apply_authenticationpolicy                   - Apply a manifest for an authentication-policy'
@@ -75,6 +75,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_authenticationpolicy                    - Edit an authentication-policy'
 	@echo '    _kcl_explain_authenticationpolicy                 - Explain authentication-policy'
 	@echo '    _kcl_label_authenticationpolicy                   - Label an authentication-policy'
+	@echo '    _kcl_list_authenticationpolicies                  - List all authentication-policies'
+	@echo '    _kcl_list_authenticationpolicies_set              - List a set of authentication-policies'
 	@echo '    _kcl_show_authenticationpolicy                    - Show everything related to an authentication-policy'
 	@echo '    _kcl_show_authenticationpolicy_description        - Show description of an authentication-policy'
 	@echo '    _kcl_show_authenticationpolicy_destinationrules   - Show destination-rules of an authentication-policy'
@@ -83,10 +85,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_authenticationpolicy                 - Unapply a manifest for an authentication-policy'
 	@echo '    _kcl_unlabel_authenticationpolicy                 - Unlabel an authentication-policy'
 	@echo '    _kcl_update_authenticationpolicy                  - Update an authentication-policy'
-	@echo '    _kcl_view_authenticationpolicies                  - View all authentication-policies'
-	@echo '    _kcl_view_authenticationpolicies_set              - View a set of authentication-policies'
 	@echo '    _kcl_watch_authenticationpolicies                 - Watch authentication-policies'
 	@echo '    _kcl_watch_authenticationpolicies_set             - Watch a set of authentication-policies'
+	@echo '    _kcl_write_authenticationpolicies                 - Write manifest for one-or-more authentication-policies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -155,22 +156,27 @@ _kcl_unlabel_authenticationpolicy:
 _kcl_update_authenticationpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Updating authentication-policy "$(KCL_AUTHENTICATIONPOLICY_NAME)" ...'; $(NORMAL)
 
-_kcl_view_authenticationpolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL authentication-policies ...'; $(NORMAL)
+_kcl_list_authenticationpolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL authentication-policies ...'; $(NORMAL)
 	@$(WARN) 'This operation does NOT return the default authentication-policy which is the "default" mesh-policy'; $(NORMAL)
 	$(KUBECTL) get policies --all-namespaces=true $(__KCL_OUTPUT_AUTHENTICATIONPOLICIES) $(_X__KCL_SELECTOR__AUTHENTICATIONPOLICIES) $(__KCL_SORT_BY__AUTHENTICATIONPOLICIES)
 
-_kcl_view_authenticationpolicies_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing authentication-policies-set "$(KCL_AUTHENTICATIONPOLICIES_SET_NAME)" ...'; $(NORMAL)
+_kcl_list_authenticationpolicies_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing authentication-policies-set "$(KCL_AUTHENTICATIONPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation does NOT return the default authentication-policy which is the "default" mesh-policy'; $(NORMAL)
 	@$(WARN) 'Authentication-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get policies --all-namespaces=false $(__KCL_NAMESPACE__AUTHENTICATIONPOLICIES) $(__KCL_OUTPUT__AUTHENTICATIONPOLICIES) $(__KCL_SELECTOR__AUTHENTICATIONPOLICIES) $(__KCL_SORT_BY__AUTHENTICATIONPOLICIES)
 
 _kcl_watch_authenticationpolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Watching authentication-policies ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL authentication-policies ...'; $(NORMAL)
 	@$(WARN) 'This operation does NOT return the default authentication-policy which is the "default" mesh-policy'; $(NORMAL)
 	$(KUBECTL) get policies --all-namespaces=true --watch 
 
 _kcl_watch_authenticationpolicies_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching authentication-policies-set "$(KCL_AUTHENTICATIONPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation does NOT return the default authentication-policy which is the "default" mesh-policy'; $(NORMAL)
+
+_kcl_write_authenticationpolicy: _kcl_write_authenticationpolicies
+_kcl_write_authenticationpolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more authentication-policies ...'; $(NORMAL)
+	$(WRITER) $(KCL_AUTHENTICATIONPOLICIES_MANIFEST_FILEPATH)

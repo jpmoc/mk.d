@@ -32,11 +32,11 @@ _mke_get_node_ipaddress_C= $(shell $(MINIKUBE) ip --profile $(1))
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::Node ($(_MINIKUBE_NODE_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::Node ($(_MINIKUBE_NODE_MK_VERSION)) parameters:'
 	@echo '    MKE_NODE_CLUSTER_NAME=$(MKE_NODE_CLUSTER_NAME)'
 	@echo '    MKE_NODE_EXEC_COMMAND=$(MKE_NODE_EXEC_COMMAND)'
@@ -49,9 +49,12 @@ _mke_view_framework_parameters ::
 	@echo '    MKE_NODES_SET_NAME=$(MKE_NODES_SET_NAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::Node ($(_MINIKUBE_NODE_MK_VERSION)) targets:'
+	@echo '    _mke_add_node                - Add a node'
 	@echo '    _mke_exec_node               - Exec a command into the node'
+	@echo '    _mke_list_nodes              - List all nodes'
+	@echo '    _mke_list_nodes_set          - List a set of nodes'
 	@echo '    _mke_show_node               - Show everything related to a node'
 	@echo '    _mke_show_node_description   - Show description of a node'
 	@echo '    _mke_show_node_sshcommand    - Show ssh-command of a node'
@@ -75,7 +78,15 @@ _mke_exec_node:
 	@$(INFO) '$(MKE_UI_LABEL)Exec-ing into node of cluster "$(MKE_CONFIG_NAME)" ...'; $(NORMAL)
 	$(MINIKUBE) ssh $(__MKE_PROFILE__NODE) $(MKE_NODE_EXEC_COMMAND)
 
-_mke_show_node :: _mke_show_node_sshcommand _mke_show_node_description
+_mke_list_nodes:
+	@$(INFO) '$(MKE_UI_LABEL)Listing ALL nodes ...'; $(NORMAL)
+
+_mke_list_nodes_set:
+	@$(INFO) '$(MKE_UI_LABEL)Listing nodes-set "$(MKE_NODES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Nodes are grouped based on the provided ...'; $(NORMAL)
+
+_MKE_SHOW_NODE_TARGETS?= _mke_show_node_sshcommand _mke_show_node_description
+_mke_show_node: $(_MKE_SHOW_NODE_TARGETS)
 
 _mke_show_node_description:
 	@$(INFO) '$(MKE_UI_LABEL)Showing description of node "$(MKE_NODE_NAME)" ...'; $(NORMAL)
@@ -92,10 +103,3 @@ _mke_ssh_node:
 _mke_tail_node:
 	@$(INFO) '$(MKE_UI_LABEL)Tailing logs of node "$(MKE_NODE_NAME)" ...'; $(NORMAL)
 	$(MINIKUBE) logs $(__MKE_FOLLOW__NODE) $(__MKE_LENGTH__NODE) $(__MKE_PROBLEMS__NODE)
-
-_mke_view_nodes:
-	@$(INFO) '$(MKE_UI_LABEL)View nodes ...'; $(NORMAL)
-
-_mke_view_nodes_set:
-	@$(INFO) '$(MKE_UI_LABEL)View nodes-set "$(MKE_NODES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Nodes are grouped based on the provided ...'; $(NORMAL)

@@ -62,11 +62,11 @@ _KCL_UNAPPLY_SUBSCRIPTIONS_|?= $(_KCL_APPLY_SUBSCRIPTIONS_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Subscription ($(_KUBECTL_KNATIVE_SUBSCRIPTION_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Subscription ($(_KUBECTL_KNATIVE_SUBSCRIPTION_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Subscription ($(_KUBECTL_KNATIVE_SUBSCRIPTION_MK_VERSION)) parameters:'
 	@echo '    KCL_SUBSCRIPTION_ANNOTATIONS_KEYS=$(KCL_SUBSCRIPTION_ANNOTATIONS_KEYS)'
 	@echo '    KCL_SUBSCRIPTION_ANNOTATIONS_KEYVALUES=$(KCL_SUBSCRIPTION_ANNOTATIONS_KEYVALUES)'
@@ -92,7 +92,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_SUBSCRIPTIONS_SORT_BY=$(KCL_SUBSCRIPTIONS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Subscription ($(_KUBECTL_KNATIVE_SUBSCRIPTION_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_subscription                - Annotate a subscription'
 	@echo '    _kcl_apply_subscriptions                  - Apply manifest for one-por-more subscriptions'
@@ -104,6 +104,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_subscription                 - Explain the subscription object'
 	@echo '    _kcl_kustomize_subscription               - Kustomize one-or-more subscriptions'
 	@echo '    _kcl_label_subscription                   - Label a subscription'
+	@echo '    _kcl_list_subscriptions                   - List all subscriptions'
+	@echo '    _kcl_list_subscriptions_set               - List a set of subscriptions'
 	@echo '    _kcl_show_subscription                    - Show everything related to a subscription'
 	@echo '    _kcl_show_subscription_channel            - Show the channel of a subscription'
 	@echo '    _kcl_show_subscription_description        - Show the description of a subscription'
@@ -112,10 +114,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_subscriptions                - Un-apply manifest for one-or-more subscriptions'
 	@echo '    _kcl_unlabel_subscription                 - Un-label manifest for a subscription'
 	@echo '    _kcl_update_subscription                  - Update a subscription'
-	@echo '    _kcl_view_subscriptions                   - View all subscriptions'
-	@echo '    _kcl_view_subscriptions_set               - View a set of subscriptions'
 	@echo '    _kcl_watch_subscriptions                  - Watching subscriptions'
 	@echo '    _kcl_watch_subscriptions_set              - Watching a set of subscriptions'
+	@echo '    _kcl_write_subscriptions                  - Write manifest for one-or-more subscriptions'
 	@echo
 
 #----------------------------------------------------------------------
@@ -169,7 +170,17 @@ _kcl_label_subscription:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling subscription "$(KCL_SUBSCRIPTION_NAME)" ...'; $(NORMAL)
 	@ $(KUBECTL) label ...
 
-_kcl_show_subscription: _kcl_show_description_channel _kcl_show_subscription_object _kcl_show_subscription_state _kcl_show_subscription_subscriber _kcl_show_subscription_description
+_kcl_list_subscriptions:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL subscriptions ...'; $(NORMAL)
+	$(KUBECTL) get subscriptions --all-namespaces=true $(_X__KCL_NAMESPACE__SUBSCRIPTIONS) $(__KCL_OUTPUT_SUBSCRIPTIONS) $(_X__KCL_SELECTOR__SUBSCRIPTIONS) $(__KCL_SORT_BY__SUBSCRIPTIONS)
+
+_kcl_list_subscriptions_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing subscriptions-set "$(KCL_SUBSCRIPTIONS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Subscriptions are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get subscriptions --all-namespaces=false $(__KCL_NAMESPACE__SUBSCRIPTIONS) $(__KCL_OUTPUT__SUBSCRIPTIONS) $(__KCL_SELECTOR__SUBSCRIPTIONS) $(__KCL_SORT_BY__SUBSCRIPTIONS)
+
+_KCL_SHOW_SUBSCRIPTION_TARGETS?= _kcl_show_subscription_broker _kcl_show_subscription_channel _kcl_show_subscription_object _kcl_show_subscription_state _kcl_show_subscription_subscriber _kcl_show_subscription_description
+_kcl_show_subscription: $(_KCL_SHOW_SUBSCRIPTION_TARGETS)
 
 _kcl_show_subscription_broker:
 	@$(INFO) '$(KCL_UI_LABEL)Showing broker of subscription "$(KCL_SUBSCRIPTION_NAME)" ...'; $(NORMAL)
@@ -214,15 +225,6 @@ _kcl_update_subscription:
 	@$(INFO) '$(KCL_UI_LABEL)Updating subscription "$(KCL_SUBSCRIPTION_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) patch ...
 
-_kcl_view_subscriptions:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL subscriptions ...'; $(NORMAL)
-	$(KUBECTL) get subscriptions --all-namespaces=true $(_X__KCL_NAMESPACE__SUBSCRIPTIONS) $(__KCL_OUTPUT_SUBSCRIPTIONS) $(_X__KCL_SELECTOR__SUBSCRIPTIONS) $(__KCL_SORT_BY__SUBSCRIPTIONS)
-
-_kcl_view_subscriptions_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing subscriptions-set "$(KCL_SUBSCRIPTIONS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Subscriptions are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get subscriptions --all-namespaces=false $(__KCL_NAMESPACE__SUBSCRIPTIONS) $(__KCL_OUTPUT__SUBSCRIPTIONS) $(__KCL_SELECTOR__SUBSCRIPTIONS) $(__KCL_SORT_BY__SUBSCRIPTIONS)
-
 _kcl_watch_subscriptions:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL subscriptions ...'; $(NORMAL)
 	$(KUBECTL) get subscriptions --all-namespaces=true --watch 
@@ -230,3 +232,8 @@ _kcl_watch_subscriptions:
 _kcl_watch_subscriptions_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching subscriptions-set "$(KCL_SUBSCRIPTIONS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Subscriptions are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+
+_kcl_write_subscription: _kcl_write_subscriptions
+_kcl_write_subscriptions:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more subscriptions ...'; $(NORMAL)
+	$(WRITER) $(KCL_SUBSCRIPTIONS_MANIFEST_FILEPATH)

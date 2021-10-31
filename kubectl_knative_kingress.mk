@@ -65,11 +65,11 @@ __KCL_WATCH_ONLY__KINGRESSES= $(if $(KCL_KINGRESSES_WATCH_ONLY),--watch-only=$(K
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::KIngress ($(_KUBECTL_KNATIVE_KINGRESS_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::KIngress ($(_KUBECTL_KNATIVE_KINGRESS_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::KIngress ($(_KUBECTL_KNATIVE_KINGRESS_MK_VERSION)) parameters:'
 	@echo '    KCL_KINGRESS_ISTIOGATEWAY_NAME=$(KCL_KINGRESS_ISTIOGATEWAY_NAME)'
 	@echo '    KCL_KINGRESS_ISTIOGATEWAY_NAMESPACE=$(KCL_KINGRESS_ISTIOGATEWAY_NAMESPACE)'
@@ -94,7 +94,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_KINGRESSES_WATCH_ONLY=$(KCL_KINGRESSES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::KIngress ($(_KUBECTL_KNATIVE_KINGRESS_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_kingress                 - Annotate a knative-ingress'
 	@echo '    _kcl_apply_kingresses                  - Apply manifest for one-or-more knative-ingresses'
@@ -105,6 +105,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_kingress                  - Explain the knative-ingress object'
 	@echo '    _kcl_kustomize_kingresses              - Kustomize one-or-more knative-ingresses'
 	@echo '    _kcl_label_kingress                    - Label a knative-ingress'
+	@echo '    _kcl_list_kingresses                   - List all knative-revisions'
+	@echo '    _kcl_list_kingresses_set               - List a set of knative-ingresses'
 	@echo '    _kcl_show_kingress                     - Show everything related to a knative-ingress'
 	@echo '    _kcl_show_kingress_description         - Show the description of a knative-ingress'
 	@echo '    _kcl_show_kingress_istioingressgateway - Show the istio-ingress-gateway of a knative-ingress'
@@ -113,10 +115,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_kingress_virtualservices     - Show the virtual-services of a knative-ingress'
 	@echo '    _kcl_unapply_kingresses                - Unapply manifest for one-or-more knative-ingresses'
 	@echo '    _kcl_update_kingress                   - Update a knative-ingress'
-	@echo '    _kcl_view_kingresses                   - View all knative-revisions'
-	@echo '    _kcl_view_kingresses_set               - View a set of knative-ingresses'
-	@echo '    _kcl_watch_kingresses                  - Watch knative-ingresses'
+	@echo '    _kcl_watch_kingresses                  - Watch all knative-ingresses'
 	@echo '    _kcl_watch_kingresses_set              - Watch a set of knative-ingresses'
+	@echo '    _kcl_write_kingresses                  - Write manifest for one-or-more knative-ingresses'
 	@echo
 
 #----------------------------------------------------------------------
@@ -212,12 +213,12 @@ _kcl_unlabel_kingress:
 _kcl_update_kingress:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-ingress "$(KCL_KINGRESS_NAME)" ...'; $(NORMAL)
 
-_kcl_view_kingresses:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-ingresses ...'; $(NORMAL)
+_kcl_list_kingresses:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-ingresses ...'; $(NORMAL)
 	$(KUBECTL) get kingress --all-namespaces=true $(_X__KCL_NAMESPACE__KINGRESSES) $(__KCL_OUTPUT__KINGRESSES) $(_X__KCL_SELECTOR__KINGRESSES)$(__KCL_SHOW_LABELS__KINGRESSES)
 
-_kcl_view_kingresses_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-ingresses-set "$(KCL_KINGRESSES_SET_NAME)" ...'; $(NORMAL)
+_kcl_list_kingresses_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-ingresses-set "$(KCL_KINGRESSES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Knative-ingresses are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get kingress --all-namespaces=false $(__KCL_FIELD_SELECTOR__KINGRESSES) $(__KCL_NAMESPACE__KINGRESSES) $(__KCL_OUTPUT__KINGRESSES) $(__KCL_SELECTOR__KINGRESSES) $(__KCL_SHOW_LABELS__KINGRESSES)
 
@@ -228,3 +229,8 @@ _kcl_watch__kingresses:
 _kcl_watch_kingresses_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-ingresses-set "$(KCL_KINGRESSES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get kingress $(strip $(__KCL_ALL_NAMESPACES__KINGRESSES) $(__KCL_NAMESPACE__KINGRESSES) $(__KCL_OUTPUT__KINGRESSES) $(__KCL_SELECTOR__KINGRESSES) $(_X__KCL_WATCH__KINGRESSES) --watch=true $(__KCL_WATCH_ONLY__KINGRESSES) )
+
+_kcl_write_kingress: _kcl_write_kingresses
+_kcl_write_kingresses:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-ingresses ...'; $(NORMAL)
+	$(WRITER) $(KCL_KINGRESSES_MANIFEST_FILEPATH)

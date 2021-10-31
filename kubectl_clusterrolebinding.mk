@@ -42,8 +42,8 @@ _KCL_UNAPPLY_CLUSTERROLEBINDINGS_|?= $(_KCL_APPLY_CLUSTERROLEBINDINGS_|)
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::ClusterRoleBinding ($(_KUBECTL_CLUSTERROLEBINDING_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::ClusterRoleBinding ($(_KUBECTL_CLUSTERROLEBINDING_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::ClusterRoleBinding ($(_KUBECTL_CLUSTERROLEBINDING_MK_VERSION)) parameters:'
@@ -92,7 +92,7 @@ _kcl_annotate_clusterrolebinding:
 
 _kcl_apply_clusterrolebinding: _kcl_apply_clusterrolebindings
 _kcl_apply_clusterrolebindings:
-	@$(INFO) '$(KCL_UI_LABEL)Applying amnifest for one-or-more cluster-role-bindings ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Applying manifest for one-or-more cluster-role-bindings ...'; $(NORMAL)
 	$(if $(KCL_CLUSTERROLEBINDINGS_MANIFEST_FILEPATH),cat $(KCL_CLUSTERROLEBINDINGS_MANIFEST_FILEPATH))
 	$(if $(filter true,$(KCL_CLUSTERROLEBINDINGS_MANIFEST_STDINFLAG)),$(_KCL_APPLY_CLUSTERROLEBINDINGS_|)cat)
 	$(if $(KCL_CLUSTERROLEBINDINGS_MANIFEST_URL),curl -L $(KCL_CLUSTERROLEBINDINGS_MANIFEST_URL))

@@ -216,5 +216,5 @@ _kcl_watching_ingresses_set:
 
 _kcl_write_ingress: _kcl_write_ingresses
 _kcl_write_ingresses:
-	@$(INFO) '$(KCL_UI_LABEL)Writing amnifest for one-or-more ingresses ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more ingresses ...'; $(NORMAL)
 	$(WRITE) $(KCL_INGRESSES_MANIFEST_FILEPATH)

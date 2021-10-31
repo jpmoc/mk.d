@@ -35,11 +35,12 @@ _icl_get_jaeger_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --ou
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::Jaeger ($(_ISTIOCTL_JAEGER_MK_VERSION)) macros:'
+	@echo '    _icl_get_jaeger_pods_names_{|S|SN}   - Get the names of the jaeger pods (Selector,namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::Jaeger ($(_ISTIOCTL_JAEGER_MK_VERSION)) variables:'
 	@echo '    ICL_JAEGER_HOST=$(ICL_JAEGER_HOST)'
 	@echo '    ICL_JAEGER_IP=$(ICL_JAEGER_IP)'
@@ -54,7 +55,7 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_JAEGER_URL=$(ICL_JAEGER_URL)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::Jaeger ($(_ISTIOCTL_JAEGER_MK_VERSION)) targets:'
 	@echo '    _icl_open_jaeger                 - Open a jaeger-dashboard'
 	@echo '    _icl_show_jaeger                 - Show everything related to a jaeger-dahsboard'

@@ -19,6 +19,7 @@ __HLM_URL__REPOSITORY= $(if $(HLM_REPOSITORY_URL),--url $(HLM_REPOSITORY_URL))
 __HLM_USERNAME=
 
 # UI parameters
+|_HLM_LIST_REPOSITORIES_SET?= | grep 'NAME\|$(HLM_REPOSITORIES_REGEX)'
 
 #--- Utilities
 |_HLM_SHOW_REPOSITORY_CHARTVERSIONS?= | head -10
@@ -29,11 +30,11 @@ __HLM_USERNAME=
 # USAGE
 #
 
-_hlm_view_framework_macros ::
-	@echo 'HeLM::Repository ($(_HELM_REPOSITORY_MK_VERSION)) macros:'
-	@echo
+_hlm_list_macros ::
+	@#echo 'HeLM::Repository ($(_HELM_REPOSITORY_MK_VERSION)) macros:'
+	@#echo
 
-_hlm_view_framework_parameters ::
+_hlm_list_parameters ::
 	@echo 'HeLM::Repository ($(_HELM_REPOSITORY_MK_VERSION)) parameters:'
 	@echo '    HLM_REPOSITORY_DIRPATH=$(HLM_REPOSITORY_DIRPATH)'
 	@echo '    HLM_REPOSITORY_NAME=$(HLM_REPOSITORY_NAME)'
@@ -42,17 +43,17 @@ _hlm_view_framework_parameters ::
 	@echo '    HLM_REPOSITORIES_SET_NAME=$(HLM_REPOSITORIES_SET_NAME)'
 	@echo
 
-_hlm_view_framework_targets ::
+_hlm_list_targets ::
 	@echo 'HeLM::Repository ($(_HELM_REPOSITORY_MK_VERSION)) targets:'
 	@echo '    _hlm_add_repository               - Add a repository'
 	@echo '    _hlm_index_repository             - Index a local repository'
+	@echo '    _hlm_list_repositories            - List all repositories'
+	@echo '    _hlm_list_repositories_set        - List a set of repositories'
 	@echo '    _hlm_remove_repository            - Remove a repository'
 	@echo '    _hlm_show_repository              - Show everything related to a repository'
 	@echo '    _hlm_show_repository_content      - Show content of a repository'
 	@echo '    _hlm_show_repository_description  - Show description of a repository'
 	@echo '    _hlm_update_repositories          - Update local-indexes of repositories'
-	@echo '    _hlm_view_repositories            - View repositories'
-	@echo '    _hlm_view_repositories_set        - View a set of repositories'
 	@echo
 
 #----------------------------------------------------------------------
@@ -74,11 +75,20 @@ _hlm_index_repository:
 	$(HELM) repo index $(__HLM_MERGE) $(__HLM_URL__REPOSITORY) $(HLM_REPOSITORY_DIRPATH)
 	@$(WARN) 'After successful completion, publish your repository online. Git push on github?'; $(NORMAL)
 
+_hlm_list_repositories:
+	@$(INFO) '$(HLM_UI_LABEL)Listing ALL repositories ...'; $(NORMAL)
+	$(HELM) repo list
+
+_hlm_list_repositories_set:
+	@$(INFO) '$(HLM_UI_LABEL)Listing repositories-set "$(HLM_REPOSITORIES_SET_NAME)" ...'; $(NORMAL)
+	$(HELM) repo list $(|_HLM_LIST_REPOSITORIES_SET)
+
 _hlm_remove_repository:
 	@$(INFO) '$(HLM_UI_LABEL)Removing repository "$(HLM_REPOSITORY_NAME)" ...'; $(NORMAL)
 	$(HELM) repo remove $(HLM_REPOSITORY_NAME)
 
-_hlm_show_repository: _hlm_show_repository_charts _hlm_show_repository_chartversions _hlm_show_repository_description
+_HLM_SHOW_REPOSITORY_TARGETS?= _hlm_show_repository_charts _hlm_show_repository_chartversions _hlm_show_repository_description
+_hlm_show_repository: $(_HLM_SHOW_REPOSITORY_TARGETS)
 
 _hlm_show_repository_charts:
 	@$(INFO) '$(HLM_UI_LABEL)Showing charts of repository "$(HLM_REPOSITORY_NAME)" ...'; $(NORMAL)
@@ -100,14 +110,6 @@ _hlm_update_repositories:
 	@$(WARN) 'This operation re-reads the index.html of the configured chart repositories'; $(NORMAL)
 	@$(WARN) 'This operation update information of available charts locally from chart repositories'; $(NORMAL)
 	$(HELM) repo update
-
-_hlm_view_repositories:
-	@$(INFO) '$(HLM_UI_LABEL)Viewing ALL repositories ...'; $(NORMAL)
-	$(HELM) repo list
-
-_hlm_view_repositories_set:
-	@$(INFO) '$(HLM_UI_LABEL)Viewing repositories-set "$(HLM_REPOSITORIES_SET_NAME)" ...'; $(NORMAL)
-	$(HELM) repo list | grep 'NAME\|$(HLM_REPOSITORIES_REGEX)'
 
 _hlm_watch_repositories:
 	@$(INFO) '$(HLM_UI_LABEL)Watching ALL repositories ...'; $(NORMAL)

@@ -36,14 +36,14 @@ ISTIOCTL?= $(strip $(__ISTIOCTL_ENVIRONMENT) $(ISTIOCTL_ENVIRONMENT) $(ISTIOCTL_
 # USAGE
 #
 
-_view_framework_macros :: _icl_view_framework_macros
-_icl_view_framework_macros ::
-	@echo 'IstioCtL ($(_ISTIOCTL_MK_VERSION)) macros:'
-	@echo
+_list_macros :: _icl_list_macros
+_icl_list_macros ::
+	@#echo 'IstioCtL:: ($(_ISTIOCTL_MK_VERSION)) macros:'
+	@#echo
 
-_view_framework_parameters :: _icl_view_framework_parameters
-_icl_view_framework_parameters ::
-	@echo 'IstioCtL ($(_ISTIOCTL_MK_VERSION)) variables:'
+_list_parameters :: _icl_list_parameters
+_icl_list_parameters ::
+	@echo 'IstioCtL:: ($(_ISTIOCTL_MK_VERSION)) variables:'
 	@echo '    ICL_INPUTS_DIRPATH=$(ICL_INPUTS_DIRPATH)'
 	@echo '    ICL_ISTIO_NAMESPACE_NAME=$(ICL_ISTIO_NAMESPACE_NAME)'
 	@echo '    ICL_ISTIOPILOT_HOST=$(ICL_ISTIOPILOT_HOST)'
@@ -56,9 +56,9 @@ _icl_view_framework_parameters ::
 	@# echo '    ISTIOCTL_KUBECONFIG_FILEPATH=$(ISTIOCTL_KUBECONFIG_FILEPATH)'
 	@echo
 
-_view_framework_targets :: _icl_view_framework_targets
-_icl_view_framework_targets ::
-	@echo 'IstioCtL ($(_ISTIOCTL_MK_VERSION)) targets:'
+_list_targets :: _icl_list_targets
+_icl_list_targets ::
+	@echo 'IstioCtL:: ($(_ISTIOCTL_MK_VERSION)) targets:'
 	@echo '    _icl_install_dependencies       - Install dependencies'
 	@echo '    _icl_show_version               - Show version of helm and tiller'
 	@echo
@@ -86,12 +86,13 @@ MK_DIR?= .
 # PUBLIC TARGETS
 #
 
-_install_framework_dependencies :: _icl_install_dependencies
+_install_dependencies :: _icl_install_dependencies
 _icl_install_dependencies ::
 	@$(INFO) '$(ICL_UI_LABEL)Installing dependencies ...'; $(NORMAL)
 	@$(WARN) 'Install docs at https://istio.io/docs/setup/kubernetes/download-release/'; $(NORMAL)
 	# cd /tmp; curl --location https://git.io/getLatestIstio | sh -
 
+_view_versions :: _icl_show_version
 _icl_show_version:
-	@$(INFO) '$(ICL_UI_LABEL)Showing version ...'; $(NORMAL)
+	@$(INFO) '$(ICL_UI_LABEL)Showing version of dependencies ...'; $(NORMAL)
 	$(ISTIOCTL) version

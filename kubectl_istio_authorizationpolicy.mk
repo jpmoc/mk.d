@@ -42,12 +42,12 @@ _kcl_get_authorizationpolicy_destinationrules_names_SN= $(shell $(KUBECTL) get d
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Istio::AuthorizationPolicy ($(_KUBECTL_ISTIO_AUTHORIZATIONPOLICY_MK_VERSION)) macros:'
 	@echo '    _kcl_get_authorizationpolicy_destinationrules_names_{|S|SN}  - Get the Destination rules for a policy (Selector,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::AuthorizationPolicy ($(_KUBECTL_ISTIO_AUTHORIZATIONPOLICY_MK_VERSION)) parameters:'
 	@echo '    KCL_AUTHORIZATIONPOLICY_DESTINATIONRULES_NAMES=$(KCL_AUTHORIZATIONPOLICY_DESTINATIONRULES_NAMES)'
 	@echo '    KCL_AUTHORIZATIONPOLICY_DESTINATIONRULES_SELECTOR=$(KCL_AUTHORIZATIONPOLICY_DESTINATIONRULES_SELECTOR)'
@@ -66,7 +66,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_AUTHORIZATIONPOLICIES_SORTBY=$(KCL_AUTHORIZATIONPOLICIES_SORTBY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::AuthorizationPolicy ($(_KUBECTL_ISTIO_AUTHORIZATIONPOLICY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_authorizationpolicy                - Annotate an authorization-policy'
 	@echo '    _kcl_apply_authorizationpolicy                   - Apply a manifest for an authorization-policy'
@@ -75,6 +75,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_edit_authorizationpolicy                    - Edit an authorization-policy'
 	@echo '    _kcl_explain_authorizationpolicy                 - Explain authorization-policy'
 	@echo '    _kcl_label_authorizationpolicy                   - Label an authorization-policy'
+	@echo '    _kcl_list_authorizationpolicies                  - List all authorization-policies'
+	@echo '    _kcl_list_authorizationpolicies_set              - List a set of authorization-policies'
 	@echo '    _kcl_show_authorizationpolicy                    - Show everything related to an authorization-policy'
 	@echo '    _kcl_show_authorizationpolicy_description        - Show description of an authorization-policy'
 	@echo '    _kcl_show_authorizationpolicy_destinationrules   - Show destination-rules of an authorization-policy'
@@ -83,8 +85,6 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_authorizationpolicy                 - Unapply a manifest for an authorization-policy'
 	@echo '    _kcl_unlabel_authorizationpolicy                 - Unlabel an authorization-policy'
 	@echo '    _kcl_update_authorizationpolicy                  - Update an authorization-policy'
-	@echo '    _kcl_view_authorizationpolicies                  - View all authorization-policies'
-	@echo '    _kcl_view_authorizationpolicies_set              - View a set of authorization-policies'
 	@echo '    _kcl_watch_authorizationpolicies                 - Watch authorization-policies'
 	@echo '    _kcl_watch_authorizationpolicies_set             - Watch a set of authorization-policies'
 	@echo
@@ -119,7 +119,17 @@ _kcl_explain_authorizationpolicy:
 _kcl_label_authorizationpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling authorization-policy "$(KCL_AUTHORIZATIONPOLICY_NAME)" ...'; $(NORMAL)
 
-_kcl_show_authorizationpolicy :: _kcl_show_authorizationpolicy_object _kcl_show_authorizationpolicy_state _kcl_show_authorizationpolicy_description
+_kcl_list_authorizationpolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL authorization-policies ...'; $(NORMAL)
+	$(KUBECTL) get authorizationpolicies --all-namespaces=true $(__KCL_OUTPUT_AUTHORIZATIONPOLICIES) $(_X__KCL_SELECTOR__AUTHORIZATIONPOLICIES) $(__KCL_SORT_BY__AUTHORIZATIONPOLICIES)
+
+_kcl_list_authorizationpolicies_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing authorization-policies-set "$(KCL_AUTHORIZATIONPOLICIES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Authorization-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get authorizationpolicies --all-namespaces=false $(__KCL_NAMESPACE__AUTHORIZATIONPOLICIES) $(__KCL_OUTPUT__AUTHORIZATIONPOLICIES) $(__KCL_SELECTOR__AUTHORIZATIONPOLICIES) $(__KCL_SORT_BY__AUTHORIZATIONPOLICIES)
+
+_KCL_SHOW_AUTHORIZATIONPOLICY_TARGETS?= _kcl_show_authorizationpolicy_object _kcl_show_authorizationpolicy_state _kcl_show_authorizationpolicy_description
+_kcl_show_authorizationpolicy: $(_KCL_SHOW_AUTHORIZATIONPOLICY_TARGETS)
 
 _kcl_show_authorizationpolicy_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description authorization-policy "$(KCL_AUTHORIZATIONPOLICY_NAME)" ...'; $(NORMAL)
@@ -143,15 +153,6 @@ _kcl_unlabel_authorizationpolicy:
 
 _kcl_update_authorizationpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Updating authorization-policy "$(KCL_AUTHORIZATIONPOLICY_NAME)" ...'; $(NORMAL)
-
-_kcl_view_authorizationpolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL authorization-policies ...'; $(NORMAL)
-	$(KUBECTL) get authorizationpolicies --all-namespaces=true $(__KCL_OUTPUT_AUTHORIZATIONPOLICIES) $(_X__KCL_SELECTOR__AUTHORIZATIONPOLICIES) $(__KCL_SORT_BY__AUTHORIZATIONPOLICIES)
-
-_kcl_view_authorizationpolicies_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing authorization-policies-set "$(KCL_AUTHORIZATIONPOLICIES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Authorization-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get authorizationpolicies --all-namespaces=false $(__KCL_NAMESPACE__AUTHORIZATIONPOLICIES) $(__KCL_OUTPUT__AUTHORIZATIONPOLICIES) $(__KCL_SELECTOR__AUTHORIZATIONPOLICIES) $(__KCL_SORT_BY__AUTHORIZATIONPOLICIES)
 
 _kcl_watch_authorizationpolicies:
 	@$(INFO) '$(KCL_UI_LABEL)Watching authorization-policies ...'; $(NORMAL)

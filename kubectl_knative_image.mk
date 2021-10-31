@@ -53,11 +53,11 @@ __KCL_WATCH_ONLY__IMAGES= $(if $(KCL_IMAGES_WATCH_ONLY),--watch-only=$(KCL_IMAGE
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Image ($(_KUBECTL_KNATIVE_IMAGE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Image ($(_KUBECTL_KNATIVE_IMAGE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Image ($(_KUBECTL_KNATIVE_IMAGE_MK_VERSION)) parameters:'
 	@echo '    KCL_IMAGE_NAME=$(KCL_IMAGE_NAME)'
 	@echo '    KCL_IMAGE_NAMESPACE_NAME=$(KCL_IMAGE_NAMESPACE_NAME)'
@@ -76,7 +76,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_IMAGES_WATCH_ONLY=$(KCL_IMAGES_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Image ($(_KUBECTL_KNATIVE_IMAGE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_image                 - Annotate a knative-image'
 	@echo '    _kcl_apply_images                   - Apply manifest for one-or-more knative-images'
@@ -87,15 +87,16 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_image                  - Explain the knative-image object'
 	@echo '    _kcl_kustomize_image                - Kustomize one-or-more knative-images'
 	@echo '    _kcl_label_image                    - Label a knative-image'
+	@echo '    _kcl_list_images                    - List all knative-images'
+	@echo '    _kcl_list_images_set                - List a set of knative-images'
 	@echo '    _kcl_show_image                     - Show everything related to a knative-image'
 	@echo '    _kcl_show_image_description         - Show the description of a knative-image'
 	@echo '    _kcl_show_image_object              - Show the object of a knative-image'
-	@echo '    _kcl_unapply_images                 - Unapply amnifest for one-or-more knative-images'
+	@echo '    _kcl_unapply_images                 - Unapply manifest for one-or-more knative-images'
 	@echo '    _kcl_update_image                   - Update a knative-image'
-	@echo '    _kcl_view_images                    - View all knative-images'
-	@echo '    _kcl_view_images_set                - View a set of knative-images'
 	@echo '    _kcl_watch_images                   - Watch knative-images'
 	@echo '    _kcl_watch_images_set               - Watch a set of knative-images'
+	@echo '    _kcl_write_images                   - Write a manifest for one-or-more knative-images'
 	@echo
 
 #----------------------------------------------------------------------
@@ -146,6 +147,15 @@ _kcl_kustomize_images:
 _kcl_label_image:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-image "$(KCL_IMAGE_NAME)" ...'; $(NORMAL)
 
+_kcl_list_images:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-images ...'; $(NORMAL)
+	$(KUBECTL) get king --all-namespaces=true $(_X__KCL_NAMESPACE__IMAGES) $(__KCL_OUTPUT__IMAGES) $(_X__KCL_SELECTOR__IMAGES)$(__KCL_SHOW_LABELS__IMAGES)
+
+_kcl_list_images_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-images-set "$(KCL_IMAGES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Knative-serverless-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get king --all-namespaces=false $(__KCL_FIELD_SELECTOR__IMAGES) $(__KCL_NAMESPACE__IMAGES) $(__KCL_OUTPUT__IMAGES) $(__KCL_SELECTOR__IMAGES) $(__KCL_SHOW_LABELS__IMAGES)
+
 _KCL_SHOW_IMAGE_TARGETS?= _kcl_show_image_object _kcl_show_image_state _kcl_show_image_description
 _kcl_show_image :: $(_KCL_SHOW_IMAGE_TARGETS)
 
@@ -173,15 +183,6 @@ _kcl_unlabel_image:
 _kcl_update_image:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-serverless-service "$(KCL_IMAGE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_images:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-images ...'; $(NORMAL)
-	$(KUBECTL) get king --all-namespaces=true $(_X__KCL_NAMESPACE__IMAGES) $(__KCL_OUTPUT__IMAGES) $(_X__KCL_SELECTOR__IMAGES)$(__KCL_SHOW_LABELS__IMAGES)
-
-_kcl_view_images_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-images-set "$(KCL_IMAGES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Knative-serverless-services are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get king --all-namespaces=false $(__KCL_FIELD_SELECTOR__IMAGES) $(__KCL_NAMESPACE__IMAGES) $(__KCL_OUTPUT__IMAGES) $(__KCL_SELECTOR__IMAGES) $(__KCL_SHOW_LABELS__IMAGES)
-
 _kcl_watch__images:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-images ...'; $(NORMAL)
 	$(KUBECTL) get king $(strip $(_X__KCL_ALL_NAMESPACES__IMAGES) --all-namespaces=true $(_X__KCL_NAMESPACE__IMAGES) $(__KCL_OUTPUT__IMAGES) $(_X__KCL_SELECTOR__IMAGES) $(_X__KCL_WATCH__IMAGES) --watch=true $(__KCL_WATCH_ONLY__IMAGES) )
@@ -189,3 +190,8 @@ _kcl_watch__images:
 _kcl_watch_images_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-images-set "$(KCL_IMAGES_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get king $(strip $(__KCL_ALL_NAMESPACES__IMAGES) $(__KCL_NAMESPACE__IMAGES) $(__KCL_OUTPUT__IMAGES) $(__KCL_SELECTOR__IMAGES) $(_X__KCL_WATCH__IMAGES) --watch=true $(__KCL_WATCH_ONLY__IMAGES) )
+
+_kcl_write_image: _kcl_write_images
+_kcl_write_images:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-serverless-services ...'; $(NORMAL)
+	$(WRITER) $(KCL_IMAGES_MANIFEST_FILEPATH)

@@ -24,24 +24,24 @@ KUSTOMIZE?= $(strip $(__KUSTOMIZE_ENVIRONMENT) $(KUSTOMIZE_ENVIRONMENT) $(KUSTOM
 # USAGE
 #
 
-_view_framework_macros :: _kze_view_framework_macros
-_kze_view_framework_macros ::
-	@#echo 'KustomiZE ($(_KUSTOMIZE_MK_VERSION)) macros:'
+_list_macros :: _kze_list_macros
+_kze_list_macros ::
+	@#echo 'KustomiZE:: ($(_KUSTOMIZE_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _kze_view_framework_parameters
-_kze_view_framework_parameters ::
-	@echo 'KustomiZE ($(_KUSTOMIZE_MK_VERSION)) parameters:'
+_list_parameters :: _kze_list_parameters
+_kze_list_parameters ::
+	@echo 'KustomiZE:: ($(_KUSTOMIZE_MK_VERSION)) parameters:'
 	@echo '    KZE_INPUTS_DIRPATH=$(KZE_INPUTS_DIRPATH)'
 	@echo '    KZE_OUTPUTS_DIRPATH=$(KZE_OUTPUTS_DIRPATH)'
 	@echo '    KUSTOMIZE=$(KUSTOMIZE)'
 	@echo
 
-_view_framework_targets :: _kze_view_framework_targets
-_kze_view_framework_targets ::
-	@echo 'KustomiZE ($(_KUSTOMIZE_MK_VERSION)) targets:'
+_list_targets :: _kze_list_targets
+_kze_list_targets ::
+	@echo 'KustomiZE:: ($(_KUSTOMIZE_MK_VERSION)) targets:'
 	@echo '    _kze_install_dependencies              - Install dependencies'
-	@echo '    _kze_view_versions                     - View versions of dependencies'
+	@echo '    _kze_show_versions                     - Show versions of dependencies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -58,7 +58,7 @@ MK_DIR?= .
 # PUBLIC TARGETS
 #
 
-_install_framework_dependencies :: _kze_install_dependencies
+_install_dependencies :: _kze_install_dependencies
 _kze_install_dependencies ::
 	@$(INFO) '$(KZE_UI_LABEL)Installaing dependencies...'; $(NORMAL)
 	@$(WARN) 'Install docs @ https://github.com/kubernetes-sigs/kustomize/blob/master/docs/INSTALL.md'; $(NORMAL)
@@ -67,7 +67,7 @@ _kze_install_dependencies ::
 	which kustomize
 	kustomize version
 
-_view_versions :: _kze_view_versions
-_kze_view_versions:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
+_view_versions :: _kze_show_versions
+_kze_show_version:
+	@$(INFO) '$(KZE_UI_LABEL)Showing versions of dependencies ...'; $(NORMAL)
 	kustomize version

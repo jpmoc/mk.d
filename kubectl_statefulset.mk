@@ -43,8 +43,8 @@ _KCL_UNAPPLY_STATEFULSETS_|?= $(_KCL_APPLY_STATEFULSETS_|)
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::StatefulSet ($(_KUBECTL_STATEFULSET_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::StatefulSet ($(_KUBECTL_STATEFULSET_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::StatefulSet ($(_KUBECTL_STATEFULSET_MK_VERSION)) parameters:'

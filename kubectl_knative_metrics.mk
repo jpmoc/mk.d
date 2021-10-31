@@ -53,11 +53,11 @@ __KCL_WATCH_ONLY__METRICS= $(if $(KCL_METRICS_WATCH_ONLY),--watch-only=$(KCL_MET
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Metric ($(_KUBECTL_KNATIVE_METRIC_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Metric ($(_KUBECTL_KNATIVE_METRIC_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Metric ($(_KUBECTL_KNATIVE_METRIC_MK_VERSION)) parameters:'
 	@echo '    KCL_METRIC_NAME=$(KCL_METRIC_NAME)'
 	@echo '    KCL_METRIC_NAMESPACE_NAME=$(KCL_METRIC_NAMESPACE_NAME)'
@@ -77,7 +77,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_METRICS_WATCH_ONLY=$(KCL_METRICS_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Metric ($(_KUBECTL_KNATIVE_METRIC_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_metric                 - Annotate a metric'
 	@echo '    _kcl_apply_metrics                   - Apply manifest for one-or-more metrics'
@@ -88,16 +88,17 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_metric                  - Explain the metric object'
 	@echo '    _kcl_kustomize_metric                - Kustomize one-or-more metrics'
 	@echo '    _kcl_label_metric                    - Label a metric'
+	@echo '    _kcl_list_metrics                    - List all metrics'
+	@echo '    _kcl_list_metrics_set                - List a set of metrics'
 	@echo '    _kcl_show_metric                     - Show everything related to a metric'
 	@echo '    _kcl_show_metric_description         - Show the description of a metric'
 	@echo '    _kcl_show_metric_object              - Show the object of a metric'
 	@echo '    _kcl_show_metric_revision            - Show the revision of a metric'
-	@echo '    _kcl_unapply_metrics                 - Unapply amnifest for one-or-more metrics'
+	@echo '    _kcl_unapply_metrics                 - Unapply manifest for one-or-more metrics'
 	@echo '    _kcl_update_metric                   - Update a metric'
-	@echo '    _kcl_view_metrics                    - View all metrics'
-	@echo '    _kcl_view_metrics_set                - View a set of metrics'
 	@echo '    _kcl_watch_metrics                   - Watch metrics'
 	@echo '    _kcl_watch_metrics_set               - Watch a set of metrics'
+	@echo '    _kcl_write_metrics                   - Write a manifest for one-or-more metrics'
 	@echo
 
 #----------------------------------------------------------------------
@@ -147,9 +148,19 @@ _kcl_kustomize_metrics:
 
 _kcl_label_metric:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling metric "$(KCL_METRIC_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) label ...
+
+_kcl_list_metrics:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL metrics ...'; $(NORMAL)
+	$(KUBECTL) get metrics --all-namespaces=true $(_X__KCL_NAMESPACE__METRICS) $(__KCL_OUTPUT__METRICS) $(_X__KCL_SELECTOR__METRICS)$(__KCL_SHOW_LABELS__METRICS)
+
+_kcl_list_metrics_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing metrics-set "$(KCL_METRICS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Metrics are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get metrics --all-namespaces=false $(__KCL_FIELD_SELECTOR__METRICS) $(__KCL_NAMESPACE__METRICS) $(__KCL_OUTPUT__METRICS) $(__KCL_SELECTOR__METRICS) $(__KCL_SHOW_LABELS__METRICS)
 
 _KCL_SHOW_METRIC_TARGETS?= _kcl_show_metric_object _kcl_show_metric_state _kcl_show_metric_description
-_kcl_show_metric :: $(_KCL_SHOW_METRIC_TARGETS)
+_kcl_show_metric: $(_KCL_SHOW_METRIC_TARGETS)
 
 _kcl_show_metric_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description metric "$(KCL_METRIC_NAME)" ...'; $(NORMAL)
@@ -175,15 +186,6 @@ _kcl_unlabel_metric:
 _kcl_update_metric:
 	@$(INFO) '$(KCL_UI_LABEL)Updating metric "$(KCL_METRIC_NAME)" ...'; $(NORMAL)
 
-_kcl_view_metrics:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL metrics ...'; $(NORMAL)
-	$(KUBECTL) get metrics --all-namespaces=true $(_X__KCL_NAMESPACE__METRICS) $(__KCL_OUTPUT__METRICS) $(_X__KCL_SELECTOR__METRICS)$(__KCL_SHOW_LABELS__METRICS)
-
-_kcl_view_metrics_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing metrics-set "$(KCL_METRICS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Metrics are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get metrics --all-namespaces=false $(__KCL_FIELD_SELECTOR__METRICS) $(__KCL_NAMESPACE__METRICS) $(__KCL_OUTPUT__METRICS) $(__KCL_SELECTOR__METRICS) $(__KCL_SHOW_LABELS__METRICS)
-
 _kcl_watch__metrics:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL metrics ...'; $(NORMAL)
 	$(KUBECTL) get metrics $(strip $(_X__KCL_ALL_NAMESPACES__METRICS) --all-namespaces=true $(_X__KCL_NAMESPACE__METRICS) $(__KCL_OUTPUT__METRICS) $(_X__KCL_SELECTOR__METRICS) $(_X__KCL_WATCH__METRICS) --watch=true $(__KCL_WATCH_ONLY__METRICS) )
@@ -192,3 +194,8 @@ _kcl_watch_metrics_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching metrics-set "$(KCL_METRICS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Metrics are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get metrics $(strip $(__KCL_ALL_NAMESPACES__METRICS) $(__KCL_NAMESPACE__METRICS) $(__KCL_OUTPUT__METRICS) $(__KCL_SELECTOR__METRICS) $(_X__KCL_WATCH__METRICS) --watch=true $(__KCL_WATCH_ONLY__METRICS) )
+
+_kcl_write_metric: _kcl_write_metrics
+_kcl_write_metrics:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more metrics ...'; $(NORMAL)
+	$(WRITER) $(KCL_METRICS_MANIFEST_FILEPATH)

@@ -20,18 +20,18 @@ __GPG_SYMMETRIC?= $(if $(filter true, $(GPG_FILE_SYMMETRIC_ENABLE)),--symmetric)
 # USAGE
 #
 
-_gpg_view_framework_macros ::
+_gpg_list_macros ::
 	@#echo 'GPG::File ($(_GPG_FILE_MK_VERSION)) macros:'
 	@#echo
 
-_gpg_view_framework_parameters ::
+_gpg_list_parameters ::
 	@echo 'GPG::File ($(_GPG_FILE_MK_VERSION)) parameters:'
 	@echo '    GPG_FILE_DECRYPTED_FILEPATH=$(GPG_FILE_DECRYPTED_FILEPATH)'
 	@echo '    GPG_FILE_ENCRYPTED_FILEPATH=$(GPG_FILE_ENCRYPTED_FILEPATH)'
 	@echo '    GPG_FILE_SYMMETRIC_ENABLE=$(GPG_FILE_SYMMETRIC_ENABLE)'
 	@echo
 
-_gpg_view_framework_targets ::
+_gpg_list_targets ::
 	@echo 'GPG::File ($(_GPG_FILE_MK_VERSION)) targets:'
 	@echo '    _gpg_decrypt_file           - Decrypt an encrypted file'
 	@echo '    _gpg_encrypt_file           - Encrypt a clear file'

@@ -57,12 +57,12 @@ _osl_get_certificatesigningrequest_modulus_F= $(shell $(OPENSSL) req -in $(1) -m
 # INTERFACE
 #
 
-_osl_view_framework_macros ::
+_osl_list_macros ::
 	@echo 'OpenSSL::CertificateSigningRequest ($(_OPENSSL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) macros:'
 	@echo '    _osl_get_certificatesigningrequest_modulus_{|F}     - Get the modulus of a certificate-signing-request (Filepath)'
 	@echo
 
-_osl_view_framework_parameters ::
+_osl_list_parameters ::
 	@echo 'OpenSSL::CertificateSigningRequest ($(_OPENSSL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) parameters:'
 	@echo '    OSL_CERTIFICATESIGNINGREQUEST_CERTIFICATE_FILEPATH=$(OSL_CERTIFICATESIGNINGREQUEST_CERTIFICATE_FILEPATH)'
 	@echo '    OSL_CERTIFICATESIGNINGREQUEST_CONFIG_FILEPATH=$(OSL_CERTIFICATESIGNINGREQUEST_CONFIG_FILEPATH)'
@@ -84,7 +84,7 @@ _osl_view_framework_parameters ::
 	@echo '    OSL_CERTIFICATESIGNINGREQUESTS_SET_NAME=$(OSL_CERTIFICATESIGNINGREQUESTS_SET_NAME)'
 	@echo
 
-_osl_view_framework_targets ::
+_osl_list_targets ::
 	@echo 'OpenSSL::CertificateSigningRequest ($(_OPENSSL_CERTIFICATESIGNINGREQUEST_MK_VERSION)) targets:'
 	@echo '    _osl_approve_certificatesigningrequest             - Approve a certificate-signing-request'
 	@echo '    _osl_check_certificatesigningrequest               - Check everything related to a certificate-signing-request'
@@ -102,8 +102,8 @@ _osl_view_framework_targets ::
 	@echo '    _osl_show_certificatesigningrequest_privatekey     - Show the private-key used to generate a certificate-signing-request'
 	@echo '    _osl_show_certificatesigningrequest_publickey      - Show the public-key embedded in a certificate-signing-request'
 	@echo '    _osl_show_certificatesigningrequest_subject        - Show subject of a certificate-signing-request'
-	@echo '    _osl_view_certificatesigningrequests               - View certificate-signing-requests'
-	@echo '    _osl_view_certificatesigningrequests_set           - View a set of certificate-signing-requests'
+	@echo '    _osl_list_certificatesigningrequests               - List all certificate-signing-requests'
+	@echo '    _osl_list_certificatesigningrequests_set           - List a set of certificate-signing-requests'
 	@echo
 
 #----------------------------------------------------------------------
@@ -194,11 +194,11 @@ _osl_show_certificatesigningrequest_subject:
 	@$(WARN) 'Country              - The two-letter ISO code for the country where your organization is location'; $(NORMAL)
 	$(OPENSSL) req $(__OSL_IN__CERTIFICATESIGNINGREQUEST) -noout -subject
 
-_osl_view_certificatesigningrequests:
-	@$(INFO) '$(OSL_UI_LABEL)Viewing certificate-signing-requests ...'; $(NORMAL)
+_osl_list_certificatesigningrequests:
+	@$(INFO) '$(OSL_UI_LABEL)Listing ALL certificate-signing-requests ...'; $(NORMAL)
 	ls -al $(OSL_CERTIFICATESIGNINGREQUESTS_DIRPATH)*.csr
 
-_osl_view_certificatesigningrequests_set:
-	@$(INFO) '$(OSL_UI_LABEL)Viewing certificate-signing-requests-set "$(OSL_CERTIFICATESIGNINGREQUESTS_SET)" ...'; $(NORMAL)
+_osl_list_certificatesigningrequests_set:
+	@$(INFO) '$(OSL_UI_LABEL)Listing certificate-signing-requests-set "$(OSL_CERTIFICATESIGNINGREQUESTS_SET)" ...'; $(NORMAL)
 	@$(WARN) 'Certificate-signing-requests are grouped based on the provided directory and regex'; $(NORMAL)
 	ls -al $(OSL_CERTIFICATESIGNINGREQUESTS_DIRPATH)$(OSL_CERTIFICATESIGNINGREQUESTS_REGEX)

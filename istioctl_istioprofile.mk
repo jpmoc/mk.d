@@ -18,23 +18,23 @@ __ICL_CONFIG_PATH=
 # USAGE
 #
 
-_icl_view_framework_macros ::
-	@echo 'IstioCtL::IstioProfile ($(_ISTIOCTL_ISTIOPROFILE_MK_VERSION)) macros:'
-	@echo
+_icl_list_macros ::
+	@#echo 'IstioCtL::IstioProfile ($(_ISTIOCTL_ISTIOPROFILE_MK_VERSION)) macros:'
+	@#echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::IstioProfile ($(_ISTIOCTL_ISTIOPROFILE_MK_VERSION)) variables:'
 	@echo '    ICL_ISTIOPROFILE_NAME=$(ICL_ISTIOPROFILE_NAME)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::IstioProfile ($(_ISTIOCTL_ISTIOPROFILE_MK_VERSION)) targets:'
 	@echo '    _icl_create_istioprofile             - Create an istio-profile'
 	@echo '    _icl_delete_istioprofile             - Delete an existing istio-profile'
+	@echo '    _icl_list_istioprofiles              - List all istio-profiles'
 	@echo '    _icl_show_istioprofile               - Show everything related to an istio-profile'
 	@echo '    _icl_show_istioprofile_config        - Show config of an istio-profile'
 	@echo '    _icl_show_istioprofile_description   - Show description of an istio-profile'
-	@echo '    _icl_view_istioprofiles              - View istio-profiles'
 	@echo
 
 #----------------------------------------------------------------------
@@ -51,6 +51,12 @@ _icl_create_istioprofile:
 _icl_delete_istioprofile:
 	@$(INFO) '$(ICL_UI_LABEL)Deleting istio-profile "$(ICL_ISTIOPROFILE_NAME)" ...'; $(NORMAL)
 
+_icl_list_istioprofiles:
+	@$(INFO) '$(ICL_UI_LABEL)Listing ALL istio-profiles ...'; $(NORMAL)
+	@$(WARN) 'Active profile is: $(ICL_ISTIOPROFILE_NAME)'; $(NORMAL)
+	@$(WARN) 'Profile doc @ https://istio.io/docs/setup/additional-setup/config-profiles/'; $(NORMAL)
+	$(ISTIOCTL) profile list 
+
 _icl_show_istioprofile: _icl_show_istioprofile_config _icl_show_istioprofile_description
 
 _icl_show_istioprofile_config:
@@ -59,9 +65,3 @@ _icl_show_istioprofile_config:
 
 _icl_show_istioprofile_description:
 	@$(INFO) '$(ICL_UI_LABEL)Showing description of istio-profile "$(ICL_ISTIOPROFILE_NAME)" ...'; $(NORMAL)
-
-_icl_view_istioprofiles:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing istio-profiles ...'; $(NORMAL)
-	@$(WARN) 'Active profile is: $(ICL_ISTIOPROFILE_NAME)'; $(NORMAL)
-	@$(WARN) 'Profile doc @ https://istio.io/docs/setup/additional-setup/config-profiles/'; $(NORMAL)
-	$(ISTIOCTL) profile list 

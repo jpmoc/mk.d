@@ -19,11 +19,11 @@ MKE_CONFIG_NAME?= minikube
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::Config ($(_MINIKUBE_CONFIG_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::Config ($(_MINIKUBE_CONFIG_MK_VERSION)) parameters:'
 	@echo '    MKE_CONFIG_DIRECTIVE=$(MKE_CONFIG_DIRECTIVE)'
 	@echo '    MKE_CONFIG_DIRECTIVES=$(MKE_CONFIG_DIRECTIVES)'
@@ -31,7 +31,7 @@ _mke_view_framework_parameters ::
 	@echo '    MKE_CONFIG_NAME=$(MKE_CONFIG_NAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::Config ($(_MINIKUBE_CONFIG_MK_VERSION)) targets:'
 	@echo '    _mke_show_config                - Show everything related to minikube-configuration'
 	@echo '    _mke_show_config_description    - Show description of minikube-configuration'

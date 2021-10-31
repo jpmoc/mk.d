@@ -36,12 +36,12 @@ _osl_get_remotecertificate_modulus_F= $(shell XXXX | openssl x509 -modulus -noou
 # INTERFACE
 #
 
-_osl_view_framework_macros ::
+_osl_list_macros ::
 	@echo 'OpenSSL::RemoteCertificate ($(_OPENSSL_REMOTECERTIFICATE_MK_VERSION)) macros:'
 	@echo '    _osl_get_remotecertificate_modulus_{|H}               - Get modulus of a remote-certificate'
 	@echo
 
-_osl_view_framework_parameters ::
+_osl_list_parameters ::
 	@echo 'OpenSSL::RemoteCertificate ($(_OPENSSL_REMOTECERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    OSL_REMOTECERTIFICATE_CACHAIN_FILEPATH=$(OSL_REMOTECERTIFICATE_CACHAIN_FILEPATH)'
 	@echo '    OSL_REMOTECERTIFICATE_DIRPATH=$(OSL_REMOTECERTIFICATE_DIRPATH)'
@@ -54,7 +54,7 @@ _osl_view_framework_parameters ::
 	@echo '    OSL_REMOTECERTIFICATE_SRVERNAME=$(OSL_REMOTECERTIFICATE_SERVERNAME)'
 	@echo
 
-_osl_view_framework_targets ::
+_osl_list_targets ::
 	@echo 'OpenSSL::RemoteCertificate ($(_OPENSSL_REMOTECERTIFICATE_MK_VERSION)) targets:'
 	@echo '    _osl_check_remotecertificate                   - Check everything about a remote-certificate'
 	@echo '    _osl_check_remotecertificate_tustchain         - Check the trust-chain of a remote-certificate'

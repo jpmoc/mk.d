@@ -23,7 +23,7 @@ KZE_KUSTOMIZATIONS_DIRPATH?= $(KZE_INPUTS_DIRPATH)
 
 # Pipe
 |_KZE_CREATE_KUSTOMIZATION?= | tee $(KZE_KUSTOMIZATION_MANIFEST_FILEPATH)
-|_KZE_VIEW_KUSTOMIZATIONS_SET?=
+|_KZE_LIST_KUSTOMIZATIONS_SET?=
 
 # UI parameters
 
@@ -33,11 +33,11 @@ KZE_KUSTOMIZATIONS_DIRPATH?= $(KZE_INPUTS_DIRPATH)
 # USAGE
 #
 
-_kze_view_framework_macros ::
-	@echo 'KustomiZE::kustomization ($(_KUSTOMIZE_KUSTOMIZATION_MK_VERSION)) macros:'
-	@echo
+_kze_list_macros ::
+	@#echo 'KustomiZE::kustomization ($(_KUSTOMIZE_KUSTOMIZATION_MK_VERSION)) macros:'
+	@#echo
 
-_kze_view_framework_parameters ::
+_kze_list_parameters ::
 	@echo 'KustomiZE::kustomization ($(_KUSTOMIZE_KUSTOMIZATION_MK_VERSION)) parameters:'
 	@echo '    KZE_KUSTOMIZATION_DIRPATH=$(KZE_KUSTOMIZATION_DIRPATH)'
 	@echo '    KZE_KUSTOMIZATION_FILENAME=$(KZE_KUSTOMIZATION_FILENAME)'
@@ -52,7 +52,7 @@ _kze_view_framework_parameters ::
 	@echo '    KZE_KUSTOMIZATIONS_SET_NAME=$(KZE_KUSTOMIZATIONS_SET_NAME)'
 	@echo
 
-_kze_view_framework_targets ::
+_kze_list_targets ::
 	@echo 'KustomiZE::kustomization ($(_KUSTOMIZE_KUSTOMIZATION_MK_VERSION)) targets:'
 	@echo '    _kze_add_configmaps_kustomization          - Add one or more config-maps in a kustomization'
 	@echo '    _kze_add_resources_kustomization           - Add one or more resources in a kustomization'
@@ -66,8 +66,8 @@ _kze_view_framework_targets ::
 	@echo '    _kze_show_kustomization_manifest           - Show manifest of kustomization'
 	@echo '    _kze_show_kustomization_resources          - Show resources of a kustomization'
 	@echo '    _kze_update_kustomization                  - Update kustomization'
-	@echo '    _kze_view_kustomizations                   - View kustomizations'
-	@echo '    _kze_view_kustomizations_set               - View set of kustomizations'
+	@echo '    _kze_list_kustomizations                   - List all kustomizations'
+	@echo '    _kze_list_kustomizations_set               - List a set of kustomizations'
 	@echo
 
 #----------------------------------------------------------------------
@@ -129,11 +129,11 @@ _kze_show_kustomization_resources:
 
 _kze_update_kustomization: _kze_edit_kustomization
 
-_kze_view_kustomizations:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing kustomizations ...'; $(NORMAL)
+_kze_list_kustomizations:
+	@$(INFO) '$(KZE_UI_LABEL)Listing ALL kustomizations ...'; $(NORMAL)
 	ls -al $(KZE_KUSTOMIZATIONS_DIRPATH)
 
-_kze_view_kustomizations_set:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing kustomizations-set "$(KZE_KUSTOMIZATIONS_SET_NAME)" ...'; $(NORMAL)
+_kze_list_kustomizations_set:
+	@$(INFO) '$(KZE_UI_LABEL)Listing kustomizations-set "$(KZE_KUSTOMIZATIONS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Kustomizations are grouped based on directory, regex, and pipe-filter'; $(NORMAL)
-	ls -al $(KZE_KUSTOMIZATIONS_DIRPATH)$(KZE_KUSTOMIZATIONS_REGEX) $(|_KZE_VIEW_KUSTOMIZATIONS_SET)
+	ls -al $(KZE_KUSTOMIZATIONS_DIRPATH)$(KZE_KUSTOMIZATIONS_REGEX) $(|_KZE_LIST_KUSTOMIZATIONS_SET)

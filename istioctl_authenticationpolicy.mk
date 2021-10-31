@@ -24,11 +24,11 @@ __ICL_NAMESPACE__AUTHENTICATIONPOLICY?= $(if $(ICL_AUTHENTICATIONPOLICY_NAMESPAC
 # USAGE
 #
 
-_icl_view_framework_macros ::
-	@echo 'IstioCtL::AuthenticationPolicy ($(_ISTIOCTL_AUTHENTICATIONPOLICY_MK_VERSION)) macros:'
-	@echo
+_icl_list_macros ::
+	@#echo 'IstioCtL::AuthenticationPolicy ($(_ISTIOCTL_AUTHENTICATIONPOLICY_MK_VERSION)) macros:'
+	@#echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::AuthenticationPolicy ($(_ISTIOCTL_AUTHENTICATIONPOLICY_MK_VERSION)) parameters:'
 	@echo '    ICL_AUTHENTICATIONPOLICY_NAME=$(ICL_AUTHENTICATIONPOLICY_NAME)'
 	@echo '    ICL_AUTHENTICATIONPOLICY_NAMESPACE_NAME=$(ICL_AUTHENTICATIONPOLICY_NAMESPACE_NAME)'
@@ -36,13 +36,13 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_AUTHENTICATIONPOLICY_SERVICE_HOST=$(ICL_AUTHENTICATIONPOLICY_SERVICE_HOST)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::AuthenticationPolicy ($(_ISTIOCTL_AUTHENTICATIONPOLICY_MK_VERSION)) targets:'
 	@echo '    _icl_show_authenticationpolicies               - Show everything related to an authentication-policies'
 	@echo '    _icl_show_authenticationpolicies_description   - Show description of an authentication-policies'
 	@echo '    _icl_show_authenticationpolicies_hostport      - Show a host:port which use an authentication-policies'
 	@echo '    _icl_show_authenticationpolicies_hostports     - Show host:ports which use an authentication-policies'
-	@echo '    _icl_view_authenticationpolicies               - View the authentication-policies'
+	@echo '    _icl_list_authenticationpolicies               - List the authentication-policies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -78,8 +78,8 @@ _icl_show_authenticationpolicy_hostport:
 		echo 'ICL_AUTHENTICATIONPOLICY_SERVICE_HOST not set ...'; \
 	)
 
-_icl_view_authenticationpolicies:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing the authentication-policies ...'; $(NORMAL)
+_icl_list_authenticationpolicies:
+	@$(INFO) '$(ICL_UI_LABEL)Listing the authentication-policies ...'; $(NORMAL)
 	@$(WARN) 'This operation checks whether the client and service-side mTLS settings allow for communication'; $(NORMAL)
 	@$(WARN) 'On the server-side, the auth-policy is set in the mesh-policy and possibly overwriten by a policy resource'
 	@$(WARN) '* When the auth-policy is set to DISABLE, istio-proxies of service-endpoints will not terminate mTLS'

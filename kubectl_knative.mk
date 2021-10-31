@@ -75,12 +75,12 @@ _KCL_SHOW_KNATIVESERVING_TRACINGCONFIG_|?= $(_KCL_SHOW_KNATIVESERVING_CONFIG_|)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative ($(_KUBECTL_KNATIVE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative:: ($(_KUBECTL_KNATIVE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
-	@echo 'KubeCtL::Knative ($(_KUBECTL_KNATIVE_MK_VERSION)) parameters:'
+_kcl_list_parameters ::
+	@echo 'KubeCtL::Knative:: ($(_KUBECTL_KNATIVE_MK_VERSION)) parameters:'
 	@echo '    KCL_KNATIVE_DNSNAME_DOMAIN=$(KCL_KNATIVE_DNSNAME_DOMAIN)'
 	@echo '    KCL_KNATIVE_NETWORKLAYER_TYPE=$(KCL_KNATIVE_NETWORKLAYER_TYPE)'
 	@echo '    KCL_KNATIVE_RELEASE=$(KCL_KNATIVE_RELEASE)'
@@ -96,16 +96,15 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_KNATIVESERVING_RELEASE=$(KCL_KNATIVESERVING_RELEASE)'
 	@echo
 
-_view_framework_targets :: _kcl_view_framework_targets
-_kcl_view_framework_targets ::
-	@echo 'KubeCtL::Knative ($(_KUBECTL_KNATIVE_MK_VERSION)) targets:'
+_kcl_list_targets ::
+	@echo 'KubeCtL::Knative:: ($(_KUBECTL_KNATIVE_MK_VERSION)) targets:'
+	@echo '    _kcl_list_sourcetypes                - List the types for sources'
 	@echo '    _kcl_show_knative_config             - Show the config of knative components'
 	@echo '    _kcl_show_knativeeventing_config     - Show the config of eventing components'
 	@echo '    _kcl_show_knativeeventing_version    - Show version of eventing components'
 	@echo '    _kcl_show_knativeserving_config      - Show the config of serving components'
 	@echo '    _kcl_show_knativeserving_version     - Show version of serving components'
 	@echo '    _kcl_view_knative_versions           - View versions of eventing and serving'
-	@echo '    _kcl_view_sourcetypes                - View the available types for sources'
 	@echo
 
 #----------------------------------------------------------------------
@@ -194,6 +193,10 @@ _kcl_install_knative:
 	# ISTIO # curl -L https://github.com/knative/net-istio/releases/download/v0.26.0/istio.yaml
 	# curl -L https://github.com/knative/net-istio/releases/download/v0.26.0/net-istio.yaml
 	# KNATIVE-EVENTING
+
+_kcl_list_sourcetypes:
+	@$(INFO) '$(KCL_UI_LABEL)Listing supported knative-source-types ...'; $(NORMAL)
+	$(KUBECTL) api-resources | grep sources.knative.dev
 
 _kcl_show_knative_config: _kcl_show_knativeeventing_config _kcl_show_knativeserving_config
 
@@ -338,7 +341,3 @@ _kcl_show_knativeserving_version:
 
 _kcl_view_versions :: _kcl_view_knative_versions
 _kcl_view_knative_versions :: _kcl_show_knativeeventing_version _kcl_show_knativeservice_version
-
-_kcl_view_sourcetypes:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing supported knative-source-types ...'; $(NORMAL)
-	$(KUBECTL) api-resources | grep sources.knative.dev

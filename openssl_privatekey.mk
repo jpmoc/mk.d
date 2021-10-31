@@ -47,12 +47,12 @@ _osl_get_privatekey_modulus_FP= $(shell openssl rsa -modulus -noout -in $(1) -pa
 # INTERFACE
 #
 
-_ssl_view_framework_macros ::
+_ssl_list_macros ::
 	@echo 'OpenSSL::PrivateKey ($(_OPENSSL_PRIVATEKEY_MK_VERSION)) parameters:'
 	@echo '    _osl_get_privatekey_modulus_{|F|FP}                - Get modulus of private-key (Filepath,Passphrase)'
 	@echo
 
-_osl_view_framework_parameters ::
+_osl_list_parameters ::
 	@echo 'OpenSSL::PrivateKey ($(_OPENSSL_PRIVATEKEY_MK_VERSION)) parameters:'
 	@echo '    OSL_PRIVATEKEY_CIPHER_ALGORITHM=$(OSL_PRIVATEKEY_CIPHER_ALGORITHM)'
 	@echo '    OSL_PRIVATEKEY_DIRPATH=$(OSL_PRIVATEKEY_DIRPATH)'
@@ -70,21 +70,21 @@ _osl_view_framework_parameters ::
 	@echo '    OSL_PRIVATEKEYS_SET_NAME=$(OSL_PRIVATEKEYS_SET_NAME)'
 	@echo
 
-_osl_view_framework_targets ::
+_osl_list_targets ::
 	@echo 'OpenSSL::PrivateKey ($(_OPENSSL_PRIVATEKEY_MK_VERSION)) targets:'
 	@echo '    _osl_check_privatekey                   - Check everything related to a private-key'
 	@echo '    _osl_check_privatekey_integrity         - Check integrity of a private-key'
 	@echo '    _osl_check_privatekey_modulus           - Check modulus of a private-key'
 	@echo '    _osl_create_privatekey                  - Create a private-key'
 	@echo '    _osl_delete_privatekey                  - Delete a private-key'
+	@echo '    _osl_list_privatekeys                   - List all private-keys'
+	@echo '    _osl_list_privatekeys_set               - List a set of private-keys'
 	@echo '    _osl_show_privatekey                    - Show everything related to a private-key'
 	@echo '    _osl_show_privatekey_components         - Show components of a private-key'
 	@echo '    _osl_show_privatekey_content            - Show content of a private-key'
 	@echo '    _osl_show_privatekey_description        - Show description of a private-key'
 	@echo '    _osl_show_privatekey_modulus            - Show modulus of a private-key'
 	@echo '    _osl_update_privatekey                  - Update a private-key'
-	@echo '    _osl_view_privatekeys                   - View private-keys'
-	@echo '    _osl_view_privatekeys_set               - View a set of private-keys'
 	@echo
 
 #----------------------------------------------------------------------
@@ -112,7 +112,17 @@ _osl_delete_privatekey:
 	@$(INFO) '$(OSL_UI_LABEL)Deleting private-key "$(OSL_PRIVATEKEY_NAME)" ...'; $(NORMAL)
 	rm -rf $(OSL_PRIVATEKEY_FILEPATH)
 
-_osl_show_privatekey: _osl_show_privatekey_components _osl_show_privatekey_content _osl_show_privatekey_modulus _osl_show_privatekey_description
+_osl_list_privatekeys:
+	@$(INFO) '$(OSL_UI_LABEL)Listing ALL private-keys ...'; $(NORMAL)
+	ls -al $(OSL_PRIVATEKEYS_DIRPATH)*
+
+_osl_list_privatekeys_set:
+	@$(INFO) '$(OSL_UI_LABEL)Listing private-keys-set "$(OSL_PRIVATEKEYS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Private-keys are grouped based on the provided regex'; $(NORMAL)
+	ls -al $(OSL_PRIVATEKEYS_DIRPATH)$(OSL_PRIVATEKEYS_REGEX)
+
+_OSL_SHOW_PRIVATEKEY_TARGETS?= _osl_show_privatekey_components _osl_show_privatekey_content _osl_show_privatekey_modulus _osl_show_privatekey_description
+_osl_show_privatekey: $(_OSL_SHOW_PRIVATEKEY_TARGETS)
 
 _osl_show_privatekey_components:
 	@$(INFO) '$(OSL_UI_LABEL)Showing components of private-key "$(OSL_PRIVATEKEY_NAME)" ...'; $(NORMAL)
@@ -140,12 +150,3 @@ _osl_update_privatekey:
 	@$(WARN) 'This operation fails if the input file is the same as the output file'; $(NORMAL)
 	# Remove passphrase: $(OPENSSL) rsa $(__OSL_IN__PRIVATEKEY) $(__OSL_OUT__PRIVATEKEY) $(__OSL_PASSIN__PRIVATEKEY)
 	# Add a passphrase:  $(OPENSSL) rsa $(__OSL_IN__PRIVATEKEY) $(__OSL_OUT__PRIVATEKEY) $(__OSL_PASSOUT__PRIVATEKEY)
-
-_osl_view_privatekeys:
-	@$(INFO) '$(OSL_UI_LABEL)View private-keys ...'; $(NORMAL)
-	ls -al $(OSL_PRIVATEKEYS_DIRPATH)*
-
-_osl_view_privatekeys_set:
-	@$(INFO) '$(OSL_UI_LABEL)View private-keys-set "$(OSL_PRIVATEKEYS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Private-keys are grouped based on the provided regex'; $(NORMAL)
-	ls -al $(OSL_PRIVATEKEYS_DIRPATH)$(OSL_PRIVATEKEYS_REGEX)

@@ -11,6 +11,9 @@ ICL_ISTIOPROXY_CONTAINER_NAME?= istio-proxy
 ICL_ISTIOPROXY_PORT?= 15000
 # ICL_ISTIOPROXY_PORTFORWARD_PORTS?= 15000:15000
 # ICL_ISTIOPROXY_URL?= http://localhost:15000
+# ICL_ISTIOPROXY_URL_DNSNAME?= localhost
+# ICL_ISTIOPROXY_URL_PORT?= :15000
+# ICL_ISTIOPROXY_URL_PROTOCOL?= http://
 # ICL_ISTIOPROXIES_NAMESPACE_NAME?=
 # ICL_ISTIOPROXIES_SET_NAME?=
 
@@ -19,7 +22,7 @@ ICL_ISTIOPROXY_NAME?= $(ICL_ISTIOPROXY_CONTAINER_NAME)$(if $(ICL_ISTIOPROXY_POD_
 ICL_ISTIOPROXY_NAMESPACE_NAME?= $(ICL_APPMANIFEST_NAMESPACE_NAME)
 ICL_ISTIOPROXY_PILOT_HOST?= $(ICL_ISTIOPILOT_HOST)
 ICL_ISTIOPROXY_PILOT_HOSTPORT?= $(ICL_ISTIOPILOT_HOSTPORT)
-ICL_ISTIOPROXY_URL?= http://$(ICL_ISTIOPROXY_IP_OR_HOST):$(ICL_ISTIOPROXY_PORT)
+ICL_ISTIOPROXY_URL?= $(ICL_ISTIOPROXY_URL_PROTOCOL)$(ICL_ISTIOPROXY_DNSNAME)$(ICL_ISTIOPROXY_PORT)
 ICL_ISTIOPROXIES_NAMESPACE_NAME?= $(ICL_ISTIOPROXY_NAMESPACE_NAME)
 
 # Option parameters
@@ -51,12 +54,12 @@ _icl_get_istioproxy_pod_name_SN= $(firstword $(shell $(KUBECTL) get pods --names
 # USAGE
 #
 
-_icl_view_framework_macros ::
+_icl_list_macros ::
 	@echo 'IstioCtL::IstioProxy ($(_ISTIOCTL_ISTIOPROXY_MK_VERSION)) macros:'
 	@echo '    _icl_get_istioproxy_pod_name_{|S|SN}       - Get the pod of an istio-proxy (Selector,Namespace)'
 	@echo
 
-_icl_view_framework_parameters ::
+_icl_list_parameters ::
 	@echo 'IstioCtl::IstioProxy ($(_ISTIOCTL_ISTIOPROXY_MK_VERSION)) variables:'
 	@echo '    ICL_ISTIOPROXY_CLUSTER_NAME=$(ICL_ISTIOPROXY_CLUSTER_NAME)'
 	@echo '    ICL_ISTIOPROXY_CONTAINER_NAME=$(ICL_ISTIOPROXY_CONTAINER_NAME)'
@@ -72,12 +75,14 @@ _icl_view_framework_parameters ::
 	@echo '    ICL_ISTIOPROXIES_SET_NAME=$(ICL_ISTIOPROXIES_SET_NAME)'
 	@echo
 
-_icl_view_framework_targets ::
+_icl_list_targets ::
 	@echo 'IstioCtl::IstioProxy ($(_ISTIOCTL_ISTIOPROXY_MK_VERSION)) targets:'
 	@echo '    _icl_check_istioproxy                       - Check everything related to an istio-proxy'
 	@echo '    _icl_check_istioproxy_connectionconfig      - Check connections between an external-pod and an istio-proxy'
 	@echo '    _icl_check_istioproxy_mtls                  - Check a mTLS connection between an external-pod and an istio-proxy'
 	@echo '    _icl_check_istioproxy_nomtls                - Check a non-mTLS connection between an external-pod and an istio-proxy'
+	@echo '    _icl_list_istioproxies                      - List all istio-proxies'
+	@echo '    _icl_list_istioproxies_set                  - List a set of istio-proxies'
 	@echo '    _icl_open_istioproxy                        - Open an istio-proxy dashboard'
 	@echo '    _icl_portfoward_istioproxy                  - Port-forward to an istio-proxy'
 	@echo '    _icl_show_istioproxy                        - Show everything related to an istio-proxy'
@@ -102,8 +107,6 @@ _icl_view_framework_targets ::
 	@echo '    _icl_show_istioproxy_virtuallisteners       - Show the virtual-listeners of an istio-proxy'
 	@echo '    _icl_ssh_istioproxy                         - Ssh into an istio-proxy'
 	@echo '    _icl_update_istioproxy_logconfig            - Update the log-configuration of an istio-proxy'
-	@echo '    _icl_view_istioproxies                      - View istio-proxies'
-	@echo '    _icl_view_istioproxies_set                  - View a set of istio-proxies'
 	@echo
 
 #----------------------------------------------------------------------
@@ -140,6 +143,15 @@ _icl_check_istioproxy_nomtls:
 	@$(WARN) 'This operation fails if usage of mTLS is enforced'; $(NORMAL)
 	$(KUBECTL) exec $(__ICL_CONTAINER__ISTIOPROXY) $(__ICL_NAMESPACE__ISTIOPROXY) $(ICL_ISTIOPROXY_POD_NAME) -- curl --silent http://$(ICL_ISTIOPROXY_PILOT_HOSTPORT)/debug/edsz $(|_ICL_CHECK_ISTIOPROXY_NOMTLS)
 
+_icl_list_istioproxies:
+	@$(INFO) '$(ICL_UI_LABEL)Listing ALL istio-proxies ...'; $(NORMAL)
+	$(ISTIOCTL) proxy-status $(_X__ICL_NAMESPACE__ISTIOPROXY)
+
+_icl_list_istioproxies_set:
+	@$(INFO) '$(ICL_UI_LABEL)Listing istio-proxies-set "$(ICL_ISTIOPROXIES_SET_NAME)"  ...'; $(NORMAL)
+	@$(WARN) 'The Istio-proxies are grouped based on provided namespace'; $(NORMAL)
+	$(ISTIOCTL) proxy-status $(__ICL_NAMESPACE__ISTIOPROXY)
+
 _icl_open_istioproxy:
 	@$(INFO) '$(ICL_UI_LABEL)Opening dashboard of istio-proxy "$(ICL_ISTIOPROXY_NAME)" ...'; $(NORMAL)
 	$(ISTIOCTL) dashboard envoy $(__ICL_NAMESPACE__ISTIOPROXY) $(ICL_ISTIOPROXY_POD_NAME)
@@ -148,7 +160,8 @@ _icl_portfoward_istioproxy:
 	@$(INFO) '$(ICL_UI_LABEL)Port-forwarding to istio-proxy "$(ICL_ISTIOPROXY_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) port-forward $(__ICL_NAMESPACE__ISTIOPROXY) $(ICL_ISTIOPROXY_POD_NAME) $(ICL_ISTIOPROXY_PORTFORWARD_PORTS)
 
-_icl_show_istioproxy: _icl_show_istioproxy_bootstrap _icl_show_istioproxy_config _icl_show_istioproxy_connectionconfig _icl_show_istioproxy_internals _icl_show_istioproxy_logconfig _icl_show_istioproxy_resources _icl_show_istioproxy_version _icl_show_istioproxy_description
+_ICL_SHOW_ISTIOPROXY_TARGETS?= _icl_show_istioproxy_bootstrap _icl_show_istioproxy_config _icl_show_istioproxy_connectionconfig _icl_show_istioproxy_internals _icl_show_istioproxy_logconfig _icl_show_istioproxy_resources _icl_show_istioproxy_version _icl_show_istioproxy_description
+_icl_show_istioproxy: $(_ICL_SHOW_ISTIOPROXY_TARGETS)
 
 _icl_show_istioproxy_authpolicies:
 	@$(INFO) '$(ICL_UI_LABEL)Showing authentication-policies of istio-proxy "$(ICL_ISTIOPROXY_NAME)" ...'; $(NORMAL)
@@ -286,12 +299,3 @@ _icl_ssh_istioproxy:
 _icl_update_istioproxy_logconfig:
 	@$(INFO) '$(ICL_UI_LABEL)Updating the log-config for istio-proxy "$(ICL_ISTIOPROXY_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) exec $(__ICL_CONTAINER__ISTIOPROXY) $(__ICL_NAMESPACE__ISTIOPROXY) $(ICL_ISTIOPROXY_POD_NAME) -- curl --request POST --silent localhost:15000/logging?rbac=debug 
-
-_icl_view_istioproxies:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing the istio-proxies ...'; $(NORMAL)
-	$(ISTIOCTL) proxy-status $(_X__ICL_NAMESPACE__ISTIOPROXY)
-
-_icl_view_istioproxies_set:
-	@$(INFO) '$(ICL_UI_LABEL)Viewing the istio-proxies-set "$(ICL_ISTIOPROXIES_SET_NAME)"  ...'; $(NORMAL)
-	@$(WARN) 'The Istio-proxies are grouped based on provided namespace'; $(NORMAL)
-	$(ISTIOCTL) proxy-status $(__ICL_NAMESPACE__ISTIOPROXY)

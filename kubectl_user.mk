@@ -16,8 +16,8 @@ _KUBECTL_USER_MK_VERSION= $(_KUBECTL_MK_VERSION)
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::User ($(_KUBECTL_USER_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::User ($(_KUBECTL_USER_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::User ($(_KUBECTL_USER_MK_VERSION)) parameters:'

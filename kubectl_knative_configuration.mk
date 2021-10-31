@@ -77,12 +77,12 @@ _kcl_get_configuration_latestrevision_name_NN= $(shell $(KUBECTL) get configurat
 # USAGE
 #
 
-_kcl_view_framework_macros ::
+_kcl_list_macros ::
 	@echo 'KubeCtL::Knative::Configuration ($(_KUBECTL_KNATIVE_CONFIGURATION_MK_VERSION)) macros:'
 	@echo '    _kcl_get_configuration_latestrevision_name_{|N|NN}       - Get the latest-revision of a configuration (Name,Namespace)'
 	@echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Configuration ($(_KUBECTL_KNATIVE_CONFIGURATION_MK_VERSION)) parameters:'
 	@echo '    KCL_CONFIGURATION_DEPLOYMENTS_SELECTOR=$(KCL_CONFIGURATION_DEPLOYMENTS_SELECTOR)'
 	@echo '    KCL_CONFIGURATION_IMAGES_SELECTOR=$(KCL_CONFIGURATION_IMAGES_SELECTOR)'
@@ -111,7 +111,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CONFIGURATIONS_WATCH_ONLY=$(KCL_CONFIGURATIONS_WATCH_ONLY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Configuration ($(_KUBECTL_KNATIVE_CONFIGURATION_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_configuration                - Annotate a knative-configuration'
 	@echo '    _kcl_apply_configurations                  - Apply manifest for one-or-more knative-configurations'
@@ -123,6 +123,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_configuration                 - Explain the knative-configuration object'
 	@echo '    _kcl_kustomize_configurations              - Kustomize one-or-more knative-configurations'
 	@echo '    _kcl_label_configuration                   - Label a knative-configuration'
+	@echo '    _kcl_list_configurations                   - List all knative-configurations'
+	@echo '    _kcl_list_configurations_set               - List a set of knative-configurations'
 	@echo '    _kcl_show_configuration                    - Show everything related to a knative-configuration'
 	@echo '    _kcl_show_configuration_deployments        - Show the deployments of a knative-configuration'
 	@echo '    _kcl_show_configuration_description        - Show the description of a knative-configuration'
@@ -136,12 +138,11 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_show_configuration_serverlessservices - Show the serverless-services of a knative-configuration'
 	@echo '    _kcl_show_configuration_services           - Show the services of a knative-configuration'
 	@echo '    _kcl_show_configuration_state              - Show the state of a knative-configuration'
-	@echo '    _kcl_unapply_configurations                - Unapply manifest for one-or-more knative-configurations'
+	@echo '    _kcl_unapply_configurations                - Un-apply manifest for one-or-more knative-configurations'
 	@echo '    _kcl_update_configuration                  - Update a knative-configuration'
-	@echo '    _kcl_view_configurations                   - View all knative-configurations'
-	@echo '    _kcl_view_configurations_set               - View a set of knative-configurations'
 	@echo '    _kcl_watch_configurations                  - Watch knative-configurations'
 	@echo '    _kcl_watch_configurations_set              - Watch a set of knative-configurations'
+	@echo '    _kcl_write_configurations                  - Write manifest for one-or-more knative-configurations'
 	@echo
 
 #----------------------------------------------------------------------
@@ -194,6 +195,16 @@ _kcl_kustomize_configurations:
 
 _kcl_label_configuration:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling knative-configuration "$(KCL_CONFIGURATION_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) label ...
+
+_kcl_list_configurations:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL knative-configurations ...'; $(NORMAL)
+	$(KUBECTL) get config --all-namespaces=true $(_X__KCL_NAMESPACE__CONFIGURATIONS) $(__KCL_OUTPUT__CONFIGURATIONS) $(_X__KCL_SELECTOR__CONFIGURATIONS)$(__KCL_SHOW_LABELS__CONFIGURATIONS)
+
+_kcl_list_configurations_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing knative-configurations-set "$(KCL_CONFIGURATIONS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Configurations are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get config --all-namespaces=false $(__KCL_FIELD_SELECTOR__CONFIGURATIONS) $(__KCL_NAMESPACE__CONFIGURATIONS) $(__KCL_OUTPUT__CONFIGURATIONS) $(__KCL_SELECTOR__CONFIGURATIONS) $(__KCL_SHOW_LABELS__CONFIGURATIONS)
 
 _KCL_SHOW_CONFIGURATION_TARGETS?= _kcl_show_configuration_deployments _kcl_show_configuration_images _kcl_show_configuraion_metrics _kcl_show_configuration_object _kcl_show_configuration_podautoscalers  _kcl_show_configuration_pods _kcl_show_configuration_replicasets _kcl_show_configuration_revisions _kcl_show_configuration_serverlessservices _kcl_show_configuration_services _kcl_show_configuration_state _kcl_show_configuration_description
 _kcl_show_configuration :: $(_KCL_SHOW_CONFIGURATION_TARGETS)
@@ -275,15 +286,6 @@ _kcl_unlabel_configuration:
 _kcl_update_configuration:
 	@$(INFO) '$(KCL_UI_LABEL)Updating knative-configuration "$(KCL_CONFIGURATION_NAME)" ...'; $(NORMAL)
 
-_kcl_view_configurations:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL knative-configurations ...'; $(NORMAL)
-	$(KUBECTL) get config --all-namespaces=true $(_X__KCL_NAMESPACE__CONFIGURATIONS) $(__KCL_OUTPUT__CONFIGURATIONS) $(_X__KCL_SELECTOR__CONFIGURATIONS)$(__KCL_SHOW_LABELS__CONFIGURATIONS)
-
-_kcl_view_configurations_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing knative-configurations-set "$(KCL_CONFIGURATIONS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Configurations are grouped based on the provided namespace, field-selector, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get config --all-namespaces=false $(__KCL_FIELD_SELECTOR__CONFIGURATIONS) $(__KCL_NAMESPACE__CONFIGURATIONS) $(__KCL_OUTPUT__CONFIGURATIONS) $(__KCL_SELECTOR__CONFIGURATIONS) $(__KCL_SHOW_LABELS__CONFIGURATIONS)
-
 _kcl_watch_configurations:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL knative-configurations ...'; $(NORMAL)
 	$(KUBECTL) get config $(strip $(_X__KCL_ALL_NAMESPACES__CONFIGURATIONS) --all-namespaces=true $(_X__KCL_NAMESPACE__CONFIGURATIONS) $(__KCL_OUTPUT__CONFIGURATIONS) $(_X__KCL_SELECTOR__CONFIGURATIONS) $(_X__KCL_WATCH__CONFIGURATIONS) --watch=true $(__KCL_WATCH_ONLY__CONFIGURATIONS) )
@@ -291,3 +293,8 @@ _kcl_watch_configurations:
 _kcl_watch_configurations_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching knative-configurations-set "$(KCL_CONFIGURATIONS_SET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get config $(strip $(__KCL_ALL_NAMESPACES__CONFIGURATIONS) $(__KCL_NAMESPACE__CONFIGURATIONS) $(__KCL_OUTPUT__CONFIGURATIONS) $(__KCL_SELECTOR__CONFIGURATIONS) $(_X__KCL_WATCH__CONFIGURATIONS) --watch=true $(__KCL_WATCH_ONLY__CONFIGURATIONS) )
+
+_kcl_write_configuration: _kcl_write_configurations
+_kcl_write_configurations:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more knative-configurations ...'; $(NORMAL)
+	$(WRITER) $(KCL_CONFIGURATIONS_MANIFEST_FILEPATH)

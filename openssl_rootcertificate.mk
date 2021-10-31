@@ -67,12 +67,12 @@ _osl_get_rootcertificate_modulus_F= $(shell openssl x509 -modulus -noout -in $(1
 # INTERFACE
 #
 
-_osl_view_framework_macros ::
+_osl_list_macros ::
 	@echo 'OpenSSL::RootCertificate ($(_OPENSSL_ROOTCERTIFICATE_MK_VERSION)) macros:'
 	@echo '    _osl_get_rootcertificate_modulus_{|F}               - Get modulus of a root-certificate'
 	@echo
 
-_osl_view_framework_parameters ::
+_osl_list_parameters ::
 	@echo 'OpenSSL::RootCertificate ($(_OPENSSL_ROOTCERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    OSL_ROOTCERTIFICATE_CONFIG_DIRPATH=$(OSL_ROOTCERTIFICATE_CONFIG_DIRPATH)'
 	@echo '    OSL_ROOTCERTIFICATE_CONFIG_FILENAME=$(OSL_ROOTCERTIFICATE_CONFIG_FILENAME)'
@@ -93,13 +93,15 @@ _osl_view_framework_parameters ::
 	@echo '    OSL_ROOTCERTIFICATES_SET_NAME=$(OSL_ROOTCERTIFICATES_SET_NAME)'
 	@echo
 
-_osl_view_framework_targets ::
+_osl_list_targets ::
 	@echo 'OpenSSL::RootCertificate ($(_OPENSSL_MK_VERSION)) targets:'
 	@echo '    _osl_check_rootcertificate                   - Check everything about a root-certificate'
 	@echo '    _osl_check_rootcertificate_integrity         - Check integrity of a root-certificate'
 	@echo '    _osl_check_rootcertificate_modulus           - Check modulus of a root-certificate'
 	@echo '    _osl_create_rootcertificate                  - Create a root-certificate'
 	@echo '    _osl_delete_rootcertificate                  - Delete a root-certificate'
+	@echo '    _osl_list_rootcertificates                   - List all root-certificates'
+	@echo '    _osl_list_rootcertificates_set               - List a set of root-certificates'
 	@echo '    _osl_show_rootcertificate                    - Show everything related to a root-certificate'
 	@echo '    _osl_show_rootcertificate_config             - Show config of a root-certificate'
 	@echo '    _osl_show_rootcertificate_content            - Show content of a root-certificate'
@@ -108,8 +110,6 @@ _osl_view_framework_targets ::
 	@echo '    _osl_show_rootcertificate_encodedcontent     - Show encoded-content of a root-certificate'
 	@echo '    _osl_show_rootcertificate_modulus            - Show modulus of a root-certificate'
 	@echo '    _osl_show_rootcertificate_publickey          - Show public-key embedded in a root-certificate'
-	@echo '    _osl_view_rootcertificates                   - View root-certificates'
-	@echo '    _osl_view_rootcertificates_set               - View a set of root-certificates'
 	@echo
 
 
@@ -138,7 +138,17 @@ _osl_create_rootcertificate:
 	$(OPENSSL) req $(__OSL_CONFIG__ROOTCERTIFICATE) $(__OSL_DAYS__ROOTCERTIFICATE) $(__OSL_EXTENSIONS__ROOTCERTIFICATE) $(__OSL_KEYOUT__ROOTCERTIFICATE) -new $(__OSL_NEWKEY__ROOTCERTIFICATE) $(__OSL_NODES__ROOTCERTIFICATE) $(__OSL_OUT__ROOTCERTIFICATE) $(__OSL_SET_SERIAL__ROOTCERTIFICAE) $(__OSL_SHA256__ROOTCERTIFICATE) $(__OSL_SUBJ__ROOTCERTIFICATE) -x509
 	@echo 'Generated root-certificate: $(OSL_ROOTCERTIFICATE_FILEPATH)'; $(NORMAL)
 
-_osl_show_rootcertificate :: _osl_show_rootcertificate_config _osl_show_rootcertificate_content _osl_show_rootcertificate_modulus _osl_show_rootcertificate_publickey _osl_show_rootcertificate_description
+_osl_list_rootcertificates:
+	@$(INFO) '$(OSL_UI_LABEL)Listing ALL root-certificates ...'; $(NORMAL)
+	ls -al $(OSL_CERTIFICATES_DIRPATH)ca.*.crt
+
+_osl_list_rootcertificates_set:
+	@$(INFO) '$(OSL_UI_LABEL)Listing root-certificates-set "$(OSL_ROOTCERTIFICATES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Root-certificates are grouped based on the provided directory and regex'; $(NORMAL)
+	ls -al $(OSL_ROOTCERTIFICATES_DIRPATH)$(OSL_ROOTCERTIFICATES_REGEX)
+
+_OSL_SHOW_ROOTCERTIFICATE_TARGETS?= _osl_show_rootcertificate_config _osl_show_rootcertificate_content _osl_show_rootcertificate_modulus _osl_show_rootcertificate_publickey _osl_show_rootcertificate_description
+_osl_show_rootcertificate: $(_OSL_SHOW_ROOTCERTIFICATE_TARGETS)
 
 _osl_show_rootcertificate_config: 
 	@$(INFO) '$(OSL_UI_LABEL)Showing default-config of root-certificate "$(OSL_ROOTCERTIFICATE_NAME)" ...'; $(NORMAL)
@@ -170,12 +180,3 @@ _osl_show_rootcertificate_modulus:
 
 _osl_show_rootcertificate_publickey:
 	@$(INFO) '$(OSL_UI_LABEL)Showing public-key of root-certificate "$(OSL_ROOTCERTIFICATE_NAME)" ...'; $(NORMAL)
-
-_osl_view_rootcertificates:
-	@$(INFO) '$(OSL_UI_LABEL)View root-certificates ...'; $(NORMAL)
-	ls -al $(OSL_CERTIFICATES_DIRPATH)ca.*.crt
-
-_osl_view_rootcertificates_set:
-	@$(INFO) '$(OSL_UI_LABEL)View root-certificates-set "$(OSL_ROOTCERTIFICATES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Root-certificates are grouped based on the provided directory and regex'; $(NORMAL)
-	ls -al $(OSL_ROOTCERTIFICATES_DIRPATH)$(OSL_ROOTCERTIFICATES_REGEX)

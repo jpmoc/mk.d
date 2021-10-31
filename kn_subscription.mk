@@ -25,11 +25,11 @@ __KN_NAMESPACE__SUBSCRIPTIONS= $(if $(KN_SUBSCRIPTIONS_NAMESPACE_NAME),--namespa
 # USAGE
 #
 
-_kn_view_framework_macros ::
-	@echo 'KN::Subscription ($(_KN_SUBSCRIPTION_MK_VERSION)) macros:'
-	@echo
+_kn_list_macros ::
+	@#echo 'KN::Subscription ($(_KN_SUBSCRIPTION_MK_VERSION)) macros:'
+	@#echo
 
-_kn_view_framework_parameters ::
+_kn_list_parameters ::
 	@echo 'KN::Subscription ($(_KN_SUBSCRIPTION_MK_VERSION)) parameters:'
 	@echo '    KN_SUBSCRIPTION_NAME=$(KN_SUBSCRIPTION_NAME)'
 	@echo '    KN_SUBSCRIPTION_NAMESPACE_NAME=$(KN_SUBSCRIPTION_NAMESPACE_NAME)'
@@ -37,14 +37,14 @@ _kn_view_framework_parameters ::
 	@echo '    KN_SUBSCRIPTIONS_SET_NAME=$(KN_SUBSCRIPTIONS_SET_NAME)'
 	@echo
 
-_kn_view_framework_targets ::
+_kn_list_targets ::
 	@echo 'KN::Subscription ($(_KN_SUBSCRIPTION_MK_VERSION)) targets:'
 	@echo '    _kn_create_subscription                  - Create a new subscription'
 	@echo '    _kn_delete_subscription                  - Delete an existing subscription'
+	@echo '    _kn_list_subscriptions                   - List all subscriptions'
+	@echo '    _kn_list_subscriptions_set               - List a set of subscriptions'
 	@echo '    _kn_show_subscription                    - Show everything related to a subscription'
 	@echo '    _kn_show_subscription_description        - Show the description of a subscription'
-	@echo '    _kn_view_subscriptions                   - View all subscriptions'
-	@echo '    _kn_view_subscriptions_set               - View a set of subscriptions'
 	@#echo '    _kn_watch_subscriptions                  - Watch subscriptions'
 	@#echo '    _kn_watch_subscriptions_set              - Watch a set of subscriptions'
 	@echo
@@ -69,12 +69,12 @@ _kn_show_subscription_description:
 _kn_update_subscription:
 	@$(INFO) '$(KN_UI_LABEL)Updating subscription "$(KN_SUBSCRIPTION_NAME)" ...'; $(NORMAL)
 
-_kn_view_subscriptions:
-	@$(INFO) '$(KN_UI_LABEL)Viewing subscriptions ...'; $(NORMAL)
+_kn_list_subscriptions:
+	@$(INFO) '$(KN_UI_LABEL)Listing ALL subscriptions ...'; $(NORMAL)
 	$(KN) subscription list --all-namespaces=true $(_X__KN_NAMESPACE__SUBSCRIPTIONS)
 
-_kn_view_subscriptions_set:
-	@$(INFO) '$(KN_UI_LABEL)Viewing subscriptions-set "$(KN_SUBSCRIPTIONS_SET_NAME)" ...'; $(NORMAL)
+_kn_list_subscriptions_set:
+	@$(INFO) '$(KN_UI_LABEL)Listing subscriptions-set "$(KN_SUBSCRIPTIONS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'subscriptions are grouped based on the provided namespace, and ...'; $(NORMAL)
 	$(KN) subscription list --all-namespaces=false $(__KN_NAMESPACE__SUBSCRIPTIONS)
 

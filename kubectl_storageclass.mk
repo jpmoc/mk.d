@@ -25,8 +25,8 @@ __KCL_FILENAME__STORAGECLASS= $(if $(KCL_STORAGECLASS_MANIFEST_FILEPATH),--filen
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) parameters:'

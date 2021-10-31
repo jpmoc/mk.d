@@ -42,14 +42,14 @@ _hlm_get_helm_home= $(shell $(HELM) home)
 # USAGE
 #
 
-_view_framework_macros :: _hlm_view_framework_macros
-_hlm_view_framework_macros ::
+_list_macros :: _hlm_list_macros
+_hlm_list_macros ::
 	@echo 'HeLM:: ($(_HELM_MK_VERSION)) macros:'
 	@echo '    _hlm_get_helm_home               - Get the home pf the helm client'
 	@echo
 
-_view_framework_parameters :: _hlm_view_framework_parameters
-_hlm_view_framework_parameters ::
+_list_parameters :: _hlm_list_parameters
+_hlm_list_parameters ::
 	@echo 'HeLM:: ($(_HELM_MK_VERSION)) variables:'
 	@echo '    HELM=$(HELM)'
 	@# echo '    HELM_HOME=$(HELM_HOME)'
@@ -60,8 +60,8 @@ _hlm_view_framework_parameters ::
 	@echo '    HLM_OUTPUTS_DIRPATH=$(HLM_OUTPUTS_DIRPATH)'
 	@echo
 
-_view_framework_targets :: _hlm_view_framework_targets
-_hlm_view_framework_targets ::
+_list_targets :: _hlm_list_targets
+_hlm_list_targets ::
 	@echo 'HeLM:: ($(_HELM_MK_VERSION)) targets:'
 	@echo '    _hlm_install_dependencies       - Install dependencies'
 	@echo '    _hlm_show_configuration         - Show config of helm'
@@ -97,7 +97,7 @@ _hlm_install_dependencies ::
 # 	tree $(HLM_HOME)
 # 
 
-_view_versions :: _hlm_view_versions
-_hlm_view_versions: # _hlm_show_version_client _hlm_show_version_server
+_view_versions :: _hlm_show_versions
+_hlm_show_versions: # _hlm_show_version_client _hlm_show_version_server
 	@$(INFO) '$(HLM_UI_LABEL)Showing version of dependencies...'; $(NORMAL)
 	$(HELM) version

@@ -57,6 +57,8 @@ __HLM_VERSION__CHART= $(if $(HLM_CHART_VERSION),--version $(HLM_CHART_VERSION))
 # UI parameters
 
 # Pipes
+|_HLM_LIST_CHARTS?= #
+|_HLM_LIST_CHARTS_SET?= #
 |_HLM_SHOW_CHART_VERSIONS?= | head -10; echo '...'
 
 #--- MACROS
@@ -65,11 +67,11 @@ __HLM_VERSION__CHART= $(if $(HLM_CHART_VERSION),--version $(HLM_CHART_VERSION))
 # USAGE
 #
 
-_hlm_view_framework_macros ::
+_hlm_list_macros ::
 	@echo 'HeLM::Chart ($(_HELM_CHART_MK_VERSION)) macros:'
 	@echo
 
-_hlm_view_framework_parameters ::
+_hlm_list_parameters ::
 	@echo 'HeLM::Chart ($(_HELM_CHART_MK_VERSION)) parameters:'
 	@echo '    HLM_CHART_CNAME=$(HLM_CHART_CNAME)'
 	@echo '    HLM_CHART_DIRPATH=$(HLM_CHART_DIRPATH)'
@@ -95,9 +97,11 @@ _hlm_view_framework_parameters ::
 	@echo '    HLM_CHARTS_SET_NAME=$(HLM_CHARTS_SET_NAME)'
 	@echo
 
-_hlm_view_framework_targets ::
+_hlm_list_targets ::
 	@echo 'HeLM::Chart ($(_HELM_CHART_MK_VERSION)) targets:'
 	@echo '    _hlm_download_chart        - Download source code of a chart'
+	@echo '    _hlm_list_charts           - List all charts' 
+	@echo '    _hlm_list_charts_set       - List a set of charts' 
 	@echo '    _hlm_seach_chart           - Search for a chart' 
 	@echo '    _hlm_show_chart            - Show everything related to a chart' 
 	@echo '    _hlm_show_chart_metadata   - Show the metadata of a chart' 
@@ -133,7 +137,7 @@ _hlm_package_chart:
 _hlm_show_chart: _hlm_show_chart_readme _hlm_show_chart_values _hlm_show_chart_versions _hlm_show_chart_description
 
 _hlm_show_chart_dependencies ::
-	@# Link to _hlm_view_dependencies
+	@# Link to _hlm_list_dependencies
 
 _hlm_show_chart_description:
 	@$(INFO) '$(HLM_UI_LABEL)Showing description of chart "$(HLM_CHART_CNAME)" ...'; $(NORMAL)
@@ -154,13 +158,13 @@ _hlm_show_chart_versions:
 	@$(INFO) '$(HLM_UI_LABEL)Showing versions of chart "$(HLM_CHART_CNAME)" ...'; $(NORMAL)
 	$(HELM) search repo --versions --regexp "$(HLM_CHART_CNAME)" $(|_HLM_SHOW_CHART_VERSIONS)
 
-_hlm_view_charts:
-	@$(INFO) '$(HLM_UI_LABEL)View ALL charts ...'; $(NORMAL)
-	$(HELM) search repo --versions $(|_HLM_VIEW_CHARTS)
+_hlm_list_charts:
+	@$(INFO) '$(HLM_UI_LABEL)Listing ALL charts ...'; $(NORMAL)
+	$(HELM) search repo --versions $(|_HLM_LIST_CHARTS)
 
-_hlm_view_charts_set:
-	@$(INFO) '$(HLM_UI_LABEL)View charts-set "$(HLM_CHARTS_SET_NAME)" ...'; $(NORMAL)
-	$(HELM) search repo --versions --regex '$(HLM_CHARTS_REPOSITORY_NAME)/' $(|_HLM_VIEW_CHARTS_SET)
+_hlm_list_charts_set:
+	@$(INFO) '$(HLM_UI_LABEL)Listing charts-set "$(HLM_CHARTS_SET_NAME)" ...'; $(NORMAL)
+	$(HELM) search repo --versions --regex '$(HLM_CHARTS_REPOSITORY_NAME)/' $(|_HLM_LIST_CHARTS_SET)
 
 _hlm_verify_chart:
 	@$(INFO) '$(HLM_UI_LABEL)Showing parameters/values of chart "$(HLM_CHART_CNAME)" ...'; $(NORMAL)

@@ -28,27 +28,27 @@ __KCL_SORT_BY__INSTANCES= $(if $(KCL_INSTANCES_SORT_BY),--sort-by=$(KCL_INSTANCE
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_INSTANCE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio::Instance ($(_KUBECTL_ISTIO_INSTANCE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
-	@echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_INSTANCE_MK_VERSION)) parameters:'
+_kcl_list_parameters ::
+	@echo 'KubeCtL::Istio::Instance ($(_KUBECTL_ISTIO_INSTANCE_MK_VERSION)) parameters:'
 	@echo '    KCL_INSTANCE_NAME=$(KCL_INSTANCE_NAME)'
 	@echo '    KCL_INSTANCE_NAMESPACE_NAME=$(KCL_INSTANCE_NAMESPACE_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
-	@echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_INSTANCE_MK_VERSION)) targets:'
+_kcl_list_targets ::
+	@echo 'KubeCtL::Istio::Instance ($(_KUBECTL_ISTIO_INSTANCE_MK_VERSION)) targets:'
 	@echo '    _kcl_create_instance                  - Create a instance'
 	@echo '    _kcl_delete_instance                  - Delete a instance'
 	@echo '    _kcl_label_instance                   - Label a instance'
+	@echo '    _kcl_list_instances                   - List all instances'
+	@echo '    _kcl_list_instances_set               - List a set of instances'
 	@echo '    _kcl_show_instance                    - Show everything related to a instance'
 	@echo '    _kcl_show_instance_description        - Show description of a instance'
 	@echo '    _kcl_show_instance_manifest           - Show manifest of a instance'
 	@echo '    _kcl_unlabel_instance                 - Unlabel a instance'
-	@echo '    _kcl_view_instances                   - View all instances'
-	@echo '    _kcl_view_instances_set               - View a set of instances'
 	@echo '    _kcl_watch_instances                  - Watch instances'
 	@echo '    _kcl_watch_instances_set              - Watch a set of instances'
 	@echo
@@ -75,7 +75,17 @@ _kcl_explain_instance:
 	@$(INFO) '$(KCL_UI_LABEL)Explaining instance object ...'; $(NORMAL)
 	$(KUBECTL) explain instance
 
-_kcl_show_instance: _kcl_show_instance_manifest _kcl_show_instance_description
+_kcl_list_instances:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL instances ...'; $(NORMAL)
+	$(KUBECTL) get instances --all-namespaces=true $(_X__KCL_NAMESPACE__INSTANCES) $(__KCL_OUTPUT_INSTANCES) $(_X__KCL_SELECTOR__INSTANCES) $(__KCL_SORT_BY__INSTANCES)
+
+_kcl_list_instances_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing instances-set "$(KCL_INSTANCES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get instances --all-namespaces=false $(__KCL_NAMESPACE__INSTANCES) $(__KCL_OUTPUT__INSTANCES) $(__KCL_SELECTOR__INSTANCES) $(__KCL_SORT_BY__INSTANCES)
+
+_KCL_SHOW_INSTANCE_TARGETS?= _kcl_show_instance_manifest _kcl_show_instance_description
+_kcl_show_instance: $(_KCL_SHOW_INSTANCE_TARGETS)
 
 _kcl_show_instance_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description instance "$(KCL_INSTANCE_NAME)" ...'; $(NORMAL)
@@ -87,15 +97,6 @@ _kcl_show_instance_manifest:
 
 _kcl_unlabel_instance:
 	@$(INFO) '$(KCL_UI_LABEL)Removing labels from instance "$(KCL_INSTANCE_NAME)" ...'; $(NORMAL)
-
-_kcl_view_instances:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL instances ...'; $(NORMAL)
-	$(KUBECTL) get instances --all-namespaces=true $(_X__KCL_NAMESPACE__INSTANCES) $(__KCL_OUTPUT_INSTANCES) $(_X__KCL_SELECTOR__INSTANCES) $(__KCL_SORT_BY__INSTANCES)
-
-_kcl_view_instances_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing instances-set "$(KCL_INSTANCES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get instances --all-namespaces=false $(__KCL_NAMESPACE__INSTANCES) $(__KCL_OUTPUT__INSTANCES) $(__KCL_SELECTOR__INSTANCES) $(__KCL_SORT_BY__INSTANCES)
 
 _kcl_watch_instances:
 	@$(INFO) '$(KCL_UI_LABEL)Watching instances ...'; $(NORMAL)

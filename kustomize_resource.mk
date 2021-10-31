@@ -16,7 +16,7 @@ KZE_RESOURCES_DIRPATH?= $(KZE_RESOURCE_DIRPATH)
 # Option parameters
 
 # Pipe
-|_KZE_VIEW_RESOURCES_SET?=
+|_KZE_LIST_RESOURCES_SET?=
 
 # UI parameters
 
@@ -26,11 +26,11 @@ KZE_RESOURCES_DIRPATH?= $(KZE_RESOURCE_DIRPATH)
 # USAGE
 #
 
-_kze_view_framework_macros ::
-	@echo 'KustomiZE::Resource ($(_KUSTOMIZE_RESOURCE_MK_VERSION)) macros:'
-	@echo
+_kze_list_macros ::
+	@#echo 'KustomiZE::Resource ($(_KUSTOMIZE_RESOURCE_MK_VERSION)) macros:'
+	@#echo
 
-_kze_view_framework_parameters ::
+_kze_list_parameters ::
 	@echo 'KustomiZE::Resource ($(_KUSTOMIZE_RESOURCE_MK_VERSION)) parameters:'
 	@echo '    KZE_RESOURCE_DIRPATH=$(KZE_RESOURCE_DIRPATH)'
 	@echo '    KZE_RESOURCE_FILENAME=$(KZE_RESOURCE_FILENAME)'
@@ -41,17 +41,17 @@ _kze_view_framework_parameters ::
 	@echo '    KZE_RESOURCES_SET_NAME=$(KZE_RESOURCES_SET_NAME)'
 	@echo
 
-_kze_view_framework_targets ::
+_kze_list_targets ::
 	@echo 'KustomiZE::Resource ($(_KUSTOMIZE_RESOURCE_MK_VERSION)) targets:'
 	@echo '    _kze_create_resource                  - Create resources in a resource'
 	@echo '    _kze_delete_resource                  - Delete resources in a resource'
-	@echo '    _kze_edit_resource                    - Edit a resource'
+	@echo '    _kze_list_resources                   - List all resources'
+	@echo '    _kze_list_resources_set               - List a set of resources'
 	@echo '    _kze_show_resource                    - Show everything related to a resource'
-	@echo '    _kze_show_resource_content            - Show everything related to a resource'
+	@echo '    _kze_show_resource_content            - Show the content of a resource'
 	@echo '    _kze_show_resource_description        - Show description of resource'
 	@echo '    _kze_update_resource                  - Update resource'
-	@echo '    _kze_view_resources                  - View resources'
-	@echo '    _kze_view_resources_set              - View set of resources'
+	@echo '    _kze_write_resource                   - Write a resource'
 	@echo
 
 #----------------------------------------------------------------------
@@ -64,11 +64,17 @@ _kze_delete_resource:
 	@$(INFO) '$(KZE_UI_LABEL)Deleting resource "$(KZE_RESOURCE_NAME)" ...'; $(NORMAL)
 	rm $(KZE_RESOURCE_FILEPATH)	
 
-_kze_edit_resource:
-	@$(INFO) '$(KZE_UI_LABEL)Editing resource "$(KZE_RESOURCE_NAME)" ...'; $(NORMAL)
-	$(EDITOR) $(KZE_RESOURCE_FILEPATH)
+_kze_list_resources:
+	@$(INFO) '$(KZE_UI_LABEL)Listing ALL resources ...'; $(NORMAL)
+	ls -al $(KZE_RESOURCES_DIRPATH)
 
-_kze_show_resource :: _kze_show_resource_content _kze_show_resource_description
+_kze_list_resources_set:
+	@$(INFO) '$(KZE_UI_LABEL)Listing resources-set "$(KZE_RESOURCES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Reources are grouped based on directory, regex, and pipe-filter'; $(NORMAL)
+	ls -al $(KZE_RESOURCES_DIRPATH)$(KZE_RESOURCES_REGEX) $(|_KZE_LIST_RESOURCES_SET)
+
+_KZE_SHOW_RESOURCE_TARGETS?= _kze_show_resource_content _kze_show_resource_description
+_kze_show_resource: $(_KZE_SHOW_RESOURCE_TARGETS)
 
 _kze_show_resource_content:
 	@$(INFO) '$(KZE_UI_LABEL)Showing context of resource "$(KZE_RESOURCE_NAME)" ...'; $(NORMAL)
@@ -80,11 +86,6 @@ _kze_show_resource_description:
 
 _kze_update_resource: _kze_edit_resource
 
-_kze_view_resources:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing resources ...'; $(NORMAL)
-	ls -al $(KZE_RESOURCES_DIRPATH)
-
-_kze_view_resources_set:
-	@$(INFO) '$(KZE_UI_LABEL)Viewing resources-set "$(KZE_RESOURCES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Reources are grouped based on directory, regex, and pipe-filter'; $(NORMAL)
-	ls -al $(KZE_RESOURCES_DIRPATH)$(KZE_RESOURCES_REGEX) $(|_KZE_VIEW_RESOURCES_SET)
+_kze_write_resource:
+	@$(INFO) '$(KZE_UI_LABEL)Writing resource "$(KZE_RESOURCE_NAME)" ...'; $(NORMAL)
+	$(WRITE) $(KZE_RESOURCE_FILEPATH)

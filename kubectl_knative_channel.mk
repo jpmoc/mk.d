@@ -82,11 +82,11 @@ __KCL_SORT_BY__CHANNELS= $(if $(KCL_CHANNELS_SORT_BY),--sort-by=$(KCL_CHANNELS_S
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Knative::Channel ($(_KUBECTL_KNATIVE_CHANNEL_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Knative::Channel ($(_KUBECTL_KNATIVE_CHANNEL_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Knative::Channel ($(_KUBECTL_KNATIVE_CHANNEL_MK_VERSION)) parameters:'
 	@echo '    KCL_CHANNEL_CLOUDEVENT_CONTENTTYPE=$(KCL_CHANNEL_CLOUDEVENT_CONTENTTYPE)'
 	@echo '    KCL_CHANNEL_CLOUDEVENT_ID=$(KCL_CHANNEL_CLOUDEVENT_ID)'
@@ -122,7 +122,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_CHANNELS_SORT_BY=$(KCL_CHANNELS_SORT_BY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Knative::Channel ($(_KUBECTL_KNATIVE_CHANNEL_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_channel                - Annotate a channel'
 	@echo '    _kcl_apply_channels                  - Apply manifest for one-por-more channels'
@@ -135,6 +135,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_explain_channel                 - Explain the channel object'
 	@echo '    _kcl_kustomize_channel               - Kustomize one-or-more channels'
 	@echo '    _kcl_label_channel                   - Label a channel'
+	@echo '    _kcl_list_channels                   - List all channels'
+	@echo '    _kcl_list_channels_set               - List a set of channels'
 	@echo '    _kcl_show_channel                    - Show everything related to a channel'
 	@echo '    _kcl_show_channel_description        - Show the description of a channel'
 	@echo '    _kcl_show_channel_object             - Show the object of a channel'
@@ -143,10 +145,9 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_channels                - Un-apply manifest for one-or-more channels'
 	@echo '    _kcl_unlabel_channel                 - Un-label manifest for a channel'
 	@echo '    _kcl_update_channel                  - Update a channel'
-	@echo '    _kcl_view_channels                   - View all channels'
-	@echo '    _kcl_view_channels_set               - View a set of channels'
 	@echo '    _kcl_watch_channels                  - Watching channels'
 	@echo '    _kcl_watch_channels_set              - Watching a set of channels'
+	@echo '    _kcl_write_channels                  - Write manifest for one-or-more channels'
 	@echo
 
 #----------------------------------------------------------------------
@@ -155,6 +156,7 @@ _kcl_view_framework_targets ::
 
 _kcl_annotate_channel:
 	@$(INFO) '$(KCL_UI_LABEL)Annotating channel "$(KCL_CHANNEL_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) annotate ...
 
 _kcl_apply_channel: _kcl_apply_channels
 _kcl_apply_channels:
@@ -204,6 +206,16 @@ _kcl_kustomize_channels:
 
 _kcl_label_channel:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling channel "$(KCL_CHANNEL_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) label ...
+
+_kcl_list_channels:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL channels ...'; $(NORMAL)
+	$(KUBECTL) get channels --all-namespaces=true $(_X__KCL_NAMESPACE__CHANNELS) $(__KCL_OUTPUT_CHANNELS) $(_X__KCL_SELECTOR__CHANNELS) $(__KCL_SORT_BY__CHANNELS)
+
+_kcl_list_channels_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing channels-set "$(KCL_CHANNELS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'channels are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get channels --all-namespaces=false $(__KCL_NAMESPACE__CHANNELS) $(__KCL_OUTPUT__CHANNELS) $(__KCL_SELECTOR__CHANNELS) $(__KCL_SORT_BY__CHANNELS)
 
 _kcl_show_channel: _kcl_show_channel_object _kcl_show_channel_state _kcl_show_channel_triggers _kcl_show_channel_description
 
@@ -239,18 +251,14 @@ _kcl_unlabel_channel:
 _kcl_update_channel:
 	@$(INFO) '$(KCL_UI_LABEL)Updating channel "$(KCL_CHANNEL_NAME)" ...'; $(NORMAL)
 
-_kcl_view_channels:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL channels ...'; $(NORMAL)
-	$(KUBECTL) get channels --all-namespaces=true $(_X__KCL_NAMESPACE__CHANNELS) $(__KCL_OUTPUT_CHANNELS) $(_X__KCL_SELECTOR__CHANNELS) $(__KCL_SORT_BY__CHANNELS)
-
-_kcl_view_channels_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing channels-set "$(KCL_CHANNELS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'channels are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get channels --all-namespaces=false $(__KCL_NAMESPACE__CHANNELS) $(__KCL_OUTPUT__CHANNELS) $(__KCL_SELECTOR__CHANNELS) $(__KCL_SORT_BY__CHANNELS)
-
 _kcl_watch_channels:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL channels ...'; $(NORMAL)
 	$(KUBECTL) get channels --all-namespaces=true --watch 
 
 _kcl_watch_channels_set:
 	@$(INFO) '$(KCL_UI_LABEL)Watching channels-set "$(KCL_CHANNELS_SET_NAME)" ...'; $(NORMAL)
+
+_kcl_write_channel: _kcl_write_channels
+_kcl_write_channels:
+	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more channels ...'; $(NORMAL)
+	$(WRITE) $(KCL_CHANNELS_MANIFEST_FILEPATH)

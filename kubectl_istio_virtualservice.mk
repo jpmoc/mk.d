@@ -67,11 +67,11 @@ _KCL_UNAPPLY_VIRTUALSERVICES_|?= #-
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio::VirtualService ($(_KUBECTL_ISTIO_VIRTUALSERVICE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio::VirtualService ($(_KUBECTL_ISTIO_VIRTUALSERVICE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::VirtualService ($(_KUBECTL_ISTIO_VIRTUALSERVICE_MK_VERSION)) parameters:'
 	@echo '    KCL_VIRTUALSERVICE_DESTINATIONRULES_FIELDSELECTOR=$(KCL_VIRTUALSERVICE_DESTINATIONRULE_FIELDSELECTOR)'
 	@echo '    KCL_VIRTUALSERVICE_DESTINATIONRULES_NAME=$(KCL_VIRTUALSERVICE_DESTINATIONRULE_NAME)'
@@ -103,7 +103,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_VIRTUALSERVICES_SET_NAME=$(KCL_VIRTUALSERVICES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::VirtualService ($(_KUBECTL_ISTIO_VIRTUALSERVICE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_virtualservice                - Annotate a virtual-service'
 	@echo '    _kcl_apply_virtualservices                  - Apply manifest for one-or-more virtual-services'
@@ -113,6 +113,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_diff_virtualservices                   - Diff manifest for one-or-more virtual-services'
 	@echo '    _kcl_dig_virtualservice                     - Dig a virtual-service'
 	@echo '    _kcl_label_virtualservice                   - Label a virtual-service'
+	@echo '    _kcl_list_virtualservices                   - List all virtual-services'
+	@echo '    _kcl_list_virtualservices_set               - List a set of virtual-services'
 	@echo '    _kcl_show_virtualservice                    - Show everything related to a virtual-service'
 	@echo '    _kcl_show_virtualservice_description        - Show description of a virtual-service'
 	@echo '    _kcl_show_virtualservice_destinationrules   - Show destination-rules of a virtual-service'
@@ -123,8 +125,6 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_virtualservices                - Unapply a manifest for one-or-more virtual-services'
 	@echo '    _kcl_unlabel_virtualservice                 - Unlabel a virtual-service'
 	@echo '    _kcl_update_lvirtualservice                 - Updating a virtual-service'
-	@echo '    _kcl_view_virtualservices                   - View all virtual-services'
-	@echo '    _kcl_view_virtualservices_set               - View a set of virtual-services'
 	@echo '    _kcl_watch_virtualservices                  - Watch virtual-services'
 	@echo '    _kcl_watch_virtualservices_set              - Watch a set of virtual-services'
 	@echo '    _kcl_write_virtualservices                  - Write manifest for one-or-more virtual-services'
@@ -171,6 +171,15 @@ _kcl_edit_virtualservice:
 _kcl_explain_virtualservice:
 	@$(INFO) '$(KCL_UI_LABEL)Explaining virtual-service object ...'; $(NORMAL)
 	$(KUBECTL) explain virtualservice
+
+_kcl_list_virtualservices:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL virtual-services ...'; $(NORMAL)
+	$(KUBECTL) get virtualservices --all-namespaces=true $(_X__KCL_NAMESPACE__VIRTUALSERVICES) $(__KCL_OUTPUT_VIRTUALSERVICES) $(_X__KCL_SELECTOR__VIRTUALSERVICES) $(__KCL_SORT_BY__VIRTUALSERVICES)
+
+_kcl_list_virtualservices_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing virtual-services-set "$(KCL_VIRTUALSERVICES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get virtualservices --all-namespaces=false $(__KCL_NAMESPACE__VIRTUALSERVICES) $(__KCL_OUTPUT__VIRTUALSERVICES) $(__KCL_SELECTOR__VIRTUALSERVICES) $(__KCL_SORT_BY__VIRTUALSERVICES)
 
 _KCL_SHOW_VIRTUALSERVICE_TARGETS?= _kcl_show_virtualservice_destinationrules _kcl_show_virtualservice_gateways _kcl_show_virtualservice_object _kcl_show_virtualservice_services _kcl_show_virtualservice_state _kcl_show_virtualservice_description
 _kcl_show_virtualservice :: $(_KCL_SHOW_VIRTUALSERVICE_TARGETS)
@@ -243,15 +252,6 @@ _kcl_unlabel_virtualservice:
 _kcl_update_virtualservice:
 	@$(INFO) '$(KCL_UI_LABEL)Updating virtual-service "$(KCL_VIRTUALSERVICE_NAME)" ...'; $(NORMAL)
 
-_kcl_view_virtualservices:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL virtual-services ...'; $(NORMAL)
-	$(KUBECTL) get virtualservices --all-namespaces=true $(_X__KCL_NAMESPACE__VIRTUALSERVICES) $(__KCL_OUTPUT_VIRTUALSERVICES) $(_X__KCL_SELECTOR__VIRTUALSERVICES) $(__KCL_SORT_BY__VIRTUALSERVICES)
-
-_kcl_view_virtualservices_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing virtual-services-set "$(KCL_VIRTUALSERVICES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Deployments are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get virtualservices --all-namespaces=false $(__KCL_NAMESPACE__VIRTUALSERVICES) $(__KCL_OUTPUT__VIRTUALSERVICES) $(__KCL_SELECTOR__VIRTUALSERVICES) $(__KCL_SORT_BY__VIRTUALSERVICES)
-
 _kcl_watch_virtualservices:
 	@$(INFO) '$(KCL_UI_LABEL)Watching virtual-services ...'; $(NORMAL)
 	$(KUBECTL) get virtualservices --all-namespaces=true --watch 
@@ -262,4 +262,4 @@ _kcl_watch_virtualservices_set:
 _kcl_write_virtualservice: _kcl_write_virtualservices
 _kcl_write_virtualservices:
 	@$(INFO) '$(KCL_UI_LABEL)Writing manifest for one-or-more virtual-services ...'; $(NORMAL)
-	$(EDITOR) $(KCL_VIRTUALSERVICES_MANIFEST_FILEPATH)
+	$(WRITER) $(KCL_VIRTUALSERVICES_MANIFEST_FILEPATH)

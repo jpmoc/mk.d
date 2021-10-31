@@ -16,16 +16,16 @@ _MINIKUBE_INTERNALREGISTRY_MK_VERSION= $(_MINIKUBE_MK_VERSION)
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::InternalRegistry ($(_MINIKUBE_INTERNALREGISTRY_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::InternalRegistry ($(_MINIKUBE_INTERNALREGISTRY_MK_VERSION)) parameters:'
 	@echo '    MKE_INTERNALREGISTRY_NAME=$(MKE_MOUNT_NAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::InternalRegistry ($(_MINIKUBE_INTERNALREGISTRY_MK_VERSION)) targets:'
 	@echo '    _mke_enable_internalregistry               - Enable access to an internal registry'
 	@echo '    _mke_show_internalregistry                 - Show everything related to an internal registry'

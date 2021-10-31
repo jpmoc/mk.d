@@ -22,11 +22,11 @@ __MKE_URL__DASHBOARD= $(if $(filter true, $(MKE_DASHBOARD_URL_FLAG)),--url)
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::Dashboard ($(_MINIKUBE_MOUNT_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::Dashboard ($(_MINIKUBE_MOUNT_MK_VERSION)) parameters:'
 	@echo '    MKE_DASHBOARD_CLUSTER_NAME=$(MKE_DASHBOARD_CLUSTER_NAME)'
 	@echo '    MKE_DASHBOARD_PROFILE_NAME=$(MKE_DASHBOARD_PROFILE_NAME)'
@@ -34,7 +34,7 @@ _mke_view_framework_parameters ::
 	@echo '    MKE_DASHBOARD_URL_FLAG=$(MKE_DASHBOARD_URL_FLAG)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::Dashboard ($(_MINIKUBE_MOUNT_MK_VERSION)) targets:'
 	@echo '    _mke_open_dashboard               - Open the dashboard'
 	@echo

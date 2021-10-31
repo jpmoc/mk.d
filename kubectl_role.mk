@@ -30,8 +30,8 @@ __KCL_VERB__ROLE= $(if $(KCL_ROLE_RESOURCE_VERBS),--verb $(subst $(SPACE),$(COMM
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::Role ($(_KUBECTL_ROLE_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::Role ($(_KUBECTL_ROLE_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::Role ($(_KUBECTL_ROLE_MK_VERSION)) parameters:'

@@ -30,11 +30,11 @@ __KCL_SORT_BY__MESHPOLICIES= $(if $(KCL_MESHPOLICIES_SORTBY),--sort-by=$(KCL_MES
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio::MeshPolicy ($(_KUBECTL_ISTIO_MESHPOLICY_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio::MeshPolicy ($(_KUBECTL_ISTIO_MESHPOLICY_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::MeshPolicy ($(_KUBECTL_ISTIO_MESHPOLICY_MK_VERSION)) parameters:'
 	@echo '    KCL_MESHPOLICY_LABELS_KEYVALUES=$(KCL_MESHPOLICY_LABELS_KEYVALUES)'
 	@echo '    KCL_MESHPOLICY_MANIFEST_DIRPATH=$(KCL_MESHPOLICY_MANIFEST_DIRPATH)'
@@ -47,13 +47,15 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_MESHPOLICIES_SORTBY=$(KCL_MESHPOLICIES_SORTBY)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::MeshPolicy ($(_KUBECTL_ISTIO_MESHPOLICY_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_meshpolicy                - Annotate a mesh-policy'
 	@echo '    _kcl_apply_meshpolicy                   - Apply a mesh-policy'
 	@echo '    _kcl_create_meshpolicy                  - Create a mesh-policy'
 	@echo '    _kcl_delete_meshpolicy                  - Delete a mesh-policy'
 	@echo '    _kcl_label_meshpolicy                   - Label a mesh-policy'
+	@echo '    _kcl_list_meshpolicies                  - List all mesh-policies'
+	@echo '    _kcl_list_meshpolicies_set              - List a set of mesh-policies'
 	@echo '    _kcl_show_meshpolicy                    - Show everything related to a mesh-policy'
 	@echo '    _kcl_show_meshpolicy_description        - Show description of a mesh-policy'
 	@echo '    _kcl_show_meshpolicy_object             - Show object of a mesh-policy'
@@ -61,8 +63,6 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_meshpolicy                 - Unapply a manifest for a mesh-policy'
 	@echo '    _kcl_unlabel_meshpolicy                 - Unlabel a mesh-policy'
 	@echo '    _kcl_update_meshpolicy                  - Update a mesh-policy'
-	@echo '    _kcl_view_meshpolicies                  - View all mesh-policies'
-	@echo '    _kcl_view_meshpolicies_set              - View a set of mesh-policies'
 	@echo '    _kcl_watch_meshpolicies                 - Watch mesh-policies'
 	@echo '    _kcl_watch_meshpolicies_set             - Watch a set of mesh-policies'
 	@echo
@@ -93,7 +93,17 @@ _kcl_explain_meshpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Explaining mesh-policy object ...'; $(NORMAL)
 	$(KUBECTL) explain meshpolicy
 
-_kcl_show_meshpolicy: _kcl_show_meshpolicy_object _kcl_show_meshpolicy_state _kcl_show_meshpolicy_description
+_kcl_list_meshpolicies:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL mesh-policies ...'; $(NORMAL)
+	$(KUBECTL) get meshpolicies --all-namespaces=true $(__KCL_OUTPUT_MESHPOLICIES) $(_X__KCL_SELECTOR__MESHPOLICIES) $(__KCL_SORT_BY__MESHPOLICIES)
+
+_kcl_list_meshpolicies_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing mesh-policies-set "$(KCL_MESHPOLICIES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Mesh-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get meshpolicies --all-namespaces=false $(__KCL_OUTPUT__MESHPOLICIES) $(__KCL_SELECTOR__MESHPOLICIES) $(__KCL_SORT_BY__MESHPOLICIES)
+
+_KCL_SHOW_MESHPOLICY_TARGETS?= _kcl_show_meshpolicy_object _kcl_show_meshpolicy_state _kcl_show_meshpolicy_description
+_kcl_show_meshpolicy: $(_KCL_SHOW_MESHPOLICY_TARGETS)
 
 _kcl_show_meshpolicy_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description mesh-policy "$(KCL_MESHPOLICY_NAME)" ...'; $(NORMAL)
@@ -118,15 +128,9 @@ _kcl_unlabel_meshpolicy:
 _kcl_update_meshpolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Updating mesh-policy "$(KCL_MESHPOLICY_NAME)" ...'; $(NORMAL)
 
-_kcl_view_meshpolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL mesh-policies ...'; $(NORMAL)
-	$(KUBECTL) get meshpolicies --all-namespaces=true $(__KCL_OUTPUT_MESHPOLICIES) $(_X__KCL_SELECTOR__MESHPOLICIES) $(__KCL_SORT_BY__MESHPOLICIES)
-
-_kcl_view_meshpolicies_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing mesh-policies-set "$(KCL_MESHPOLICIES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Mesh-policies are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get meshpolicies --all-namespaces=false $(__KCL_OUTPUT__MESHPOLICIES) $(__KCL_SELECTOR__MESHPOLICIES) $(__KCL_SORT_BY__MESHPOLICIES)
-
 _kcl_watch_meshpolicies:
-	@$(INFO) '$(KCL_UI_LABEL)Watching mesh-policies ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Watching ALL mesh-policies ...'; $(NORMAL)
 	$(KUBECTL) get meshpolicies --all-namespaces=true --watch 
+
+_kcl_watch_meshpolicies_set:
+	@$(INFO) '$(KCL_UI_LABEL)Watching mesh-policies-set "$(KCL_MESHPOLICIES_SET_NAME)" ...'; $(NORMAL)

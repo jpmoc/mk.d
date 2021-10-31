@@ -31,11 +31,11 @@ __HLM_VALUES__MANIFEST= $(if $(HLM_MANIFEST_VALUES_FILEPATH),--values $(HLM_MANI
 # USAGE
 #
 
-_hlm_view_framework_macros ::
-	@echo 'HeLM::Manifest ($(_HELM_MANIFEST_MK_VERSION)) macros:'
-	@echo
+_hlm_list_macros ::
+	@#echo 'HeLM::Manifest ($(_HELM_MANIFEST_MK_VERSION)) macros:'
+	@#echo
 
-_hlm_view_framework_parameters ::
+_hlm_list_parameters ::
 	@echo 'HeLM::Manifest ($(_HELM_MANIFEST_MK_VERSION)) parameters:'
 	@echo '    HLM_MANIFEST_CHART_NAME=$(HLM_MANIFEST_CHART_NAME)'
 	@echo '    HLM_MANIFEST_CHARTSOURCE_DIRPATH=$(HLM_MANIFEST_CHARTSOURCE_DIRPATH)'
@@ -47,7 +47,7 @@ _hlm_view_framework_parameters ::
 	@echo '    HLM_MANIFEST_|_CAT=$(HLM_MANIFEST_|_CAT)'
 	@echo
 
-_hlm_view_framework_targets ::
+_hlm_list_targets ::
 	@echo 'HeLM::Manifest ($(_HELM_MANIFEST_MK_VERSION)) targets:'
 	@echo '    _hlm_build_manifest          - Build a releaase-manifest' 
 	@echo

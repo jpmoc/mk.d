@@ -34,12 +34,12 @@ _osl_get_publickey_modulus_F= $(shell $(OPENSSL) rsa -in $(1) -modulus -noout -p
 # INTERFACE
 #
 
-_osl_view_framework_macros ::
+_osl_list_macros ::
 	@echo 'OpenSSL::PublicKey ($(_OPENSSL_PUBLICKEY_MK_VERSION)) macros:'
 	@echo '    _osl_get_publickey_modulus_{|F}           - Get the modulus of a public-key (Filepath)'
 	@echo
 
-_osl_view_framework_parameters :: 
+_osl_list_parameters :: 
 	@echo 'OpenSSL::PublicKey ($(_OPENSSL_PUBLICKEY_MK_VERSION)) parameters:'
 	@echo '    OSL_PUBLICKEY_DIRPATH=$(OSL_PUBLICKEY_DIRPATH)'
 	@echo '    OSL_PUBLICKEY_FILENAME=$(OSL_PUBLICKEY_FILENAME)'
@@ -52,18 +52,18 @@ _osl_view_framework_parameters ::
 	@echo '    OSL_PUBLICKEYS_SET_NAME=$(OSL_PUBLICKEYS_SET_NAME)'
 	@echo
 
-_osl_view_framework_targets ::
+_osl_list_targets ::
 	@echo 'OpenSSL::PublicKey ($(_OPENSSL_PUBLICKEY_MK_VERSION)) targets:'
 	@echo '    _osl_check_publickey                     - Check everything about a public-key'
 	@echo '    _osl_check_publickey_modulus             - Check modulus of a public-key'
 	@echo '    _osl_create_publickey                    - Create a public-key'
 	@echo '    _osl_delete_publickey                    - Delete a public-key'
+	@echo '    _osl_list_publickeys                     - List a public-keys'
+	@echo '    _osl_list_publickeys_set                 - List a set of public-keys'
 	@echo '    _osl_show_publickey                      - Show everything related to a public-key'
 	@echo '    _osl_show_publickey_content              - Show content of a public-key'
 	@echo '    _osl_show_publickey_description          - Show description of a public-key'
 	@echo '    _osl_show_publickey_modulus              - Show modulus of a public-key'
-	@echo '    _osl_view_publickeys                     - View public-keys'
-	@echo '    _osl_view_publickeys_set                 - View set of public-keys'
 	@echo
 
 #----------------------------------------------------------------------
@@ -101,10 +101,10 @@ _osl_show_publickey_modulus:
 	@$(INFO) '$(OSL_UI_LABEL)Showing modulus of public-key "$(OSL_PUBLICKEY_NAME)" ...'; $(NORMAL)
 	$(OPENSSL) rsa -in $(OSL_PUBLICKEY_FILEPATH) -modulus -noout -pubin $(|_OSL_SHOW_PUBLICKEY_MODULUS)
 
-_osl_view_publickeys:
-	@$(INFO) '$(OSL_UI_LABEL)Viewing public-keys ...'; $(NORMAL)
+_osl_list_publickeys:
+	@$(INFO) '$(OSL_UI_LABEL)Listing ALL public-keys ...'; $(NORMAL)
 	ls -la $(OSL_PUBLICKEYS_DIRPATH)*
 
-_osl_view_publickeys_set:
-	@$(INFO) '$(OSL_UI_LABEL)Viewing public-keys-set "$(OSL_PUBLICKEYS_SET_NAME)" ...'; $(NORMAL)
+_osl_list_publickeys_set:
+	@$(INFO) '$(OSL_UI_LABEL)Listing public-keys-set "$(OSL_PUBLICKEYS_SET_NAME)" ...'; $(NORMAL)
 	ls -la $(OSL_PUBLICKEYS_DIRPATH)$(OSL_PUBLICKEYS_REGEX)

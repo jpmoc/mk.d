@@ -36,11 +36,11 @@ __KCL_SORT_BY__DESTINATIONRULES= $(if $(KCL_DESTINATIONRULES_SORT_BY),--sort-by=
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_DESTINATIONRULE_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_DESTINATIONRULE_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
+_kcl_list_parameters ::
 	@echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_DESTINATIONRULE_MK_VERSION)) parameters:'
 	@echo '    KCL_DESTINATIONRULE_MANIFEST_DIRPATH=$(KCL_DESTINATIONRULE_MANIFEST_DIRPATH)'
 	@echo '    KCL_DESTINATIONRULE_MANIFEST_FILENAME=$(KCL_DESTINATIONRULE_MANIFEST_FILENAME)'
@@ -55,7 +55,7 @@ _kcl_view_framework_parameters ::
 	@echo '    KCL_DESTINATIONRULES_SET_NAME=$(KCL_DESTINATIONRULES_SET_NAME)'
 	@echo
 
-_kcl_view_framework_targets ::
+_kcl_list_targets ::
 	@echo 'KubeCtL::Istio::DestinationRule ($(_KUBECTL_ISTIO_DESTINATIONRULE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_destinationrule                - Annotate a destination-rule'
 	@echo '    _kcl_apply_destinationrule                   - Apply a destination-rule'
@@ -71,8 +71,8 @@ _kcl_view_framework_targets ::
 	@echo '    _kcl_unapply_destinationrule                 - Unapply a destination-rule'
 	@echo '    _kcl_unlabel_destinationrule                 - Unlabel a destination-rule'
 	@echo '    _kcl_update_destinationrule                  - Update a destination-rule'
-	@echo '    _kcl_view_destinationrules                   - View all destination-rules'
-	@echo '    _kcl_view_destinationrules_set               - View a set of destination-rules'
+	@echo '    _kcl_list_destinationrules                   - List all destination-rules'
+	@echo '    _kcl_list_destinationrules_set               - List a set of destination-rules'
 	@echo '    _kcl_watch_destinationrules                  - Watch destination-rules'
 	@echo '    _kcl_watch_destinationrules_set              - Watch a set of destination-rules'
 	@echo '    _kcl_write_destinationrules                  - Write manifest for one-or-more destination-rules'
@@ -109,7 +109,17 @@ _kcl_explain_destinationrule:
 _kcl_label_destionationrule:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling destination-rule "$(KCL_DESTINATIONRULE_NAME)" ...'; $(NORMAL)
 
-_kcl_show_destinationrule: _kcl_show_destinationrule_object _kcl_show_destinationrule_state _kcl_show_destinationrule_subsets _kcl_show_destinationrule_description
+_kcl_list_destinationrules:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL destination-rules ...'; $(NORMAL)
+	$(KUBECTL) get destinationrules --all-namespaces=true $(_X__KCL_NAMESPACE__DESTINATIONRULES) $(__KCL_OUTPUT_DESTINATIONRULES) $(_X__KCL_SELECTOR__DESTINATIONRULES) $(__KCL_SORT_BY__DESTINATIONRULES)
+
+_kcl_list_destinationrules_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing destination-rules-set "$(KCL_DESTINATIONRULES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Destination-rules are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
+	$(KUBECTL) get destinationrules --all-namespaces=false $(__KCL_NAMESPACE__DESTINATIONRULES) $(__KCL_OUTPUT__DESTINATIONRULES) $(__KCL_SELECTOR__DESTINATIONRULES) $(__KCL_SORT_BY__DESTINATIONRULES)
+
+_KCL_SHOW_DESTINATIONRULE_TARGETS?= _kcl_show_destinationrule_object _kcl_show_destinationrule_state _kcl_show_destinationrule_subsets _kcl_show_destinationrule_description
+_kcl_show_destinationrule: $(_KCL_SHOW_DESTINATIONRULE_TARGETS)
 
 _kcl_show_destinationrule_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description destination-rule "$(KCL_DESTINATIONRULE_NAME)" ...'; $(NORMAL)
@@ -141,15 +151,6 @@ _kcl_unlabel_destinationrule:
 
 _kcl_update_destinationrule:
 	@$(INFO) '$(KCL_UI_LABEL)Updating destination-rule "$(KCL_DESTINATIONRULE_NAME)" ...'; $(NORMAL)
-
-_kcl_view_destinationrules:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing ALL destination-rules ...'; $(NORMAL)
-	$(KUBECTL) get destinationrules --all-namespaces=true $(_X__KCL_NAMESPACE__DESTINATIONRULES) $(__KCL_OUTPUT_DESTINATIONRULES) $(_X__KCL_SELECTOR__DESTINATIONRULES) $(__KCL_SORT_BY__DESTINATIONRULES)
-
-_kcl_view_destinationrules_set:
-	@$(INFO) '$(KCL_UI_LABEL)Viewing destination-rules-set "$(KCL_DESTINATIONRULES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Destination-rules are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
-	$(KUBECTL) get destinationrules --all-namespaces=false $(__KCL_NAMESPACE__DESTINATIONRULES) $(__KCL_OUTPUT__DESTINATIONRULES) $(__KCL_SELECTOR__DESTINATIONRULES) $(__KCL_SORT_BY__DESTINATIONRULES)
 
 _kcl_watch_destinationrules:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL destination-rules ...'; $(NORMAL)

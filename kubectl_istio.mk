@@ -25,19 +25,19 @@ KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME?= $(KCL_ISTIO_NAMESPACE_NAME)
 # USAGE
 #
 
-_kcl_view_framework_macros ::
-	@echo 'KubeCtL::Istio ($(_KUBECTL_ISTIO_MK_VERSION)) macros:'
-	@echo
+_kcl_list_macros ::
+	@#echo 'KubeCtL::Istio:: ($(_KUBECTL_ISTIO_MK_VERSION)) macros:'
+	@#echo
 
-_kcl_view_framework_parameters ::
-	@echo 'KubeCtL::Istio ($(_KUBECTL_ISTIO_MK_VERSION)) parameters:'
+_kcl_list_parameters ::
+	@echo 'KubeCtL::Istio:: ($(_KUBECTL_ISTIO_MK_VERSION)) parameters:'
 	@echo '    KCL_ISTIO_NAMESPACE_NAME=$(KCL_ISTIO_NAMESPACE_NAME)'
 	@echo '    KCL_ISTIO_VERSION=$(KCL_ISTIO_VERSION)'
 	@echo
 
-_view_framework_targets :: _kcl_view_framework_targets
-_kcl_view_framework_targets ::
-	@echo 'KubeCtL::Istio ($(_KUBECTL_ISTIO_MK_VERSION)) targets:'
+_list_targets :: _kcl_list_targets
+_kcl_list_targets ::
+	@echo 'KubeCtL::Istio:: ($(_KUBECTL_ISTIO_MK_VERSION)) targets:'
 	@echo
 
 #----------------------------------------------------------------------

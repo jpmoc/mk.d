@@ -1,6 +1,6 @@
 _KN_REVISION_MK_VERSION= $(_KN_MK_VERSION)
 
-# KN_REVISION_CURL_BIN?= time curl
+# KN_REVISION_CURL?= time curl
 # KN_REVISION_NAME?= helloworld-go
 # KN_REVISION_NAMESPACE_NAME?= eventing-example
 # KN_REVISIONS_NAMESPACE_NAME?= eventing-example
@@ -26,11 +26,11 @@ __KN_NAMESPACE__REVISIONS= $(if $(KN_REVISIONS_NAMESPACE_NAME),--namespace $(KN_
 # USAGE
 #
 
-_kn_view_framework_macros ::
-	@echo 'KN::Revision ($(_KN_REVISION_MK_VERSION)) macros:'
-	@echo
+_kn_list_macros ::
+	@#echo 'KN::Revision ($(_KN_REVISION_MK_VERSION)) macros:'
+	@#echo
 
-_kn_view_framework_parameters ::
+_kn_list_parameters ::
 	@echo 'KN::Revision ($(_KN_REVISION_MK_VERSION)) parameters:'
 	@echo '    KN_REVISION_NAME=$(KN_REVISION_NAME)'
 	@echo '    KN_REVISION_NAMESPACE_NAME=$(KN_REVISION_NAMESPACE_NAME)'
@@ -38,14 +38,14 @@ _kn_view_framework_parameters ::
 	@echo '    KN_REVISIONS_SET_NAME=$(KN_REVISIONS_SET_NAME)'
 	@echo
 
-_kn_view_framework_targets ::
+_kn_list_targets ::
 	@echo 'KN::Revision ($(_KN_REVISION_MK_VERSION)) targets:'
 	@echo '    _kn_create_revision                  - Create a new revision'
 	@echo '    _kn_delete_revision                  - Delete an existing revision'
+	@echo '    _kn_list_revisions                   - List all revisions'
+	@echo '    _kn_list_revisions_set               - List a set of revisions'
 	@echo '    _kn_show_revision                    - Show everything related to a revision'
 	@echo '    _kn_show_revision_description        - Show the description of a revision'
-	@echo '    _kn_view_revisions                   - View all revisions'
-	@echo '    _kn_view_revisions_set               - View a set of revisions'
 	@#echo '    _kn_watch_revisions                  - Watch revisions'
 	@#echo '    _kn_watch_revisions_set              - Watch a set of revisions'
 	@echo
@@ -61,6 +61,15 @@ _kn_create_revision:
 _kn_delete_revision:
 	@$(INFO) '$(KN_UI_LABEL)Deleting revision "$(KN_REVISION_NAME)" ...'; $(NORMAL)
 
+_kn_list_revisions:
+	@$(INFO) '$(KN_UI_LABEL)Listing ALL revisions ...'; $(NORMAL)
+	$(KN) revision list --all-namespaces=true $(_X__KN_NAMESPACE__REVISIONS)
+
+_kn_list_revisions_set:
+	@$(INFO) '$(KN_UI_LABEL)Listing revisions-set "$(KN_REVISIONS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'revisions are grouped based on the provided namespace, and ...'; $(NORMAL)
+	$(KN) revision list --all-namespaces=false $(__KN_NAMESPACE__REVISIONS)
+
 _kn_show_revision: _kn_show_revision_description
 
 _kn_show_revision_description:
@@ -69,15 +78,6 @@ _kn_show_revision_description:
 
 _kn_update_revision:
 	@$(INFO) '$(KN_UI_LABEL)Updating revision "$(KN_REVISION_NAME)" ...'; $(NORMAL)
-
-_kn_view_revisions:
-	@$(INFO) '$(KN_UI_LABEL)Viewing revisions ...'; $(NORMAL)
-	$(KN) revision list --all-namespaces=true $(_X__KN_NAMESPACE__REVISIONS)
-
-_kn_view_revisions_set:
-	@$(INFO) '$(KN_UI_LABEL)Viewing revisions-set "$(KN_REVISIONS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'revisions are grouped based on the provided namespace, and ...'; $(NORMAL)
-	$(KN) revision list --all-namespaces=false $(__KN_NAMESPACE__REVISIONS)
 
 _kn_watch_revisions:
 	@$(INFO) '$(KN_UI_LABEL)Watching revisions ...'; $(NORMAL)

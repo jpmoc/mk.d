@@ -25,8 +25,8 @@ __KCL_SELECTOR__VERTICALPODAUTOSCALERS= $(if $(KCL_VERTICALPODAUTOSCALERS_SELECT
 #
 
 _kcl_list_macros ::
-	@echo 'KubeCtL::VerticalPodAutoscaler ($(_KUBECTL_VERTICALPODAUTOSCALER_MK_VERSION)) macros:'
-	@echo
+	@#echo 'KubeCtL::VerticalPodAutoscaler ($(_KUBECTL_VERTICALPODAUTOSCALER_MK_VERSION)) macros:'
+	@#echo
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::VerticalPodAutoscaler ($(_KUBECTL_VERTICALPODAUTOSCALER_MK_VERSION)) parameters:'

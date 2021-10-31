@@ -19,17 +19,17 @@ __MKE_CLEANUP__TUNNEL?= $(if $(filter true,$(MKE_TUNNEL_CLEANUP_FLAG)),--cleanup
 # USAGE
 #
 
-_mke_view_framework_macros ::
+_mke_list_macros ::
 	@#echo 'MiniKubE::Tunnel ($(_MINIKUBE_TUNNEL_MK_VERSION)) macros:'
 	@#echo
 
-_mke_view_framework_parameters ::
+_mke_list_parameters ::
 	@echo 'MiniKubE::Tunnel ($(_MINIKUBE_TUNNEL_MK_VERSION)) parameters:'
 	@echo '    MKE_TUNNEL_CLEANUP_FLAG=$(MKE_TUNNEL_CLEANUP_FLAG)'
 	@echo '    MKE_TUNNEL_NAME=$(MKE_TUNNEL_NAME)'
 	@echo
 
-_mke_view_framework_targets ::
+_mke_list_targets ::
 	@echo 'MiniKubE::Tunnel ($(_MINIKUBE_TUNNEL_MK_VERSION)) targets:'
 	@echo '    _mke_create_tunnel           - Create a tunnel to a cluster'
 	@echo

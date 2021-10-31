@@ -26,11 +26,11 @@ OSL_FILEPAIR_ENCRYPTED_FILEPATH?= $(OSL_FILEPAIR_ENCRYPTED_DIRPATH)$(OSL_FILEPAT
 # INTERFACE
 #
 
-_ssl_view_framework_macros ::
-	@echo 'OpenSSL::FilePair ($(_OPENSSL_FILEPAIR_MK_VERSION)) parameters:'
-	@echo
+_ssl_list_macros ::
+	@#echo 'OpenSSL::FilePair ($(_OPENSSL_FILEPAIR_MK_VERSION)) parameters:'
+	@#echo
 
-_ssl_view_framework_parameters ::
+_ssl_list_parameters ::
 	@echo 'OpenSSL::FilePair ($(_OPENSSL_FILEPAIR_MK_VERSION)) parameters:'
 	@echo '    OSL_FILEPAIR_DECRYPTED_DIRPATH=$(OSL_FILEPAIR_DECRYPTED_DIRPATH)'
 	@echo '    OSL_FILEPAIR_DECRYPTED_FILENAME=$(OSL_FILEPAIR_DECRYPTED_FILENAME)'
@@ -43,7 +43,7 @@ _ssl_view_framework_parameters ::
 	@echo '    OSL_FILEPAIRS_SET_NAME=$(OSL_FILEPAIRS_SET_NAME)'
 	@echo
 
-_ssl_view_framework_targets ::
+_ssl_list_targets ::
 	@echo 'OpenSSL::FilePair ($(_OPENSSL_FILEPAIR_MK_VERSION)) targets:'
 	@echo '    _ssl_decrypt_file                        - Decrypt an encrypted file'
 	@echo '    _ssl_encrypt_file                        - Encrypt a file with SSL'
