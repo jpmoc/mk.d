@@ -13,9 +13,9 @@ KCL_ISTIO_CURL?= $(KCL_CURL)
 KCL_ISTIO_DIG?= $(KCL_DIG)
 KCL_ISTIOINGRESSGATEWAY_NAMESPACE_NAME?= $(KCL_ISTIO_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 
-# UI parameters
+# Customizations
 
 #--- Utilities
 

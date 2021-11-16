@@ -20,7 +20,7 @@ KCL_QUOTAS_MANIFEST_FILEPATH?= $(if $(KCL_QUOTAS_MANIFEST_FILENAME),$(KCL_QUOTAS
 KCL_QUOTAS_NAMESPACE_NAME?= $(KCL_QUOTA_NAMESPACE_NAME)
 KCL_QUOTAS_SET_NAME?= quotas@$(KCL_QUOTAS_FILEDSELECTOR)@$(KCL_QUOTAS_SELECTOR)@$(KCL_QUOTAS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__QUOTAS= $(if $(KCL_QUOTAS_MANIFEST_FILEPATH),--filename $(KCL_QUOTAS_MANIFEST_FILEPATH))
 __KCL_FILENAME__QUOTAS= $(if $(filter true,$(KCL_QUOTAS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__QUOTAS= $(if $(KCL_QUOTAS_MANIFEST_URL),--filename $(KCL_QUOTAS_MANIFEST_URL))
@@ -29,12 +29,12 @@ __KCL_NAMESPACE__QUOTA= $(if $(KCL_QUOTA_NAMESPACE_NAME),--namespace $(KCL_QUOTA
 __KCL_NAMESPACE__QUOTAS= $(if $(KCL_QUOTAS_NAMESPACE_NAME),--namespace $(KCL_QUOTAS_NAMESPACE_NAME))
 __KCL_SELECTOR__QUOTAS= $(if $(KCL_QUOTAS_SELECTOR),--selector $(KCL_QUOTAS_SELECTOR))
 
-# UI parameters
+# Customizations
 _KCL_APPLY_QUOTAS_|?= #
 _KCL_DIFF_QUOTAS_|?= $(_KCL_APPLY_QUOTAS_|)
 _KCL_UNAPPLY_QUOTAS_|?= $(_KCL_APPLY_QUOTAS_|)
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -72,11 +72,11 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_quota                   - Label a quota'
 	@echo '    _kcl_list_quotas                   - List all quotas'
 	@echo '    _kcl_list_quotas_set               - List a set of quotas'
+	@echo '    _kcl_patch_quota                   - Patch a quota'
 	@echo '    _kcl_show_quota                    - Show everything related to an quota'
 	@echo '    _kcl_show_quota_description        - Show the description of an quota'
 	@echo '    _kcl_unapply_quotas                - Un-apply manifest for one-or-more quotas'
 	@echo '    _kcl_unlabel_quota                 - Un-label a quota'
-	@echo '    _kcl_update_quota                  - Update a quota'
 	@echo '    _kcl_watch_quotas                  - Watch all quotas'
 	@echo '    _kcl_watch_quotas_set              - Watch a set of quotas'
 	@echo '    _kcl_write_quotas                  - Write manifest for one-or-more quotas'
@@ -136,6 +136,10 @@ _kcl_list_quotas_set:
 	@$(WARN) 'Quotas are grouped based on the provided namespace'; $(NORMAL)
 	$(KUBECTL) get quota --all-namespaces=false $(__KCL_NAMESPACE__QUOTAS)
 
+_kcl_patch_quota:
+	@$(INFO) '$(KCL_UI_LABEL)Patching quota "$(KCL_QUOTA_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) patch ...
+
 _kcl_show_quota: _kcl_show_quota_description
 
 _kcl_show_quota_description:
@@ -154,10 +158,6 @@ _kcl_unapply_quotas:
 _kcl_unlabel_quota:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling quota "$(KCL_QUOTA_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
-
-_kcl_update_quota:
-	@$(INFO) '$(KCL_UI_LABEL)Unpdating quota "$(KCL_QUOTA_NAME)" ...'; $(NORMAL)
-	# $(KUBECTL) patch ...
 
 _kcl_watch_quotas:
 	@$(INFO) '$(KCL_UI_LABEL)Watch ALL quotas ...'; $(NORMAL)

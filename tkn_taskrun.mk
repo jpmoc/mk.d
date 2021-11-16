@@ -14,7 +14,7 @@ TKN_TASKRUN_SHOWLOG_FLAG?= $(TKN_SHOWLOG_FLAG)
 TKN_TASKRUNS_NAMESPACE_NAME?= $(TKN_TASKRUN_NAMESPACE_NAME)
 TKN_TASKRUNS_SET_NAME?= tasks@@@$(TKN_TASKRUNS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 # __TKN_ALL_NAMESPACES__TASKS=
 __TKN_NAMESPACE__TASKRUN= $(if $(TKN_TASKRUN_NAMESPACE_NAME),--namespace $(TKN_TASKRUN_NAMESPACE_NAME))
 __TKN_NAMESPACE__TASKRUNS= $(if $(TKN_TASKRUNS_NAMESPACE_NAME),--namespace $(TKN_TASKRUNS_NAMESPACE_NAME))
@@ -22,9 +22,7 @@ __TKN_PARAM__TASKRUN= $(if $(TKN_TASK_PARAMETERS_KEYVALUES),--param $(TKN_TASKRU
 __TKN_SHOWLOG__TASKRUN= $(if $(filter true,$(TKN_TASKRUN_SHOWLOG_FLAG)),--showlog)
 __TKN_USE_PARAM_DEFAULTS__TASKRUN= $(if $(filter true,$(TKN_TASKRUN_USEDEFAULTS_FLAG)),--use-param-defaults)
 
-# Pipe parameters
-
-# UI parameters
+# Customizations
 
 #--- MACROS
 
@@ -32,11 +30,11 @@ __TKN_USE_PARAM_DEFAULTS__TASKRUN= $(if $(filter true,$(TKN_TASKRUN_USEDEFAULTS_
 # USAGE
 #
 
-_kn_view_framework_macros ::
-	@echo 'TKN::TaskRun ($(_TKN_TASKRUN_MK_VERSION)) macros:'
-	@echo
+_kn_list_macros ::
+	@#echo 'TKN::TaskRun ($(_TKN_TASKRUN_MK_VERSION)) macros:'
+	@#echo
 
-_kn_view_framework_parameters ::
+_kn_list_parameters ::
 	@echo 'TKN::TaskRun ($(_TKN_TASKRUN_MK_VERSION)) parameters:'
 	@echo '    TKN_TASKRUN_NAME=$(TKN_TASKRUN_NAME)'
 	@echo '    TKN_TASKRUN_NAMESPACE_NAME=$(TKN_TASKRUN_NAMESPACE_NAME)'
@@ -48,16 +46,16 @@ _kn_view_framework_parameters ::
 	@echo '    TKN_TASKRUNS_SET_NAME=$(TKN_TASKRUNS_SET_NAME)'
 	@echo
 
-_kn_view_framework_targets ::
+_kn_list_targets ::
 	@echo 'TKN::TaskRun ($(_TKN_TASKRUN_MK_VERSION)) targets:'
 	@echo '    _tkn_create_tasrunk                  - Create a new task-run'
 	@echo '    _tkn_delete_taskrun                  - Delete an existing task-run'
+	@echo '    _tkn_list_taskruns                   - List all task-runs'
+	@echo '    _tkn_list_taskruns_set               - List a set of task-runs'
 	@echo '    _tkn_show_taskrun                    - Show everything related to a task-run'
 	@echo '    _tkn_show_taskrun_description        - Show the description of a task-run'
 	@echo '    _tkn_show_taskrun_parameters         - Show the parameters of a task-run'
 	@echo '    _tkn_show_taskrun_task               - Show the task of a task-run'
-	@echo '    _tkn_view_taskruns                   - View all task-runs'
-	@echo '    _tkn_view_taskruns_set               - View a set of task-runs'
 	@#echo '    _tkn_watch_taskruns                  - Watch task-runs'
 	@#echo '    _tkn_watch_taskruns_set              - Watch a set of task-runs'
 	@echo
@@ -73,7 +71,17 @@ _tkn_create_taskrun:
 _tkn_delete_taskrun:
 	@$(INFO) '$(TKN_UI_LABEL)Deleting task-run "$(TKN_TASKRUN_NAME)" ...'; $(NORMAL)
 
-_tkn_show_taskrun: _tkn_show_task_parameters _tkn_show_task_taskruns _tkn_show_task_workspaces _tkn_show_task_description
+_tkn_list_taskruns:
+	@$(INFO) '$(TKN_UI_LABEL)Listing ALL task-runs ...'; $(NORMAL)
+	$(TKN) taskruns list --all-namespaces=true $(_X__TKN_NAMESPACE__TASKRUNS)
+
+_tkn_list_taskruns_set:
+	@$(INFO) '$(TKN_UI_LABEL)Listing task-runs-set "$(TKN_TASKRUNS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Task-runs are grouped based on the provided namespace, and ...'; $(NORMAL)
+	$(TKN) taskruns list --all-namespaces=false $(__TKN_NAMESPACE__TASKRUNS)
+
+_TKN_SHOW_TASKRUN_TARGETS?= _tkn_show_task_parameters _tkn_show_task_taskruns _tkn_show_task_workspaces _tkn_show_task_description
+_tkn_show_taskrun: $(_TKN_SHOW_TASKRUN_TARGETS)
 
 _tkn_show_taskrun_description:
 	@$(INFO) '$(TKN_UI_LABEL)Showing description of task-run "$(TKN_TASKRUN_NAME)" ...'; $(NORMAL)
@@ -87,15 +95,6 @@ _tkn_show_taskrun_task:
 
 _tkn_show_taskrun_workspaces:
 	@$(INFO) '$(TKN_UI_LABEL)Showing workspaces of task-run "$(TKN_TASKRUN_NAME)" ...'; $(NORMAL)
-
-_tkn_view_taskruns:
-	@$(INFO) '$(TKN_UI_LABEL)Viewing ALL task-runs ...'; $(NORMAL)
-	$(TKN) taskruns list --all-namespaces=true $(_X__TKN_NAMESPACE__TASKRUNS)
-
-_tkn_view_taskruns_set:
-	@$(INFO) '$(TKN_UI_LABEL)Viewing task-runs-set "$(TKN_TASKRUNS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Task-runs are grouped based on the provided namespace, and ...'; $(NORMAL)
-	$(TKN) taskruns list --all-namespaces=false $(__TKN_NAMESPACE__TASKRUNS)
 
 _tkn_watch_taskruns:
 	@$(INFO) '$(TKN_UI_LABEL)Watching task-runs ...'; $(NORMAL)

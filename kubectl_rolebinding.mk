@@ -23,7 +23,7 @@ KCL_ROLEBINDING_ROLE_NAME?= $(KCL_ROLE_NAME)
 KCL_ROLEBINDINGS_NAMESPACE_NAME?= $(KCL_ROLEBINDING_NAMESPACE_NAME)
 KCL_ROLEBINDINGS_SET_NAME?= $(KCL_ROLEBINDINGS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_GROUP__ROLEBINDINGS= $(if $(KCL_ROLEBINDING_GROUP_NAMES),--group $(subst $(SPACE),$(COMMA),$(KCL_ROLEBINDING_GROUP_NAMES)))
 __KCL_FILENAME__ROLEBINDINGS= $(if $(KCL_ROLEBINDINGS_MANIFEST_FILEPATH),--filename $(KCL_ROLEBINDINGS_MANIFEST_FILEPATH))
 __KCL_FILENAME__ROLEBINDINGS= $(if $(filter true,$(KCL_ROLEBINDINGS_MANIFEST_STDINFLAG)),--filename -)
@@ -36,9 +36,9 @@ __KCL_SELECTOR__ROLEBINDINGS= $(if $(KCL_ROLEBINDINGS_SELECTOR),--selector $(KCL
 __KCL_SERVICEACCOUNT__ROLEBINDING= $(if $(KCL_ROLEBINDING_SERVICEACCOUNT_NAME),--serviceaccount $(KCL_ROLEBINDING_SERVICEACCOUNT_NAME))
 __KCL_USER__ROLEBINDING= $(if $(KCL_ROLEBINDING_USER_NAMES),--user $(subst $(SPACE),$(COMMA),$(KCL_ROLEBINDING_USER_NAMES)))
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_rolebinding_role_name= $(call _kcl_get_rolebinding_role_name_N, $(KCL_ROLEBINDING_NAME))
 _kcl_get_rolebinding_role_name_N= $(call _kcl_get_rolebinding_role_name_NN, $(1) $(KCL_ROLEBINDING_NAMESPACE_NAME))
 _kcl_get_rolebinding_role_name_NN= $(shell $(KUBECTL) get rolebinding --namespace $(2) $(1) --output jsonpath="{.roleRef.name}")

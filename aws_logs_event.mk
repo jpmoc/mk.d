@@ -12,18 +12,16 @@ LGS_EVENTS?= $(if $(LGS_EVENTS_FILEPATH), file://$(LGS_EVENTS_FILEPATH))
 LGS_EVENTS_LOGGROUP_NAME?= $(LGS_STREAM_LOGGROUP_NAME)
 LGS_EVENTS_STREAM_NAME?= $(LGS_STREAM_NAME)
 
-# Options parameters
+# Options
 __LGS_LOG_EVENTS__EVENTS= $(if $(LGS_EVENTS), --log-events $(LGS_EVENTS))
 __LGS_LOG_GROUP_NAME__EVENTS= $(if $(LGS_EVENTS_LOGGROUP_NAME), --log-group-name $(LGS_EVENTS_LOGGROUP_NAME))
 __LGS_LOG_STREAM_NAME__EVENTS= $(if $(LGS_EVENTS_STREAM_NAME), --log-stream-name $(LGS_EVENTS_STREAM_NAME))
 __LGS_SEQUENCE_TOKEN= $(if $(LGS_EVENTS_SEQUENCE_TOKEN), --sequence-token $(LGS_EVENTS_SEQUENCE_TOKEN))
 __LGS_START_TIME__EVENTS=
 
-# UI parameters
-LGS_UI_EVENTS_SLICE?= -30::1
-LGS_UI_VIEW_EVENTS_FIELDS?= .[message]# Not rendered the same as .message in text format!
-
-#--- Utilities
+# Customizations
+_LGS_LIST_EVENTS_QUERYFILTER?= -30::1
+_LGS_LIST_EVENTS_FIELDS?= .[message]# Not rendered the same as .message in text format!
 
 #--- MACRO
 _lgs_get_events_sequence_token= $(call _lgs_get_events_sequence_token_S, $(LGS_EVENTS_STREAM_NAME))
@@ -34,12 +32,12 @@ _lgs_get_events_sequence_token_SG= $(shell $(AWS) logs describe-log-streams  --l
 # USAGE
 #
 
-_lgs_view_framework_macros ::
+_lgs_list_macros ::
 	@echo 'AWS::LoGS::Event ($(_AWS_LOGS_EVENT_MK_VERSION)) macros:'
 	@echo '    _lgs_get_sequence_token_{|S|SG}     - Get the sequence token (Stream,logGroup)'
 	@echo
 
-_lgs_view_framework_parameters ::
+_lgs_list_parameters ::
 	@echo 'AWS::LoGS::Event ($(_AWS_LOGS_EVENT_MK_VERSION)) parameters:'
 	@echo '    LGS_EVENTS=$(LGS_EVENTS)'
 	@echo '    LGS_EVENTS_FILEPATH=$(LGS_EVENTS_FILEPATH)'
@@ -48,7 +46,7 @@ _lgs_view_framework_parameters ::
 	@echo '    LGS_EVENTS_STREAM_NAME=$(LGS_EVENTS_STREAM_NAME)'
 	@echo
 
-_lgs_view_framework_targets ::
+_lgs_list_targets ::
 	@echo 'AWS::LoGS::Event ($(_AWS_LOGS_EVENT_MK_VERSION)) targets:'
 	@echo '    _lgs_put_events                      - Insert/add/put events in an existing stream in a log-group'
 	@echo
@@ -63,7 +61,7 @@ _lgs_view_framework_targets ::
 #
 
 _lgs_put_events:
-	@$(INFO) '$(AWS_UI_LABEL)Putting events in stream "$(LGS_EVENTS_STREAM_NAME)" in log group "$(LGS_EVENTS_LOGGROUP_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LGS_UI_LABEL)Putting events in stream "$(LGS_EVENTS_STREAM_NAME)" in log group "$(LGS_EVENTS_LOGGROUP_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'In a stream, events are ordered based on event-timestamp parameter'
 	@$(WARN) 'Interspacing events is therefore possible'
 	@$(WARN) 'A sequence token must be provided if you write at a non-t0'; $(NORMAL)

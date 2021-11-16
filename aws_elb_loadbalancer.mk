@@ -20,7 +20,7 @@ _AWS_ELB_LOADBALANCER_MK_VERSION= $(_AWS_ELB_MK_VERSION)
 ELB_LOADBALANCER_DNSNAME?= $(if $(ELB_LOADBALANCER_DNSNAME_UID),$(ELB_LOADBALANCER_NAME)-$(ELB_LOADBALANCER_DNSNAME_UID).$(ELB_REGION_ID).elb.amazonaws.com)
 ELB_LOADBALANCERS_NAMES?= $(ELB_LOADBALANCER_NAME)
 
-# Option parameters
+# Options
 __ELB_AVAILABILITY_ZONES= $(if $(ELB_LOADBALANCER_AVAILABILITYZONES_IDS),--availability-zones $(ELB_LOADBALANCER_AVAILABILITYZONES_IDS))
 __ELB_GROUP_IDS= $(if $(ELB_LOADBALANCER_SECURITYGROUPS_IDS),--group-ids $(ELB_LOADBALANCER_SECURITYGROUPS_IDS))
 __ELB_LISTENERS= $(if $(ELB_LOADBALANCER_LISTENERS_CONFIGS),--listeners $(ELB_LOADBALANCER_LISTENERS_CONFIGS))
@@ -33,12 +33,10 @@ __ELB_SECURITY_GROUPS= $(if $(ELB_LOADBALANCER_SECURITYGROUPS_IDS),--security-gr
 __ELB_SUBNETS= $(if $(ELB_LOADBALANCER_SUBNETS_IDS),--subnets $(ELB_LOADBALANCER_SUBNETS_IDS))
 __ELB_TAGS__LOADBALANCER= $(if $(ELB_LOADBALANCER_TAGS_KEYVALUES),--tags $(ELB_LOADBALANCER_TAGS_KEYVALUES))
 
-# UI parameters
-ELB_UI_VIEW_LOADBALANCERS_FIELDS?= .{LoadBalancerName:LoadBalancerName,dnsName:DNSName,scheme:Scheme,vpcId:VPCId}
-ELB_UI_VIEW_LOADBALANCERS_SET_FIELDS?= $(ELB_UI_VIEW_LOADBALANCERS_FIELDS)
-ELB_UI_VIEW_LOADBALANCERS_SET_QUERYFILTER?=
-
-#--- Pipes
+# Customizations
+_ELB_LIST_LOADBALANCERS_FIELDS?= .{LoadBalancerName:LoadBalancerName,dnsName:DNSName,scheme:Scheme,vpcId:VPCId}
+_ELB_LIST_LOADBALANCERS_SET_FIELDS?= $(_ELB_LIST_LOADBALANCERS_FIELDS)
+_ELB_LIST_LOADBALANCERS_SET_QUERYFILTER?=
 |_ELB_SHOW_LOADBALANCER_IPS?= | sort
 
 #--- MACROS
@@ -63,7 +61,7 @@ _elb_get_loadbalancer_vpc_id_N= $(shell $(AWS) elb describe-load-balancers --loa
 # USAGE
 #
 
-_elb_view_framework_macros ::
+_elb_list_macros ::
 	@echo 'AWS::ElasticLoadBalancer::LoadBalancer ($(_AWS_ELB_LOADBALANCER_MK_VERSION)) macros:'
 	@echo '    _elb_get_loadbalancer_id_{|N|NO}                     - Get the ID of a loadbalancer (Name,OrganizationId)'
 	@echo '    _elb_get_loadbalancer_instances_ids_{|N}             - Get the instance IDs of a loadbalancer (Name)'
@@ -72,7 +70,7 @@ _elb_view_framework_macros ::
 	@echo '    _elb_get_loadbalancer_vpc_id_{|N}                    - Get the vpc ID of a loadbalancer (Name)'
 	@echo
 
-_elb_view_framework_parameters ::
+_elb_list_parameters ::
 	@echo 'AWS::ElasticLoadBalancer::LoadBalancer ($(_AWS_ELB_LOADBALANCER_MK_VERSION)) parameters:'
 	@echo '    ELB_LOADBALANCER_ACCESSLOG_BUCKETNAME=$(ELB_LOADBALANCER_ACCESSLOG_BUCKETNAME)'
 	@echo '    ELB_LOADBALANCER_ACCESSLOG_FLAG=$(ELB_LOADBALANCER_ACCESSLOG_FLAG)'
@@ -91,7 +89,7 @@ _elb_view_framework_parameters ::
 	@echo '    ELB_LOADBALANCERS_SET_NAME=$(ELB_LOADBALANCERS_SET_NAME)'
 	@echo
 
-_elb_view_framework_targets ::
+_elb_list_targets ::
 	@echo 'AWS::ElasticLoadBalancer::LoadBalancer ($(_AWS_ELB_LOADBALANCER_MK_VERSION)) targets:'
 	@echo '    _elb_create_loadbalancer                           - Create a load-balancer'
 	@echo '    _elb_delete_loadbalancer                           - Delete an existing load-balancer'
@@ -101,8 +99,8 @@ _elb_view_framework_targets ::
 	@echo '    _elb_show_loadbalancer_instances                   - Show instances of a load-balancer'
 	@echo '    _elb_show_loadbalancer_policies                    - Show policies of a load-balancer'
 	@echo '    _elb_show_loadbalancer_securitygroups              - Show security-groups of a load-balancer'
-	@echo '    _elb_view_loadbalancers                            - View all load-balancers'
-	@echo '    _elb_view_loadbalancers_set                        - View a set of load-balancers'
+	@echo '    _elb_list_loadbalancers                            - List all load-balancers'
+	@echo '    _elb_list_loadbalancers_set                        - List a set of load-balancers'
 	@echo '    _elb_watch_loadbalancers                           - Watch all load-balancers'
 	@echo '    _elb_watch_loadbalancers_set                       - Watch a set of load-balancers'
 	@echo 
@@ -123,7 +121,17 @@ _elb_delete_loadbalancer:
 	@$(INFO) '$(ELB_UI_LABEL)Deleting load-balancer "$(ELB_LOADBALANCER_NAME)" ...'; $(NORMAL)
 	$(AWS) elb delete-load-balancer $(__ELB_LOADBALANCER_NAME)
 
-_elb_show_loadbalancer: _elb_show_loadbalancer_attributes _elb_show_loadbalancer_instances _elb_show_loadbalancer_ips _elb_show_loadbalancer_policies _elb_show_loadbalancer_securitygroups _elb_show_loadbalancer_sourcesecuritygroup _elb_show_loadbalancer_description
+_elb_list_loadbalancers:
+	@$(INFO) '$(ELB_UI_LABEL)Listing ALL load-balancers ...'; $(NORMAL)
+	$(AWS) elb describe-load-balancers $(_X__ELB_LOAD_BALANCER_NAMES__LOADBALANCERS) --query "LoadBalancerDescriptions[]$(_ELB_LIST_LOADBALANCERS_FIELDS)"
+
+_elb_list_loadbalancers_set:
+	@$(INFO) '$(ELB_UI_LABEL)Listing load-balancers-set "$(ELB_LOADBALANCERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Users are grouped based on the provided names and slice'; $(NORMAL)
+	$(AWS) elb list-load-balancers $(__ELB_LOAD_BALANCER_NAMES__LOADBALANCERS)  --query "LoadBalancers[$(_ELB_LIST_LOADBALANCERS_SET_QUERYFILTER)]$(_ELB_LIST_LOADBALANCERS_SET_FIELDS)"
+
+_ELB_SHOW_LOADBALANCER_TARGETS?= _elb_show_loadbalancer_attributes _elb_show_loadbalancer_instances _elb_show_loadbalancer_ips _elb_show_loadbalancer_policies _elb_show_loadbalancer_securitygroups _elb_show_loadbalancer_sourcesecuritygroup _elb_show_loadbalancer_description
+_elb_show_loadbalancer: $(_ELB_SHOW_LOADBALANCER_TARGETS)
 
 _elb_show_loadbalancer_attributes:
 	@$(INFO) '$(ELB_UI_LABEL)Showing attributes of load-balancer "$(ELB_LOADBALANCER_NAME)" ...'; $(NORMAL)
@@ -173,15 +181,6 @@ _elb_tag_loadbalancer:
 
 _elb_untag_loadbalancer:
 	@$(INFO) '$(ELB_UI_LABEL)Un-tagging load-balancer "$(ELB_LOADBALANCER_NAME)" ...'; $(NORMAL)
-
-_elb_view_loadbalancers:
-	@$(INFO) '$(ELB_UI_LABEL)Viewing ALL load-balancers ...'; $(NORMAL)
-	$(AWS) elb describe-load-balancers $(_X__ELB_LOAD_BALANCER_NAMES__LOADBALANCERS) --query "LoadBalancerDescriptions[]$(ELB_UI_VIEW_LOADBALANCERS_FIELDS)"
-
-_elb_view_loadbalancers_set:
-	@$(INFO) '$(ELB_UI_LABEL)Viewing load-balancers-set "$(ELB_LOADBALANCERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Users are grouped based on the provided names and slice'; $(NORMAL)
-	$(AWS) elb list-load-balancers $(__ELB_LOAD_BALANCER_NAMES__LOADBALANCERS)  --query "LoadBalancers[$(ELB_UI_VIEW_LOADBALANCERS_SET_QUERYFILTER)]$(ELB_UI_VIEW_LOADBALANCERS_SET_FIELDS)"
 
 _elb_watch_loadbalancers:
 	@$(INFO) '$(ELB_UI_LABEL)Watching ALL load-balancers ...'; $(NORMAL)

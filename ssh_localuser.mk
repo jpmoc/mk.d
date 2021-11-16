@@ -30,11 +30,11 @@ __SSH_IDENTITY__LOCALUSER= $(if $(SSH_LOCALUSER_PRIVATEKEY_FILEPATH),-i $(SSH_LO
 # USAGE
 #
 
-_ssh_view_framework_macros ::
+_ssh_list_macros ::
 	@#echo 'SSH::LocalUser ($(_SSH_LOCALUSER_MK_VERSION)) macros:'
 	@#echo
 
-_ssh_view_framework_parameters ::
+_ssh_list_parameters ::
 	@echo 'SSH::LocalUser ($(_SSH_LOCALUSER_MK_VERSION)) parameters:'
 	@echo '    SSH_LOCALUSER_AUTHORIZEDKEY_FILEPATH=$(SSH_LOCALUSER_AUTHORIZEDKEY_FILEPATH)'
 	@echo '    SSH_LOCALUSER_HOST_IP_OR_NAME=$(SSH_LOCALUSER_HOST_IP_OR_NAME)'
@@ -47,7 +47,7 @@ _ssh_view_framework_parameters ::
 	@echo '    SSH_LOCALUSER_SHORTNAME=$(SSH_LOCALUSER_SHORTNAME)'
 	@echo
 
-_ssh_view_framework_targets ::
+_ssh_list_targets ::
 	@echo 'SSH::LocalUser ($(_SSH_LOCALUSER_MK_VERSION)) targets:'
 	@echo '    _ssh_connect_localuser            - Ssh to a local-user'
 	@echo '    _ssh_run_localuser                - Run a command on a local-user'

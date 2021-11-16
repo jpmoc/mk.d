@@ -20,11 +20,11 @@ SSH_AUTHORIZEDKEY_PUBLICKEY_FILEPATH?= $(SSH_KEYPAIR_PUBLICKEY_FILEPATH)
 # USAGE
 #
 
-_ssh_view_framework_macros ::
-	@echo 'SSH::AuthorizedKey ($(_SSH_AUTHORIZEDKEY_MK_VERSION)) macros:'
-	@echo
+_ssh_list_macros ::
+	@#echo 'SSH::AuthorizedKey ($(_SSH_AUTHORIZEDKEY_MK_VERSION)) macros:'
+	@#echo
 
-_ssh_view_framework_parameters ::
+_ssh_list_parameters ::
 	@echo 'SSH::AuthorizedKey ($(_SSH_AUTHORIZEDKEY_MK_VERSION)) parameters:'
 	@echo '    SSH_AUTHORIZEDKEY_NAME=$(SSH_AUTHORIZEDKEY_NAME)'
 	@echo '    SSH_AUTHORIZEDKEY_PRIVATEKEY_FILEPATH=$(SSH_AUTHORIZEDKEY_PRIVATEKEY_FILEPATH)'
@@ -32,13 +32,14 @@ _ssh_view_framework_parameters ::
 	@echo '    SSH_AUTHORIZEDKEYS_FILEPATH=$(SSH_AUTHORIZEDKEYS_FILEPATH)'
 	@echo
 
-_ssh_view_framework_targets ::
+_ssh_list_targets ::
 	@echo 'SSH::AuthorizedKey ($(_SSH_AUTHORIZEDKEY_MK_VERSION)) targets:'
 	@echo '    _ssh_create_authorizedkey                - Create an authorized-key'
 	@echo '    _ssh_delete_authorizedkey                - Delete an authorized-key'
+	@echo '    _ssh_list_authorizedkeys                 - List all authorized-keys'
+	@echo '    _ssh_list_authorizedkeys_set             - List a set of authorized-keys'
 	@echo '    _ssh_show_authorizedkey                  - Show everything related to an authorized-key'
 	@echo '    _ssh_show_authorizedkey_description      - Show description of an authorized-key'
-	@echo '    _ssh_view_authorizedkeys                 - View all authorized-keys'
 	@echo
 
 #----------------------------------------------------------------------
@@ -57,7 +58,8 @@ _ssh_delete_authorizedkeys:
 	@echo 'This operation is dangerous. Are you sure?'; read ctrlC; $(NORMAL)
 	rm -f $(SSH_AUTHORIZEDKEYS_FILEPATH)
 
-_ssh_show_authorizedkey: _ssh_show_authorizedkey_description
+_SSH_SHOW_AUTHORIZEDKEY_TARGETS?= _ssh_show_authorizedkey_description
+_ssh_show_authorizedkey: $(_SSH_SHOW_AUTHORIZEDKEY_TARGETS)
 
 _ssh_show_authorizedkey_description:
 	@$(INFO) '$(SSH_UI_LABEL)Showing description of authorized-key  "$(SSH_AUTHORIZEDKEY_NAME)" ...'; $(NORMAL)
@@ -66,3 +68,6 @@ _ssh_show_authorizedkey_description:
 _ssh_view_authorizedkeys:
 	@$(INFO) '$(SSH_UI_LABEL)Viewing authorized-keys ...'; $(NORMAL)
 	cat $(SSH_AUTHORIZEDKEYS_FILEPATH)
+
+_ssh_view_authorizedkeys_set:
+	@$(INFO) '$(SSH_UI_LABEL)Viewing authorized-keys-set NAME ...'; $(NORMAL)

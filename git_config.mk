@@ -13,27 +13,25 @@ GIT_CONFIG_REPOSITORY_DIRPATH?= $(GIT_REPOSITORY_DIRPATH)
 GIT_CONFIG_REPOSITORYCONFIG_FILEPATH?= $(GIT_CONFIG_REPOSITORY_DIRPATH)/.git/config
 GIT_CONFIG_USERACCOUNTCONFIG_FILEPATH?= $(HOME)/.gitconfig
 
-# Option variables
+# Options
 
-# UI variables
+# Customizations
 |_GIT_SHOW_CONFIG_OVERLAY= | cat
 |_GIT_SHOW_CONFIG_REPOSITORY= $(|_GIT_SHOW_CONFIG_OVERLAY)
 |_GIT_SHOW_CONFIG_SYSTEM= $(|_GIT_SHOW_CONFIG_OVERLAY)
 |_GIT_SHOW_CONFIG_USERACCOUNT= $(|_GIT_SHOW_CONFIG_OVERLAY)
  
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_git_view_framework_macros ::
+_git_list_macros ::
 	@#echo 'Git::Config ($(_GIT_CONFIG_MK_VERSION)) targets:'
 	@#echo
 
-_git_view_framework_parameters ::
+_git_list_parameters ::
 	@echo 'Git::Config ($(_GIT_CONFIG_MK_VERSION)) parameters:'
 	@echo '    GIT_CONFIG_EDITCONFIG_TARGET=$(GIT_CONFIG_EDITCONFIG_TARGET)'
 	@echo '    GIT_CONFIG_REPOSITORY_DIRPATH=$(GIT_CONFIG_REPOSITORY_DIRPATH)'
@@ -45,7 +43,7 @@ _git_view_framework_parameters ::
 	@echo '    GIT_LOCAL_TOPDIR_CURRENT=$(GIT_LOCAL_TOPDIR_CURRENT)'
 	@echo
 
-_git_view_framework_targets ::
+_git_list_targets ::
 	@echo 'Git::Config ($(_GIT_CONFIG_MK_VERSION)) targets:'
 	@echo '    _git_edit_config             - Edit the <default> configuration'
 	@echo '    _git_edit_config_repository  - Edit the repository configuration'

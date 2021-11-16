@@ -1,13 +1,15 @@
 _AWS_LOGS_MK_VERSION=0.99.0
 
 # LGS_DESTINATION_NAME_PREFIX?=
+# LGS_UI_LABEL?= [logs] #
 
 # Derived parameters
+LGS_UI_LABEL?= $(AWS_UI_LABEL)
 
-# Options parameters
+# Options
 __LGS_DESTINATION_NAME_PREFIX?= $(if $(LGS_DESTINATION_NAME_PREFIX), --destination-name-prefix $(LGS_DESTINATION_NAME_PREFIX))
 
-# UI parameters
+# Customizations
 
 #--- Utilities
 
@@ -17,21 +19,22 @@ __LGS_DESTINATION_NAME_PREFIX?= $(if $(LGS_DESTINATION_NAME_PREFIX), --destinati
 # USAGE
 #
 
-_aws_view_framework_macros :: _lgs_view_framework_macros
-_lgs_view_framework_macros ::
+_aws_list_macros :: _lgs_list_macros
+_lgs_list_macros ::
 	@#echo 'AWS::LoGS ($(_AWS_LOGS_MK_VERSION)) macros:'
 	@#echo
 
-_aws_view_framework_parameters :: _lgs_view_framework_parameters
-_lgs_view_framework_parameters ::
+_aws_list_parameters :: _lgs_list_parameters
+_lgs_list_parameters ::
 	@echo 'AWS::LoGS ($(_AWS_LOGS_MK_VERSION)) parameters:'
 	@echo '    LGS_DESTINATION_NAME_PREFIX=$(LGS_DESTINATION_NAME_PREFIX)'
+	@echo '    LGS_UI_LABEL=$(LGS_UI_LABEL)'
 	@echo
 
-_aws_view_framework_targets :: _lgs_view_framework_targets
-_lgs_view_framework_targets ::
+_aws_list_targets :: _lgs_list_targets
+_lgs_list_targets ::
 	@echo 'AWS::LoGS ($(_AWS_LOGS_MK_VERSION)) targets:'
-	@echo '    _lgs_view_destinations               - View existing destinations'
+	@echo '    _lgs_list_destinations               - Listing all destinations'
 	@echo
 
 #----------------------------------------------------------------------
@@ -48,6 +51,6 @@ MK_DIR?= .
 # PUBLIC TARGETS
 #
 
-_lgs_view_destinations:
-	@$(INFO) '$(AWS_UI_LABEL)Viewing existing destinations ...'; $(NORMAL)
-	$(AWS) logs describe-destinations $(__LGS_DESTINATION_NAME_PREFIX) # --query "destinations[]$(LGS_UI_VIEW_DESTINATIONS_FIELDS)"
+_lgs_list_destinations:
+	@$(INFO) '$(AWS_UI_LABEL)Listing ALL destinations ...'; $(NORMAL)
+	$(AWS) logs describe-destinations $(__LGS_DESTINATION_NAME_PREFIX) # --query "destinations[]$(_LGS_LIST_DESTINATIONS_FIELDS)"

@@ -26,10 +26,10 @@ __EC2_SUBNET_ID= $(if $(EC2_SUBNET_ID),--subnet-id $(EC2_SUBNET_ID))
 __EC2_SUBNET_IDS__SUBNET= $(if $(EC2_SUBNET_ID),--subnet-ids $(EC2_SUBNET_ID))
 __EC2_SUBNET_IDS__SUBNETS= $(if $(EC2_SUBNETS_IDS),--subnet-ids $(EC2_SUBNETS_IDS))
 
-# UI parameters
-EC2_UI_VIEW_SUBNETS_FIELDS?= .{Name:Tags[?Key=='Name']|[0].Value||'',SubnetId:SubnetId,state:State,cidrBlock:CidrBlock,availabilityZone:AvailabilityZone,vpcId:VpcId} | sort_by(@, &vpcId)
-EC2_UI_VIEW_SUBNETS_SET_FIELDS?= $(EC2_UI_VIEW_SUBNETS_FIELDS)
-EC2_UI_VIEW_SUBNETS_SET_QUERYFILTER?=
+# Customizations
+_EC2_LIST_SUBNETS_FIELDS?= .{Name:Tags[?Key=='Name']|[0].Value||'',SubnetId:SubnetId,state:State,cidrBlock:CidrBlock,availabilityZone:AvailabilityZone,vpcId:VpcId} | sort_by(@, &vpcId)
+_EC2_LIST_SUBNETS_SET_FIELDS?= $(_EC2_LIST_SUBNETS_FIELDS)
+_EC2_LIST_SUBNETS_SET_QUERYFILTER?=
 
 #--- MACROS
 
@@ -50,14 +50,14 @@ _ec2_get_subnet_id_VF= $(shell $(AWS) ec2 describe-subnets --filters "Name=$(str
 # USAGE
 #
 
-_ec2_view_framework_macros ::
+_ec2_list_macros ::
 	@echo 'AWS::EC2::Subnet ($(_AWS_EC2_SUBNET_MK_VERSION)) macros:'
 	@echo '    _ec2_get_defaultsubnet_id_{|Z}           - Get the ID of the default subnet in a AZ (availabilityZone)'
 	@echo '    _ec2_get_subnet_ids_{|V|VF|VFS}          - Get a list of subnet IDs (Value,Filter,Sort)'
 	@echo '    _ec2_get_subnet_id_{|V|VF}               - Get a subnet ID (Value,Filter)'
 	@echo
 
-_ec2_view_framework_parameters ::
+_ec2_list_parameters ::
 	@echo 'AWS::EC2::Subnet ($(_AWS_EC2_SUBNET_MK_VERSION)) parameters:'
 	@echo '    EC2_SUBNET_AVAILABILITY_ZONE=$(EC2_SUBNET_AVAILABILITY_ZONE)'
 	@echo '    EC2_SUBNET_ID=$(EC2_SUBNET_ID)'
@@ -67,15 +67,15 @@ _ec2_view_framework_parameters ::
 	@echo '    EC2_SUBNETS_SET_NAME=$(EC2_SUBNETS_SET_NAME)'
 	@echo
 
-_ec2_view_framework_targets ::
+_ec2_list_targets ::
 	@echo 'AWS::EC2::Subnet ($(_AWS_EC2_SUBNET_MK_VERSION)) targets:'
-	@echo '    _ec2_create_subnet                       - Creata a new subnet'
-	@echo '    _ec2_delete_subnet                       - Delete an existing subnet'
+	@echo '    _ec2_create_subnet                       - Creata a subnet'
+	@echo '    _ec2_delete_subnet                       - Delete a subnet'
 	@echo '    _ec2_show_subnet                         - Show everything related to a subnet'
 	@echo '    _ec2_show_subnet_description             - Show description of a subnet'
 	@echo '    _ec2_show_subnet_networkinterfaces       - Show network-interfaces of a subnet'
-	@echo '    _ec2_view_subnets                        - View existing subnets'
-	@echo '    _ec2_view_subnets_set                    - View a subnets-set'
+	@echo '    _ec2_list_subnets                        - List all subnets'
+	@echo '    _ec2_list_subnets_set                    - List a set of subnets-set'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -96,7 +96,17 @@ _ec2_delete_subnet:
 	@$(INFO) '$(EC2_UI_LABEL)Deleting subnet "$(EC2_SUBNET_NAME)" ...'; $(NORMAL)
 	$(AWS) ec2 delete-subnets $(__EC2_SUBNET_ID)
 
-_ec2_show_subnet: _ec2_show_subnet_networkinterfaces _ec2_show_subnet_description
+_ec2_list_subnets:
+	@$(INFO) '$(EC2_UI_LABEL)Listing ALL subnets ...'; $(NORMAL)
+	$(AWS) ec2 describe-subnets $(_X__EC2_FILTERS__SUBNETS) $(_X__EC2_SUBNET_IDS__SUBNETS) --query "Subnets[]$(_EC2_LIST_SUBNETS_FIELDS)" 
+
+_ec2_list_subnets_set:
+	@$(INFO) '$(EC2_UI_LABEL)Listing subnets-set "$(EC2_SUBNETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Subnets are grouped based on the provided filters, ids, and optional query-filter'; $(NORMAL) 
+	$(AWS) ec2 describe-subnets $(__EC2_FILTERS__SUBNETS) $(__EC2_SUBNET_IDS__SUBNETS) --query "Subnets[$(_EC2_LIST_SUBNETS_SET_QUERYFILTER)]$(_EC2_LIST_SUBNETS_SET_FIELDS)" 
+
+_EC2_SHOW_SUBNET_TARGETS?= _ec2_show_subnet_networkinterfaces _ec2_show_subnet_description
+_ec2_show_subnet: $(_EC2_SHOW_SUBNET_TARGETS)
 
 _ec2_show_subnet_description:
 	@$(INFO) '$(EC2_UI_LABEL)Showing description of subnet "$(EC2_SUBNET_NAME)" ...'; $(NORMAL)
@@ -107,12 +117,3 @@ _ec2_show_subnet_networkinterfaces::
 	$(AWS) ec2 describe-network-interfaces --filters Name=subnet-id,Values=$(EC2_SUBNET_ID) --query "NetworkInterfaces[].{NetworkInterfaceId:NetworkInterfaceId,privateIpAddress:PrivateIpAddress,status:Status,publicIp:Association.PublicIp,subnetId:SubnetId,Name:''}"
 
 _ec2_unassociate_subnet_cidrblock:
-
-_ec2_view_subnets:
-	@$(INFO) '$(EC2_UI_LABEL)Viewing existing subnets ...'; $(NORMAL)
-	$(AWS) ec2 describe-subnets $(_X__EC2_FILTERS__SUBNETS) $(_X__EC2_SUBNET_IDS__SUBNETS) --query "Subnets[]$(EC2_UI_VIEW_SUBNETS_FIELDS)" 
-
-_ec2_view_subnets_set:
-	@$(INFO) '$(EC2_UI_LABEL)Viewing subnets-set "$(EC2_SUBNETS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Subnets are grouped based on the provided filters, ids, and optional query-filter'; $(NORMAL) 
-	$(AWS) ec2 describe-subnets $(__EC2_FILTERS__SUBNETS) $(__EC2_SUBNET_IDS__SUBNETS) --query "Subnets[$(EC2_UI_VIEW_SUBNETS_SET_QUERYFILTER)]$(EC2_UI_VIEW_SUBNETS_SET_FIELDS)" 

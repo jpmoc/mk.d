@@ -2,13 +2,13 @@ _YQ_MK_VERSION= 1.0.0
 
 YQ_DOWNLOAD_BINARY?= yq_linux_amd64
 YQ_DOWNLOAD_VERSION?= 4.2.1
+YQ_UI_LABEL?= [yq] #
 
 # Derived parameters
 
-# Option parameters
+# Options
 
-# UI parameters
-YQ_UI_LABEL?= [yq] #
+# Customizations
 
 #--- Utilities
 YQ_BIN?= yq
@@ -29,6 +29,7 @@ _list_parameters :: _yq_list_parameters
 _yq_list_parameters ::
 	@echo 'YQ:: ($(_YQ_MK_VERSION)) parameters:'
 	@echo '    YQ_OUTPUT_FORMAT=$(YQ_OUTPUT_FORMAT)'
+	@echo '    YQ_UI_LABEL=$(YQ_UI_LABEL)'
 	@echo
 
 _list_targets :: _yq_list_targets

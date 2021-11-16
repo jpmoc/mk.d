@@ -17,7 +17,7 @@ KCL_RULES_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_RULES_MANIFEST_FILEPATH?= $(KCL_RULES_MANIFEST_DIRPATH)$(KCL_RULES_MANIFEST_FILENAME)
 KCL_RULES_SET_NAME?= rules@$(KCL_RULES_FIELDSELECTOR)@$(KCL_RULES_SELECTOR)@$(KCL_RULES_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_FIELD_SELECTOR__RULES= $(if $(KCL_RULES_FIELDSELECTOR),--field-selector $(KCL_RULES_FIELDSELECTOR))
 __KCL_FILENAME__RULES= $(if $(KCL_RULES_MANIFEST_FILEPATH),--filename $(KCL_RULES_MANIFEST_FILEPATH))
 __KCL_LABELS__RULE= $(if $(KCL_RULE_LABELS_KEYVALUES),--labels $(KCL_RULE_LABELS_KEYVALUES))
@@ -28,7 +28,7 @@ __KCL_OUTPUT__RULES= $(if $(KCL_RULES_OUTPUT),--output $(KCL_RULES_OUTPUT))
 __KCL_SELECTOR__RULES= $(if $(KCL_RULES_SELECTOR),--selector=$(KCL_RULES_SELECTOR))
 __KCL_SORT_BY__RULES= $(if $(KCL_RULES_SORT_BY),--sort-by=$(KCL_RULES_SORT_BY))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 
@@ -61,6 +61,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_list_rules_set               - List a set of rules'
 	@echo '    _kcl_show_rule                    - Show everything related to a rule'
 	@echo '    _kcl_show_rule_description        - Show description of a rule'
+	@echo '    _kcl_unapply_rules                - Un-apply manifest for one-or-more rules'
 	@echo
 
 #----------------------------------------------------------------------
@@ -70,7 +71,8 @@ _kcl_list_targets ::
 _kcl_annotate_rule:
 	@$(INFO) '$(KCL_UI_LABEL)Annotating rule "$(KCL_RULE_NAME)" ...'; $(NORMAL)
 
-_kcl_apply_rule:
+_kcl_apply_rule: _kcl_apply_rules
+_kcl_apply_rules:
 	@$(INFO) '$(KCL_UI_LABEL)Applying amnifest for rule "$(KCL_RULE_NAME)" ...'; $(NORMAL)
 	cat $(KCL_RULES_MANIFEST_FILEPATH)
 	$(KUBECTL) apply $(__KCL_FILENAME__RULES) $(__KCL_NAMESPACE__RULES)

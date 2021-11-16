@@ -14,14 +14,11 @@ ICL_ENVOY_NAME?= envoy$(if $(ICL_ENVOY_POD_NAME),-$(ICL_ENVOY_POD_NAME))-dashboa
 ICL_ENVOY_NAMESPACE_NAME?= $(ICL_APPMANIFEST_NAMESPACE_NAME)
 ICL_ENVOY_URL?= http://$(ICL_ENVOY_IP_OR_HOST):$(ICL_ENVOY_PORT)
 
-# Option parameters
+# Options
 __ICL_NAMESPACE__ENVOY= $(if $(ICL_ENVOY_NAMESPACE_NAME),--namespace $(ICL_ENVOY_NAMESPACE_NAME))
 __ICL_SELECTOR__ENVOY= $(if $(ICL_ENVOY_PODS_SELECTOR),--selector $(ICL_ENVOY_PODS_SELECTOR))
 
-# UI parameters
-
-#--- Utilities
-
+# Customizations
 
 #--- Macros
 _icl_get_envoy_pods_names= $(call _icl_get_envoy_pods_names_S, $(ICL_ENVOY_PODS_SELECTOR))

@@ -22,13 +22,13 @@ KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH?= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILENAME),$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_DIRPATH)$(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILENAME))
 KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME?= $(HOSTNAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH),--filename $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_FILEPATH))
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(filter true, $(KCL_CERTIFICATESIGNINGREQUESTS_STDINFLAG)),--filename -)
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL),--filename $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFEST_URL))
 __KCL_FILENAME__CERTIFICATESIGNINGREQUESTS+= $(if $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH),--filename $(KCL_CERTIFICATESIGNINGREQUESTS_MANIFESTS_DIRPATH))
 
-# UI parameters
+# Customizations
 _KCL_APPLY_CERTIFICATESIGNINGREQUESTS_|?= #
 _KCL_DIFF_CERTIFICATESIGNINGREQUESTS_|?= $(_KCL_APPLY_CERTIFICATESIGNINGREQUESTS_|)
 _KCL_UNAPPLY_CERTIFICATESIGNINGREQUESTS_|?= $(_KCL_APPLY_CERTIFICATESIGNINGREQUESTS_|)
@@ -79,7 +79,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_show_certificatesigningrequest_state             - Show state of a certificate-signing-request'
 	@echo '    _kcl_unapply_certificatesigningrequest                - Un-apply a manifest for a certificate-signing-request'
 	@echo '    _kcl_unlabel_certificatesigningrequest                - Un-label a certificate-signing-request'
-	@echo '    _kcl_update_certificatesigningrequest                 - Update a certificate-signing-request'
+	@echo '    _kcl_patch_certificatesigningrequest                  - Patch a certificate-signing-request'
 	@echo '    _kcl_watch_certificatesigningrequests                 - Watch certificate-signing-requests'
 	@echo '    _kcl_watch_certificatesigningrequests_set             - Watch a set of certificate-signing-requests'
 	@echo '    _kcl_write_certificatesigningrequests                 - Write manifest for one-or-more certificate-signing-requests'
@@ -148,6 +148,9 @@ _kcl_list_certificatesigningrequests_set:
 	@$(WARN) 'Certificate-signing-requests are grouped based on field-selector, selector, ...'; $(NORMAL)
 	$(KUBECTL) get certificatesigningrequests $(__KCL_FIELD_SELECTOR__CERTIFICATESIGNINGREQUESTS) $(__KCL_SELECTOR__CERTIFICATESIGNINGREQUESTS)
 
+_kcl_patch_certificatesigningrequest:
+	@$(INFO) '$(KCL_UI_LABEL)Patching certificate-signing-request "$(KCL_CERTIFICATESIGNINGREQUEST_NAME)" ...'; $(NORMAL)
+
 _KCL_SHOW_CERTIFICATESIGNINGREQUEST_TARGETS?= _kcl_show_certificatesigningrequest_state _kcl_show_certificatesigningrequest_description
 _kcl_show_certificatesigningrequest: $(_KCL_SHOW_CERTIFICATESIGNINGREQUEST_TARGETS)
 
@@ -170,9 +173,6 @@ _kcl_unapply_certificatesigningrequests:
 
 _kcl_unlabel_certificatesigningrequest:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling certificate-signing-request "$(KCL_CERTIFICATESIGNINGREQUEST_NAME)" ...'; $(NORMAL)
-
-_kcl_update_certificatesigningrequest:
-	@$(INFO) '$(KCL_UI_LABEL)Updating certificate-signing-request "$(KCL_CERTIFICATESIGNINGREQUEST_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_certificatesigningrequests:
 	@$(INFO) '$(KCL_UI_LABEL)Watching certificate-signing-requests ...'; $(NORMAL)

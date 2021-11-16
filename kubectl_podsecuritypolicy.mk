@@ -20,7 +20,7 @@ KCL_PODSECURITYPOLICIES_OUTPUT_FORMAT?= $(KCL_OUTPUT_FORMAT)
 KCL_PODSECURITYPOLICIES_SET_NAME?= pod-secrutiy-policies@@@
 KCL_PODSECURITYPOLICIES_WATCH_ONLY?= $(KCL_WATCH_ONLY)
 
-# Option parameters
+# Options
 __KCL_FILENAME__PODSECURITYPOLICY= $(if $(KCL_PODSECURITYPOLICY_MANIFEST_FILEPATH),--filename $(KCL_PODSECURITYPOLICY_MANIFEST_FILEPATH))
 __KCL_OUTPUT__PODSECURITYPOLICIES= $(if $(KCL_PODSECURITYPOLICIES_OUTPUT_FORMAT),--output $(KCL_PODSECURITYPOLICIES_OUTPUT_FORMAT))
 __KCL_SELECTOR__PODSECURITYPOLICIES= $(if $(KCL_PODSECURITYPOLICIES_SELECTOR),--selector=$(KCL_PODSECURITYPOLICIES_SELECTOR))
@@ -28,7 +28,7 @@ __KCL_SHOW_LABELS__PODSECURITYPOLICIES= $(if $(filter true,$(KCL_PODSECURITYPOLI
 __KCL_WATCH__PODSECURITYPOLICIES=
 __KCL_WATCH_ONLY__PODSECURITYPOLICIES= $(if $(KCL_PODSECURITYPOLICIES_WATCH_ONLY),--watch-only=$(KCL_PODSECURITYPOLICIES_WATCH_ONLY))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 _kcl_get_podsecuritypolicies_names= $(call _kcl_get_podsecuritypolicies_names_S, $(KCL_PODSECURITYPOLICIES_SELECTOR))
@@ -71,15 +71,15 @@ _kcl_list_targets ::
 	@echo '    _kcl_edit_podsecuritypolicy                         - Edit a pod-security-policy'
 	@echo '    _kcl_explain_podsecuritypolicy                      - Explain the pod-security-policy object'
 	@echo '    _kcl_label_podsecuritypolicy                        - Label a pod-security-policy'
+	@echo '    _kcl_list_podsecuritypolicies                       - List all pod-security-policies'
+	@echo '    _kcl_list_podsecuritypolicies_set                   - List a set of pod-security-policies'
+	@echo '    _kcl_patch_podsecuritypolicy                        - Patch a pod-security-policy'
 	@echo '    _kcl_show_podsecuritypolicy                         - Show everything related to a pod-security-policy'
 	@echo '    _kcl_show_podsecuritypolicy_description             - Show the description of a pod-security-policy'
 	@echo '    _kcl_show_podsecuritypolicy_object                  - Show the object of a pod-security-policy'
 	@echo '    _kcl_show_podsecuritypolicy_state                   - Show the state of a pod-security-policy'
 	@echo '    _kcl_unapply_podsecuritypolicy                      - Un-apply manifest for a pod-security-policy'
 	@echo '    _kcl_unlabel_podsecuritypolicy                      - Un-label a pod-security-policy'
-	@echo '    _kcl_update_podsecuritypolicy                       - Update a pod-security-policy'
-	@echo '    _kcl_list_podsecuritypolicies                       - List all pod-security-policies'
-	@echo '    _kcl_list_podsecuritypolicies_set                   - List a set of pod-security-policies'
 	@echo '    _kcl_watch_podsecuritypolicies                      - Watching pod-security-policies'
 	@echo '    _kcl_watch_podsecuritypolicies_set                  - Watching a set of pod-security-policies'
 	@echo '    _kcl_write_podsecuritypolicies                      - Write a manifest for one-or-more pod-security-policies'
@@ -126,6 +126,9 @@ _kcl_list_podsecuritypolicies_set:
 	@$(WARN) 'Pod-security-policies are grouped based on the provided selector'; $(NORMAL)
 	$(KUBECTL) get podsecuritypolicies $(__KCL_OUTPUT__PODSECURITYPOLICIES) $(__KCL_SELECTOR__PODSECURITYPOLICIES) $(__KCL_SHOW_LABELS__PODSECURITYPOLICIES) $(_X_KCL_WATCH__PODSECURITYPOLICIES) $(_X_KCL__WATCH_ONLY__PODSECURITYPOLICIES)
 
+_kcl_patch_podsecuritypolicy:
+	@$(INFO) '$(KCL_UI_LABEL)Updating pod-security-policy "$(KCL_PODSECURITYPOLICY_NAME)" ...'; $(NORMAL)
+
 _KCL_SHOW_PODSECURITYPOLICY_TARGETS?= _kcl_show_podsecuritypolicy_object _kcl_show_podsecuritypolicy_state _kcl_show_podsecuritypolicy_description
 _kcl_show_podsecuritypolicy: $(_KCL_SHOW_PODSECURITYPOLICY_TARGETS)
 
@@ -148,9 +151,6 @@ _kcl_unapply_podsecuritypolicy:
 _kcl_unlabel_podsecuritypolicy:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling pod-distruption-securitypolicy "$(KCL_PODSECURITYPOLICY_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label podsecuritypolicy $(KCL_PODSECURITYPOLICY_NAME) $(_X_KCL_PODSECURITYPOLICY_LABELS_KEYVALUES) $(foreach K,$(KCL_PODSECURITYPOLICY_LABELS_KEYS),$(K)- )
-
-_kcl_update_podsecuritypolicy:
-	@$(INFO) '$(KCL_UI_LABEL)Updating pod-security-policy "$(KCL_PODSECURITYPOLICY_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_podsecuritypolicies:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-security-policies ...'; $(NORMAL)

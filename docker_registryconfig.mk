@@ -8,28 +8,28 @@ DKR_REGISTRYCONFIG_FILENAME?= config.json
 DKR_REGISTRYCONFIG_DIRPATH?= $(DKR_CONFIG_DIRPATH)
 DKR_REGISTRYCONFIG_FILEPATH?= $(DKR_REGISTRYCONFIG_DIRPATH)$(DKR_REGISTRYCONFIG_FILENAME)
 
-# Option parameters
+# Options
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_dkr_view_framework_macros ::
-	@echo 'DocKeR::RegistryConfig ($(_DOCKER_REGISTRYCONFIG_MK_VERSION)) targets:'
-	@echo
+_dkr_list_macros ::
+	@#echo 'DocKeR::RegistryConfig ($(_DOCKER_REGISTRYCONFIG_MK_VERSION)) targets:'
+	@#echo
 
-_dkr_view_framework_parameters ::
+_dkr_list_parameters ::
 	@echo 'DocKeR::RegistryConfig ($(_DOCKER_REGISTRYCONFIG_MK_VERSION)) parameters:'
 	@echo '    DKR_REGISTRYCONFIG_DIRPATH=$(DKR_REGISTRYCONFIG_DIRPATH)'
 	@echo '    DKR_REGISTRYCONFIG_FILENAME=$(DKR_REGISTRYCONFIG_FILENAME)'
 	@echo '    DKR_REGISTRYCONFIG_FILEPATH=$(DKR_REGISTRYCONFIG_FILEPATH)'
 	@echo
 
-_dkr_view_framework_targets ::
+_dkr_list_targets ::
 	@echo 'DocKeR::RegistryConfig ($(_DOCKER_REGISTRYCONFIG_MK_VERSION)) targets:'
 	@echo '    _dkr_show_registryconfig               - Show everything related to the registry-config'
 	@echo '    _dkr_show_registryconfig_content       - Show the content of the registry-config'
@@ -40,7 +40,6 @@ _dkr_view_framework_targets ::
 # PRIVATE TARGETS
 #
 
-
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
 #
@@ -49,7 +48,8 @@ _dkr_edit_registryconfig:
 	@$(INFO) '$(DKR_UI_LABEL)Editing the registry-config ...'; $(NORMAL)
 	$(EDITOR) $(DKR_REGISTRYCONFIG_FILEPATH)
 
-_dkr_show_registryconfig: _dkr_show_registryconfig_content  _dkr_show_registryconfig_description
+_DKR_SHOW_REGISTRYCONFIG_TARGETS?= _dkr_show_registryconfig_content  _dkr_show_registryconfig_description
+_dkr_show_registryconfig: $(_DKR_SHOW_REGISTRYCONFIG_TARGETS)
 
 _dkr_show_registryconfig_content:
 	@$(INFO) '$(DKR_UI_LABEL)Showing content of the registry-config ...'; $(NORMAL)

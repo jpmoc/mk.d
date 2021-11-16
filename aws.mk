@@ -26,6 +26,7 @@ AWS_PROFILES_REGEX?= '.*'
 # AWS_REGIONS_IDS?= us-west-1 ...
 # AWS_SECRET_ACCESS_KEY?= 
 # AWS_SESSION_TOKEN?= 
+# AWS_UI_LABEL?=  [aws]
 
 # Derived parameters
 AWS_CONFIG_FILEPATH= $(HOME)/.aws/config
@@ -38,13 +39,12 @@ AWS_MODE_INTERACTIVE?= $(CMN_MODE_INTERACTIVE)
 AWS_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
 AWS_REGIONS_IDS?= $(AWS_REGION_ID)
 AWS_PROFILES_SET_NAME?= profiles@$(AWS_PROFILES_REGEX)
+AWS_UI_LABEL?= [$(strip $(AWS_PROFILE_NAME) $(AWS_ACCOUNT_ID) $(AWS_REGION_ID))] #
 
-# Options parameters
+# Options
 __AWS_ACCOUNT_ALIAS= $(if $(AWS_ACCOUNT_ALIAS), --account-alias $(AWS_ACCOUNT_ALIAS))
 
-# UI parameters
-AWS_UI_LABEL?= [$(strip $(AWS_PROFILE_NAME) $(AWS_ACCOUNT_ID) $(AWS_REGION_ID))] #
-|_AWS_VIEW_PROFILES_SET?= | grep $(AWS_PROFILES_REGEX)
+# Customizations
 
 #--- Utilities
 __AWS_OPTIONS+= $(if $(filter true, $(AWS_MODE_DEBUG)),--debug)
@@ -144,7 +144,7 @@ _list_targets :: _aws_list_targets
 _aws_list_targets ::
 	@echo 'AWS ($(_AWS_MK_VERSION)) targets:'
 	@echo '    _aws_install_dependencies              - Install dependencies'
-	@echo '    _aws_view_limits                       - View region and account limits'
+	@echo '    _aws_view_limits                       - List ALL limits'
 	@echo '    _aws_view_versions                     - View versions of dependencies '
 	@echo
 
@@ -444,14 +444,14 @@ _aws_install_dependencies ::
 	which crudini
 	crudini --version
 
+_aws_view_limits ::
+	@$(INFO) '$(AWS_UI_LABEL)Viewing ALL the AWS-limits ...'; $(NORMAL)
+	@$(WARN) 'This operation returns soft and hard limits'; $(NORMAL)
+	@$(WARN) 'Limits can be for the account or the region'; $(NORMAL)
+	@$(WARN) 'AWS Service Limits @ https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html'; $(NORMAL)
+
 _view_versions :: _aws_view_versions
 _aws_view_versions ::
 	@$(INFO) '$(AWS_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
 	aws --version
 	crudini --version
-
-_aws_view_limits ::
-	@$(INFO) '$(AWS_UI_LABEL)Viewing limits for AWS services (general reference) ...'; $(NORMAL)
-	@$(WARN) 'Limits can be account or region specific'; $(NORMAL)
-	@$(WARN) 'Limits can be soft and hard ones'; $(NORMAL)
-	@$(WARN) 'AWS Service Limits @ https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html'; $(NORMAL)

@@ -4,20 +4,20 @@ _TKN_MK_VERSION= 0.99.4
 # TKN_KUBECONFIG_FILEPATH?= $(HOME)/.kube/config
 # TKN_NAMESPACE_NAME?= default
 TKN_SHOWLOG_FLAG?= false
+TKN_UI_LABEL?= [tkn] #
 
 # Derived parameters
 TKN_CONTEXT_NAME?= $(KUBECTL_CONTEXT_NAME)
 TKN_KUBECONFIG_FILEPATH?= $(KUBECTL_KUBECONFIG_FILEPATH)
 
-# Option parameters
+# Options
 
-# UI parameters
-TKN_UI_LABEL?= [tkn] #
+# Customizations
 
 #--- Utilities
+
 __TKN_OPTIONS+= $(if $(TKN_CONTEXT_NAME),--context=$(TKN_CONTEXT_NAME))#
 __TKN_OPTIONS+= $(if $(TKN_KUBECONFIG_FILEPATH),--kubeconfig=$(TKN_KUBECONFIG_FILEPATH))#
-
 TKN_BIN?= tkn
 TKN?= $(strip $(__TKN_ENVIRONMENT) $(TKN_ENVIRONMENT) $(TKN_BIN) $(__TKN_OPTIONS) $(TKN_OPTIONS))
 
@@ -27,13 +27,13 @@ TKN?= $(strip $(__TKN_ENVIRONMENT) $(TKN_ENVIRONMENT) $(TKN_BIN) $(__TKN_OPTIONS
 # USAGE
 #
 
-_view_framework_macros :: _tkn_view_framework_macros
-_tkn_view_framework_macros ::
+_list_macros :: _tkn_list_macros
+_tkn_list_macros ::
 	@#echo 'TKN ($(_TKN_MK_VERSION)) macros:'
 	@#echo
 
-_view_framework_parameters :: _kn_view_framework_parameters
-_tkn_view_framework_parameters ::
+_list_parameters :: _kn_list_parameters
+_tkn_list_parameters ::
 	@echo 'TKN ($(_TKN_MK_VERSION)) parameters:'
 	@echo '    TKN_CONTEXT_NAME=$(TKN_CONTEXT_NAME)'
 	@echo '    TKN_KUBECONFIG_FILEPATH=$(TKN_KUBECONFIG_FILEPATH)'
@@ -41,8 +41,8 @@ _tkn_view_framework_parameters ::
 	@echo '    TKN_SHOWLOG_FLAG=$(TKN_SHOWLOG_FLAG)'
 	@echo
 
-_view_framework_targets :: _tkn_view_framework_targets
-_tkn_view_framework_targets ::
+_list_targets :: _tkn_list_targets
+_tkn_list_targets ::
 	@echo 'TKN ($(_TKN_MK_VERSION)) targets:'
 	@echo '    _tkn_install_dependencies              - Install dependencies'
 	@echo '    _tkn_view_versions                     - View versions of dependencies'

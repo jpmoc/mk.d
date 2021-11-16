@@ -1,24 +1,28 @@
 _KUBECTL_STORAGECLASS_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
-# KCL_STORAGECLASS_LABELS_KEYVALUES?= istio-injection=enabled ...
-# KCL_STORAGECLASS_MANIFEST_DIRPATH?= ./in/
-# KCL_STORAGECLASS_MANIFEST_FILENAME?= storage-class.yml
-# KCL_STORAGECLASS_MANIFEST_FILEPATH?= ./in/stoage-class.yml
+# KCL_STORAGECLASS_ANNOTATIONS_KEYS?= key1 ...
+# KCL_STORAGECLASS_ANNOTATIONS_KEYVALUES?= key1=value1 ...
+# KCL_STORAGECLASS_FIELD_JSONPATH?= .spec
+# KCL_STORAGECLASS_LABELS_KEYS?= key1 ...
+# KCL_STORAGECLASS_LABELS_KEYVALUES?= key1=value1 ...
 # KCL_STORAGECLASS_NAME?= 
+# KCL_STORAGECLASSES_MANIFEST_DIRPATH?= ./in/
+# KCL_STORAGECLASSES_MANIFEST_FILENAME?= manifest.yaml
+# KCL_STORAGECLASSES_MANIFEST_FILEPATH?= ./in/manifest.yaml
 # KCL_STORAGECLASSES_SELECTOR?=
 # KCL_STORAGECLASSES_SET_NAME?= my-storageclasses-set
 
 # Derived parameters
-KCL_STORAGECLASS_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
-KCL_STORAGECLASS_MANIFEST_FILEPATH?= $(KCL_STORAGECLASS_MANIFEST_DIRPATH)$(KCL_STORAGECLASS_MANIFEST_FILENAME)
+KCL_STORAGECLASSES_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
+KCL_STORAGECLASSES_MANIFEST_FILEPATH?= $(KCL_STORAGECLASSES_MANIFEST_DIRPATH)$(KCL_STORAGECLASSES_MANIFEST_FILENAME)
 KCL_STORAGECLASSES_SET_NAME?= $(KCL_CLUSTER_NAME)
 
-# Option parameters
-__KCL_FILENAME__STORAGECLASS= $(if $(KCL_STORAGECLASS_MANIFEST_FILEPATH),--filename $(KCL_STORAGECLASS_MANIFEST_FILEPATH))
+# Options
+__KCL_FILENAME__STORAGECLASSES= $(if $(KCL_STORAGECLASSES_MANIFEST_FILEPATH),--filename $(KCL_STORAGECLASSES_MANIFEST_FILEPATH))
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -30,18 +34,23 @@ _kcl_list_macros ::
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) parameters:'
+	@echo '    KCL_STORAGECLASS_ANNOTATIONS_KEYS=$(KCL_STORAGECLASS_ANNOTATIONS_KEYS)'
+	@echo '    KCL_STORAGECLASS_ANNOTATIONS_KEYVALUES=$(KCL_STORAGECLASS_ANNOTATIONS_KEYVALUES)'
+	@echo '    KCL_STORAGECLASS_FIELD_JSONPATH=$(KCL_STORAGECLASS_FIELD_JSONPATH)'
+	@echo '    KCL_STORAGECLASS_LABELS_KEYS=$(KCL_STORAGECLASS_LABELS_KEYS)'
 	@echo '    KCL_STORAGECLASS_LABELS_KEYVALUES=$(KCL_STORAGECLASS_LABELS_KEYVALUES)'
-	@echo '    KCL_STORAGECLASS_MANIFEST_DIRPATH=$(KCL_STORAGECLASS_MANIFEST_DIRPATH)'
-	@echo '    KCL_STORAGECLASS_MANIFEST_FILENAME=$(KCL_STORAGECLASS_MANIFEST_FILENAME)'
-	@echo '    KCL_STORAGECLASS_MANIFEST_FILEPATH=$(KCL_STORAGECLASS_MANIFEST_FILEPATH)'
 	@echo '    KCL_STORAGECLASS_NAME=$(KCL_STORAGECLASS_NAME)'
+	@echo '    KCL_STORAGECLASSES_MANIFEST_DIRPATH=$(KCL_STORAGECLASSES_MANIFEST_DIRPATH)'
+	@echo '    KCL_STORAGECLASSES_MANIFEST_FILENAME=$(KCL_STORAGECLASSES_MANIFEST_FILENAME)'
+	@echo '    KCL_STORAGECLASSES_MANIFEST_FILEPATH=$(KCL_STORAGECLASSES_MANIFEST_FILEPATH)'
 	@echo '    KCL_STORAGECLASSES_SELECTOR=$(KCL_STORAGECLASSES_SELECTOR)'
 	@echo '    KCL_STORAGECLASSES_SET_NAME=$(KCL_STORAGECLASSES_SET_NAME)'
 	@echo
 
 _kcl_list_targets ::
 	@echo 'KubeCtL::StorageClass ($(_KUBECTL_STORAGECLASS_MK_VERSION)) targets:'
-	@echo '    _kcl_apply_storageclass                  - Apply a manifest for a storage-class'
+	@echo '    _kcl_annotate_storageclass               - Annotate a storage-class'
+	@echo '    _kcl_apply_storageclasses                - Apply a manifest for one-or-more storage-classes'
 	@echo '    _kcl_create_storageclass                 - Create a new storage-class'
 	@echo '    _kcl_delete_storageclass                 - Delete an existing storage-class'
 	@echo '    _kcl_edit_storageclass                   - Edit a storage-class'
@@ -51,6 +60,9 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_storageclass                  - Label a storage-class'
 	@echo '    _kcl_list_storageclasses                 - List all storage-classes'
 	@echo '    _kcl_list_storageclasses_set             - List a set of storage-classes'
+	@echo '    _kcl_unannotate_storageclass             - Un-annotate a storage-class'
+	@echo '    _kcl_unapply_storageclasses              - Un-apply a manifest for one-or-more storage-classes'
+	@echo '    _kcl_unlabel_storageclass                - Un-label a storage-class'
 	@echo '    _kcl_watch_storageclasses                - Watch all storage-classes'
 	@echo '    _kcl_watch_storageclasses_set            - Watch a set of storage-classes'
 	@echo '    _kcl_write_storageclasses                - Write manifest for one-or-more storage-classes'
@@ -60,11 +72,14 @@ _kcl_list_targets ::
 # PUBLIC TARGETS
 #
 
-_kcl_apply_storageclass:
-	@$(INFO) '$(KCL_UI_LABEL)Applying storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
-	$(KUBECTL) apply $(__KCL_FILENAME__STORAGECLASS)
+_kcl_apply_storageclass: _kcl_apply_storageclasses
+_kcl_apply_storageclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Applying manifest for one-or-more storage-classes ...'; $(NORMAL)
+	$(KUBECTL) apply $(__KCL_FILENAME__STORAGECLASSES)
 
 _kcl_create_storageclass:
+	@$(INFO) '$(KCL_UI_LABEL)Creating storage-class "$(KCL_STORAGECLASS_NAME)"...'; $(NORMAL)
+	# $(KUBECTL) create storageclass $(KCL_STORAGECLASS_NAME)
 
 _kcl_delete_storageclass:
 	@$(INFO) '$(KCL_UI_LABEL)Deleting storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
@@ -76,7 +91,7 @@ _kcl_edit_storageclass:
 
 _kcl_explain_storageclass:
 	@$(INFO) '$(KCL_UI_LABEL)Explaining storage-class object ...'; $(NORMAL)
-	$(KUBECTL) explain storageclass
+	$(KUBECTL) explain storageclass$(KCL_STORAGECLASS_FIELD_JSONPATH)
 
 _kcl_label_storageclass:
 	@$(INFO) '$(KCL_UI_LABEL)Labelling storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
@@ -99,9 +114,15 @@ _kcl_show_storageclass_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) describe storageclass $(KCL_STORAGECLASS_NAME) 
 
+_kcl_unannotate_storage_class:
+	@$(INFO) '$(KCL_UI_LABEL)Un-annotating storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
+
 _kcl_unapply_storage_class:
-	@$(INFO) '$(KCL_UI_LABEL)Unapplying storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(KCL_UI_LABEL)Un-applying storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) delete $(__KCL_FILENAME__STORAGECLASS)
+
+_kcl_unlabel_storage_class:
+	@$(INFO) '$(KCL_UI_LABEL)Un-labeling storage-class "$(KCL_STORAGECLASS_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_storageclasses:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL storage-classes ...'; $(NORMAL)

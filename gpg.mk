@@ -1,13 +1,12 @@
 _GPG_MK_VERSION= 0.99.4
 
-# GPG_PARAMETER?= value
+GPG_UI_LABEL?=[gpg] #
 
 # Derived parameters
 
-# Option parameters
+# Options
 
-# UI parameters
-GPG_UI_LABEL?=[gpg] #
+# Customizations
 
 #--- Utilities
 
@@ -34,6 +33,7 @@ _list_parameters :: _gpg_list_parameters
 _gpg_list_parameters ::
 	@echo 'GPG:: ($(_GPG_MK_VERSION)) variables:'
 	@echo '    GPG=$(GPG)'
+	@echo '    GPG_UI_LABEL=$(GPG_UI_LABEL)'
 	@echo
 
 _list_targets :: _gpg_list_targets

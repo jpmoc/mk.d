@@ -17,17 +17,17 @@ SSH_SSHAGENT_PRIVATEKEY_FILEPATH?= $(SSH_KEYPAIR_PRIVATEKEY_FILEPATH)
 # USAGE
 #
 
-_ssh_view_framework_macros ::
-	@echo 'SSH::SshAgent ($(_SSH_SSHAGENT_MK_VERSION)) macros:'
-	@echo
+_ssh_list_macros ::
+	@#echo 'SSH::SshAgent ($(_SSH_SSHAGENT_MK_VERSION)) macros:'
+	@#echo
 
-_ssh_view_framework_parameters ::
+_ssh_list_parameters ::
 	@echo 'SSH::SshAgent ($(_SSH_SSHAGENT_MK_VERSION)) parameters:'
 	@echo '    SSH_KEYPAIR_NAME=$(SSH_KEYPAIR_NAME)'
 	@echo '    SSH_PRIVATE_KEY=$(SSH_PRIVATE_KEY)'
 	@echo
 
-_ssh_view_framework_targets ::
+_ssh_list_targets ::
 	@echo 'SSH::SshAgent ($(_SSH_SSHAGENT_MK_VERSION)) targets:'
 	@echo '    _ssh_add_sshagent_managedkey         - Add a key to the ssh-agent'
 	@echo '    _ssh_remove_sshagent_managedkey      - Remove key from ssh-agent'

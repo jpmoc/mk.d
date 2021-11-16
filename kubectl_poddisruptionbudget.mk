@@ -24,7 +24,7 @@ KCL_PODDISRUPTIONBUDGETS_OUTPUT_FORMAT?= $(KCL_OUTPUT_FORMAT)
 KCL_PODDISRUPTIONBUDGETS_SET_NAME?= $(KCL_PODDISRUPTIONBUDGETS_NAMESPACE_NAME)
 KCL_PODDISRUPTIONBUDGETS_WATCH_ONLY?= $(KCL_WATCH_ONLY)
 
-# Option parameters
+# Options
 __KCL_ALL_NAMESPACES=
 __KCL_FILENAME__PODDISRUPTIONBUDGET= $(if $(KCL_PODDISRUPTIONBUDGET_MANIFEST_FILEPATH),--filename $(KCL_PODDISRUPTIONBUDGET_MANIFEST_FILEPATH))
 __KCL_NAMESPACE__PODDISRUPTIONBUDGET= $(if $(KCL_PODDISRUPTIONBUDGET_NAMESPACE_NAME),--namespace $(KCL_PODDISRUPTIONBUDGET_NAMESPACE_NAME))
@@ -35,7 +35,7 @@ __KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS= $(if $(filter true,$(KCL_PODDISRUPTIONB
 __KCL_WATCH__PODDISRUPTIONBUDGETS=
 __KCL_WATCH_ONLY__PODDISRUPTIONBUDGETS= $(if $(KCL_PODDISRUPTIONBUDGETS_WATCH_ONLY),--watch-only=$(KCL_PODDISRUPTIONBUDGETS_WATCH_ONLY))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 _kcl_get_poddisruptionbudgets_names= $(call _kcl_get_poddisruptionbudgets_names_S, $(KCL_PODDISRUPTIONBUDGETS_SELECTOR))
@@ -81,13 +81,13 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_poddisruptionbudget                        - Label a pod-distruption-budget'
 	@echo '    _kcl_list_poddisruptionbudgets                        - List all pod-disruption-budgets'
 	@echo '    _kcl_list_poddisruptionbudgets_set                    - List a set of pod-disruption-budgets'
+	@echo '    _kcl_patch_poddisruptionbudget                        - Patch a pod-distruption-budget'
 	@echo '    _kcl_show_poddisruptionbudget                         - Show everything related to a pod-distruption-budget'
 	@echo '    _kcl_show_poddisruptionbudget_description             - Show the description of a pod-distruption-budget'
 	@echo '    _kcl_show_poddisruptionbudget_object                  - Show the object of a pod-distruption-budget'
 	@echo '    _kcl_show_poddisruptionbudget_state                   - Show the state of a pod-distruption-budget'
 	@echo '    _kcl_unapply_poddisruptionbudget                      - Un-apply manifest for a pod-distruption-budget'
 	@echo '    _kcl_unlabel_poddisruptionbudget                      - Un-label a pod-distruption-budget'
-	@echo '    _kcl_update_poddisruptionbudget                       - Update a pod-distruption-budget'
 	@echo '    _kcl_watch_poddisruptionbudgets                       - Watch pod-disruption-budgets'
 	@echo '    _kcl_watch_poddisruptionbudgets_set                   - Watch a set of pod-disruption-budgets'
 	@echo '    _kcl_write_poddisruptionbudgets                       - Write a manifest for one-or-more pod-disruption-budgets'
@@ -135,6 +135,9 @@ _kcl_list_poddisruptionbudgets_set:
 	@$(WARN) 'Pod-disruptoin-budgets are grouped based on the provided namespace, selector'; $(NORMAL)
 	$(KUBECTL) get poddisruptionbudget --all-namespaces=false $(__KCL_NAMESPACE__PODDISRUPTIONBUDGETS) $(__KCL_OUTPUT__PODDISRUPTIONBUDGETS) $(__KCL_SHOW_LABELS__PODDISRUPTIONBUDGETS) $(__KCL_SELECTOR__PODDISRUPTIONBUDGETS) $(_X_KCL_WATCH__PODDISRUPTIONBUDGETS) $(_X_KCL__WATCH_ONLY__PODDISRUPTIONBUDGETS)
 
+_kcl_patch_poddisruptionbudget:
+	@$(INFO) '$(KCL_UI_LABEL)Patching pod-distruption-budget "$(KCL_PODDISRUPTIONBUDGET_NAME)" ...'; $(NORMAL)
+
 _KCL_SHOW_PODDISRUPTIONBUDGET_TARGETS?= _kcl_show_poddisruptionbudget_object _kcl_show_poddisruptionbudget_state _kcl_show_poddisruptionbudget_description
 _kcl_show_poddisruptionbudget: $(_KCL_SHOW_PODDISRUPTIONBUDGET_TARGETS)
 
@@ -157,9 +160,6 @@ _kcl_unapply_poddisruptionbudget:
 _kcl_unlabel_poddisruptionbudget:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling pod-distruption-budget "$(KCL_PODDISRUPTIONBUDGET_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label poddisruptionbudget $(__KCL_NAMESPACE__PODDISRUPTIONBUDGET) $(KCL_PODDISRUPTIONBUDGET_NAME) $(_X_KCL_PODDISRUPTIONBUDGET_LABELS_KEYVALUES) $(foreach K,$(KCL_PODDISRUPTIONBUDGET_LABELS_KEYS),$(K)- )
-
-_kcl_update_poddisruptionbudget:
-	@$(INFO) '$(KCL_UI_LABEL)Updating pod-distruption-budget "$(KCL_PODDISRUPTIONBUDGET_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_poddisruptionbudgets:
 	@$(INFO) '$(KCL_UI_LABEL)Watching pod-disruption-budgets ...'; $(NORMAL)

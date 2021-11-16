@@ -6,16 +6,16 @@ SSH_CONFIG_FILENAME?= config
 SSH_HOST_KEYCHECKING_FLAG?= true
 SSH_HOST_PORT?= 22
 # SSH_OPTIONS?= -v
+SSH_UI_LABEL?= [ssh] #
 
-# Derived parameters A
+# Derived parameters
 SSH_CONFIG_FILEPATH?= $(SSH_CONFIG_DIRPATH)$(SSH_CONFIG_FILENAME)
 
-# Option parameters
+# Options
 ## __SSH_CONFIG= $(if $(SSH_CONFIG_FILEPATH),-F $(SSH_CONFIG_FILEPATH))
 __SSH_HOST_KEY_CHECKING= $(if $(filter false,$(SSH_HOST_KEYCHECKING_FLAG)),-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no)
 
-# UI parameters
-SSH_UI_LABEL?= [ssh] #
+# Customizations
 
 #--- Utilities
 __SSH_OPTIONS+= $(__SSH_CONFIG)
@@ -33,14 +33,14 @@ _ssh_get_mypublicip= $(call dig +short myip.opendns.com @resolver1.opendns.com)
 # USAGE
 #
 
-_view_framework_macros :: _ssh_view_framework_macros
-_ssh_view_framework_macros ::
+_list_macros :: _ssh_list_macros
+_ssh_list_macros ::
 	@echo 'SSH ($(_SSH_MK_VERSION)) macros:'
 	@echo '    _ssh_get_mypublicip                - Get the public ip address'
 	@echo
 
-_view_framework_parameters :: _ssh_view_framework_parameters
-_ssh_view_framework_parameters ::
+_list_parameters :: _ssh_list_parameters
+_ssh_list_parameters ::
 	@echo 'SSH ($(_SSH_MK_VERSION)) parameters:'
 	@echo '    SSH=$(SSH)'
 	@echo '    SSH_CONFIG_DIRPATH=$(SSH_CONFIG_DIRPATH)'
@@ -50,11 +50,12 @@ _ssh_view_framework_parameters ::
 	@echo '    SSH_HOST_PORT=$(SSH_HOST_PORT)'
 	@echo '    SSH_MYPUBLICIP=$(SSH_MYPUBLICIP)'
 	@echo '    SSH_MYPUBLICIP=$(SSH_MYPUBLICIP)'
+	@echo '    SSH_UI_LABEL=$(SSH_UI_LABEL)'
 	@echo '    SSHKEYGEN=$(SSHKEYGEN)'
 	@echo
 
-_view_framework_targets :: _ssh_view_framework_targets
-_ssh_view_framework_targets ::
+_list_targets :: _ssh_list_targets
+_ssh_list_targets ::
 	@echo 'SSH ($(_SSH_MK_VERSION)) targets:'
 	@echo '    _ssh_get_mypublicip                - Get the public IP of localhost'
 	@echo '    _ssh_view_versions                 - View versions of depedencies'
@@ -84,5 +85,5 @@ _ssh_get_mypublicip:
 
 _view_versions :: _ssh_view_versions
 _ssh_view_versions:
-	@$(INFO) '$(SSH_UI_LABEL)View versions of dependencies ...'; $(NORMAL)
+	@$(INFO) '$(SSH_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
 	$(SSH) -V

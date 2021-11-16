@@ -51,6 +51,7 @@ STN_TAILS_HISTORY_COUNT?= -1
 STN_TAILS_OUTPUT_MODE?= default
 # STN_TAILS_SINCE_DURATION?= 2m
 STN_TAILS_TIMESTAMP_FLAG?= false
+STN_UI_LABEL?= [stern] #
 
 
 # Derived parameters
@@ -94,7 +95,7 @@ STN_SERVICE_TAILEXCLUDELOGLINES_REGEX?= $(STN_TAILS_EXCLUDELOGLINES_REGEX)
 STN_SERVICE_TAILHISTORY_COUNT?= $(STN_TAILS_HISTORY_COUNT)
 STN_SERVICE_TAILPODS_REGEX?= '^$(STN_SERVICE_NAME)*'#
 
-# Option parameters
+# Options
 __STN_OUTPUT= $(if $(STN_TAILS_OUTPUT_MODE),--output $(STN_TAILS_OUTPUT_MODE))
 __STN_SINCE= $(if $(STN_TAILS_SINCE_DURATION),--since $(STN_TAILS_SINCE_DURATION))
 __STN_TIMESTAMPS= $(if $(filter true, $(STN_TAILS_TIMESTAMP_FLAG)),--timestamps)
@@ -133,10 +134,8 @@ __STN_EXCLUDE_CONTAINER__SERVICE= $(if $(STN_SERVICE_TAILEXCLUDECONTAINERS_REGEX
 __STN_NAMESPACE__SERVICE= $(if $(STN_SERVICE_NAMESPACE_NAME),--namespace $(STN_SERVICE_NAMESPACE_NAME))
 __STN_TAIL__SERVICE= $(if $(STN_SERVICE_TAILHISTORY_COUNT),--tail $(STN_SERVICE_TAILHISTORY_COUNT))
 
-# UI parameters
-STN_UI_LABEL?= [stern] #
 
-# Pipe parameters
+# Customizations
 _STN_TAIL_CLUSTER_|?=
 |_STN_TAIL_CLUSTER?= # | tee cluster.log
 _STN_TAIL_DEPLOYMENT|?=
@@ -158,14 +157,14 @@ STERN?= $(strip $(__STERN_ENVIRONMENT) $(STERN_ENVIRONMENT) $(STERN_BIN) $(__STE
 # USAGE
 #
 
-_view_framework_macros :: _stn_view_framework_macros
-_stn_view_framework_macros ::
-	@echo 'STerN:: ($(_STERN_MK_VERSION)) macros:'
-	@echo
+_list_macros :: _stn_list_macros
+_stn_list_macros ::
+	@#echo 'STerN ($(_STERN_MK_VERSION)) macros:'
+	@#echo
 
-_view_framework_parameters :: _stn_view_framework_parameters
-_stn_view_framework_parameters ::
-	@echo 'STerN:: ($(_STERN_MK_VERSION)) parameters:'
+_list_parameters :: _stn_list_parameters
+_stn_list_parameters ::
+	@echo 'STerN ($(_STERN_MK_VERSION)) parameters:'
 	@echo '    STERN=$(STERN)'
 	@echo '    STN_CLUSTER_NAME=$(STN_CLUSTER_NAME)'
 	@echo '    STN_CLUSTER_TAILCOLOR_MODE=$(STN_CLUSTER_TAILCOLOR_MODE)'
@@ -212,11 +211,12 @@ _stn_view_framework_parameters ::
 	@echo '    STN_TAILS_OUTPUT_MODE=$(STN_TAILS_OUTPUT_MODE)'
 	@echo '    STN_TAILS_SINCE_DURATION=$(STN_TAILS_SINCE_DURATION)'
 	@echo '    STN_TAILS_TIMESTAMP_FLAG=$(STN_TAILS_TIMESTAMP_FLAG)'
+	@echo '    STN_UI_LABEL=$(STN_UI_LABEL)'
 	@echo
 
-_view_framework_targets :: _stn_view_framework_targets
-_stn_view_framework_targets ::
-	@echo 'STerN:: ($(_STERN_MK_VERSION)) targets:'
+_list_targets :: _stn_list_targets
+_stn_list_targets ::
+	@echo 'STerN ($(_STERN_MK_VERSION)) targets:'
 	@echo '    _stn_tail_cluster             - Tail all containers/pods in a cluster'
 	@echo '    _stn_tail_deployment          - Tail all containers/pods in a deployment'
 	@echo '    _stn_tail_namespace           - Tail all containers/pods in a namespace'

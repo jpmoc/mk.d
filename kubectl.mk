@@ -22,6 +22,7 @@ _KUBECTL_MK_VERSION= 1.0.0
 # KCL_OUTPUTS_DIRPATH?= ./out/
 # KCL_REQUEST_TIMEOUT?= 0
 # KCL_SERVER?=
+KCL_UI_LABEL?= [kubectl] #
 # KCL_WATCH_ONLY?= true
 # KUBECTL_CONTEXT_NAME?= k1.emayssat-c2.k8s.local
 KUBECTL_KUBECONFIG_DIRPATH?= $(HOME)/.kube/
@@ -42,12 +43,11 @@ KCL_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
 KUBECTL_CONTEXT_NAME?= $(KCL_CONTEXT_NAME)
 KUBECTL_KUBECONFIG_FILEPATH?= $(KUBECTL_KUBECONFIG_DIRPATH)$(KUBECTL_KUBECONFIG_FILENAME)
 
-# Option parameters
+# Options
 
-# UI parameters
-KCL_UI_LABEL?= [kubectl] #
+# Customizations
 
-#--- Utilities
+# Utilities
 __KUBECTL_OPTIONS+= $(if $(KCL_LOG_ALSOTOSTDERR),--alsologtostderr=$(KCL_ALSOLOGTOSTDERR))#
 __KUBECTL_OPTIONS+= $(if $(KCL_AS_USER),--as=$(KCL_AS_USER))#
 __KUBECTL_OPTIONS+= $(if $(KCL_AS_GROUP),--as-group=[$(KCL_AS_GROUP)])#
@@ -78,7 +78,7 @@ KUBECTL?= $(strip $(__KUBECTL_ENVIRONMENT) $(KUBECTL_ENVIRONMENT) $(KUBECTL_BIN)
 KUBECTL_KREW_BIN?= kubectl-krew
 KUBECTL_KREW?= $(strip $(__KUBECTL_KREW_ENVIRONMENT) $(KUBECTL_KREW_ENVIRONMENT) $(KUBECTL_KREW_BIN) $(__KUBECTL_KREW_OPTIONS) $(KUBECTL_KREW_OPTIONS))
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -114,6 +114,7 @@ _kcl_list_parameters ::
 	@echo '    KCL_OUTPUTS_DIRPATH=$(KCL_OUTPUTS_DIRPATH)'
 	@echo '    KCL_REQUEST_TIMEOUT=$(KCL_REQUEST_TIMEOUT)'
 	@echo '    KCL_SERVER=$(KCL_SERVER)'
+	@echo '    KCL_UI_LABEL=$(KCL_UI_LABEL)'
 	@echo '    KCL_WATCH_ONLY=$(KCL_WATCH_ONLY)'
 	@echo '    KUBECTL=$(KUBECTL)'
 	@echo '    KUBECTL_CONTEXT_NAME=$(KUBECTL_CONTEXT_NAME)'

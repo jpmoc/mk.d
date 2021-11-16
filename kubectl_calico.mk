@@ -5,11 +5,9 @@ KCL_CALICO_VERSION?= v3.17.1
 
 # Derived parameters
 
-# Option parameters
+# Options
 
-# UI parameters
-
-#--- Utilities
+# Customizations
 
 #--- MACROS
 

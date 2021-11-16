@@ -41,7 +41,7 @@ KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_FILEPATH?= $(if $(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_FILENAME),$(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_DIRPATH)$(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_FILENAME))
 KCL_MUTATINGWEBHOOKCONFIGS_SET_NAME?= mutating-webhook-config@@$(KCL_MUTATINGWEBHOOKCONFIGS_SELECTOR)@
 
-# Option parameters
+# Options
 __KCL_FILENAME__MUTATINGWEBHOOKCONFIGS+= $(if $(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_FILEPATH),--filename $(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_FILEPATH))
 __KCL_FILENAME__MUTATINGWEBHOOKCONFIGS+= $(if $(filter true,$(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__MUTATINGWEBHOOKCONFIGS+= $(if $(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_URL),--filename $(KCL_MUTATINGWEBHOOKCONFIGS_MANIFEST_URL))
@@ -53,7 +53,7 @@ __KCL_OUTPUT__MUTATINGWEBHOOKCONFIG= $(if $(KCL_MUTATINGWEBHOOKCONFIG_OUTPUT_FOR
 __KCL_OUTPUT__MUTATINGWEBHOOKCONFIGS= $(if $(KCL_MUTATINGWEBHOOKCONFIGS_OUTPUT_FORMAT),--output $(KCL_MUTATINGWEBHOOKCONFIGS_OUTPUT_FORMAT))
 __KCL_SELECTOR__MUTATINGWEBHOOKCONFIGS= $(if $(KCL_MUTATINGWEBHOOKCONFIGS_SELECTOR),--selector=$(KCL_MUTATINGWEBHOOKCONFIGS_SELECTOR))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 _kcl_get_mutatingwebhookconfig_deployments_names= $(call _kcl_get_mutatingwebhookconfig_deployments_names_S, $(KCL_MUTATINGWEBHOOKCONFIG_DEPLOYMENTS_SELECTOR))
@@ -132,6 +132,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_mutatingwebhookconfig                   - Label a mutating-webhook-config'
 	@echo '    _kcl_list_mutatingwebhookconfigs                   - List all mutating-webhook-configs'
 	@echo '    _kcl_list_mutatingwebhookconfigs_set               - List a set of mutating-webhook-configs'
+	@echo '    _kcl_patch_mutatingwebhookconfig                   - Patch a mutating-webhook-config'
 	@echo '    _kcl_portforward_mutatingwebhookconfig             - Port-forward local ports to a mutating-webhook-config'
 	@echo '    _kcl_show_mutatingwebhookconfig                    - Show everything related to a mutating-webhook-config'
 	@echo '    _kcl_show_mutatingwebhookconfig_description        - Show the description of a mutating-webhook-config'
@@ -142,9 +143,8 @@ _kcl_list_targets ::
 	@echo '    _kcl_show_mutatingwebhookconfig_state              - Show state of a mutating-webhook-config'
 	@echo '    _kcl_unapply_mutatingwebhookconfigs                - Un-apply manifest for one-or-more mutating-webhook-configs'
 	@echo '    _kcl_unlabel_mutatingwebhookconfig                 - Un-label manifest for a mutating-webhook-config'
-	@echo '    _kcl_update_mutatingwebhookconfig                  - Update a mutating-webhook-config'
-	@echo '    _kcl_watch_mutatingwebhookconfigs                  - Watching all mutating-webhook-configs'
-	@echo '    _kcl_watch_mutatingwebhookconfigs_set              - Watching a set of mutating-webhook-configs'
+	@echo '    _kcl_watch_mutatingwebhookconfigs                  - Watch all mutating-webhook-configs'
+	@echo '    _kcl_watch_mutatingwebhookconfigs_set              - Watch a set of mutating-webhook-configs'
 	@echo '    _kcl_write_mutatingwebhookconfigs                  - Write manifest for one-or-more mutating-webhook-configs'
 	@echo
 
@@ -191,6 +191,9 @@ _kcl_explain_mutatingwebhookconfig:
 
 _kcl_label_mutatingwebhookconfig:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling mutating-webhook-config "$(KCL_MUTATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
+
+_kcl_patch_mutatingwebhookconfig:
+	@$(INFO) '$(KCL_UI_LABEL)Patching mutating-webhook-config "$(KCL_MUTATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
 
 _kcl_show_mutatingwebhookconfig: _kcl_show_mutatingwebhookconfig_deployments _kcl_show_mutatingwebhookconfig_object _kcl_show_mutatingwebhookconfig_pods _kcl_show_mutatingwebhookconfig_replicasets _kcl_show_mutatingwebhookconfig_services _kcl_show_mutatingwebhookconfig_description
 
@@ -258,9 +261,6 @@ _kcl_unapply_mutatingwebhookconfigs:
 _kcl_unlabel_mutatingwebhookconfig:
 	@$(INFO) '$(KCL_UI_LABEL)Removing labels from mutating-webhook-config "$(KCL_MUTATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
-
-_kcl_update_mutatingwebhookconfig:
-	@$(INFO) '$(KCL_UI_LABEL)Updating mutating-webhook-config "$(KCL_MUTATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) patch ...
 
 _kcl_list_mutatingwebhookconfigs:

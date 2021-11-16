@@ -43,7 +43,7 @@ LBA_FUNCTION_LOGGROUP_NAME?= $(if $(LBA_FUNCTION_NAME),/aws/lambda/$(LBA_FUNCTIO
 LBA_FUNCTION_PACKAGE_FILEPATH?= $(LBA_PACKAGE_FILEPATH)
 LBA_FUNCTION_REGION_NAME?= $(LBA_REGION_NAME)
 
-# Option parameters
+# Options
 __LBA_CODE= $(if $(LBA_FUNCTION_CODE),--code $(LBA_FUNCTION_CODE))
 __LBA_CODE_SHA256= $(if $(LBA_FUNCTION_CODE_SHA256),--code-sha256 $(LBA_FUNCTION_CODE_SHA256))
 __LBA_DEAD_LETTER_CONFIG= $(if $(LBA_FUNCTION_DEAD_LETTER_CONFIG),--dead-letter-config $(LBA_FUNCTION_DEAD_LETTER_CONFIG))
@@ -74,22 +74,16 @@ __LBA_TRACING_CONFIG= $(if $(LBA_FUNCTION_TRACING_CONFIG),--tracing-config Mode=
 __LBA_VPC_CONFIG= $(if $(LBA_FUNCTION_VPC_CONFIG),--vpc-config $(LBA_FUNCTION_VPC_CONFIG))
 __LBA_ZIP_FILE= $(if $(LBA_FUNCTION_PACKAGE_FILEPATH),--zip-file fileb://$(LBA_FUNCTION_PACKAGE_FILEPATH))
 
-# Pipe function
+# Customizations
 |_LBA_INVOKE_FUNCTION?= # $(if $(LBA_FUNCTION_INVOKE_LOGTYPE),--query 'LogResult' --output text |  base64 -d > $(LBA_FUNCTION_INVOKE_LOGSFILEPATH))
-
-# UI parameters
-LBA_UI_SHOW_FUNCTION_FIELDS?=
-LBA_UI_VIEW_FUNCTIONS_FIELDS?= .{FunctionName:FunctionName,runtime:Runtime,memorySizeMB:MemorySize,timeout:Timeout,version:Version,codeSizeB:CodeSize}
-LBA_UI_VIEW_FUNCTIONS_SET_FIELDS?= $(LBA_UI_VIEW_FUNCTIONS_FIELDS)
-LBA_UI_VIEW_FUNCTIONS_SET_QUERY_FILTER?=
-
-# Pipe parameters
+_LBA_LIST_FUNCTIONS_FIELDS?= .{FunctionName:FunctionName,runtime:Runtime,memorySizeMB:MemorySize,timeout:Timeout,version:Version,codeSizeB:CodeSize}
+_LBA_LIST_FUNCTIONS_SET_FIELDS?= $(LBA_LIST_FUNCTIONS_FIELDS)
+_LBA_LIST_FUNCTIONS_SET_QUERY_FILTER?=
+_LBA_SHOW_FUNCTION_FIELDS?=
 |_LBA_SHOW_FUNCTION_LOGS?= && echo
 |_LBA_SHOW_FUNCTION_RESPONSE?= | jq --monochrome-output '.'
 
-#--- Utilities
-
-#--- Macros
+# Macros
 
 _lba_get_function_arn= $(call _lba_get_function_arn_N, $(LBA_FUNCTION_NAME))
 # _lba_get_function_arn_N= $(shell $(AWS) lambda list-functions --query "Functions[?FunctionName=='$(strip $(1))'].FunctionArn" --output text)
@@ -108,7 +102,7 @@ _lba_get_function_role_arn_N= $(shell $(AWS) lambda list-functions --query "Func
 # USAGE
 #
 
-_lba_view_framework_macros ::
+_lba_list_macros ::
 	@echo 'AWS::LamBdA::Function ($(_AWS_LAMBDA_FUNCTION_MK_VERSION)) macros:'
 	@echo '    _lba_get_function_arn_{|N}            - Get the ARN of a function (Name)'
 	@echo '    _lba_get_function_code_url_{|N}       - Get the URL for the code of a function (Name)'
@@ -116,7 +110,7 @@ _lba_view_framework_macros ::
 	@echo '    _lba_get_function_role_arn_{|N}       - Get the ARN of a role of a function (Name)'
 	@echo
 
-_lba_view_framework_parameters ::
+_lba_list_parameters ::
 	@echo 'AWS::LamBdA::Function ($(_AWS_LAMBDA_FUNCTION_MK_VERSION)) parameters:'
 	@echo '    LBA_FUNCTION_ACCOUNT_ID=$(LBA_FUNCTION_ACCOUNT_ID)'
 	@echo '    LBA_FUNCTION_ARN=$(LBA_FUNCTION_ARN)'
@@ -153,7 +147,7 @@ _lba_view_framework_parameters ::
 	@echo '    LBA_INVOCATION_TYPE=$(LBA_INVOCATION_TYPE)'
 	@echo
 
-_lba_view_framework_targets ::
+_lba_list_targets ::
 	@echo 'AWS::LamBdA::Function ($(_AWS_LAMBDA_FUNCTION_MK_VERSION)) targets:'
 	@echo '    _lba_add_permission                   - Allow an event source based on ARN'
 	@echo '    _lba_create_function                  - Create a function'
@@ -162,6 +156,8 @@ _lba_view_framework_targets ::
 	@echo '    _lba_disable_function_trigger         - Disable function trigger'
 	@echo '    _lba_enable_function_trigger          - Enable function trigger'
 	@echo '    _lba_invoke_function                  - Invoke a function'
+	@echo '    _lba_list_functions                   - List all functions'
+	@echo '    _lba_list_functions_set               - List a set of fucntions'
 	@echo '    _lba_show_function                    - Show everything related to a function'
 	@echo '    _lba_show_function_aliases            - Show aliases of a function'
 	@echo '    _lba_show_function_code               - Show code used by a function'
@@ -178,8 +174,6 @@ _lba_view_framework_targets ::
 	@echo '    _lba_update_function_code             - Update the code of a function'
 	@echo '    _lba_update_function_config           - Update the configuration of a function'
 	@echo '    _lba_version_function                 - Public a version for a function'
-	@echo '    _lba_view_functions                   - View existing functions'
-	@echo '    _lba_view_functions_set               - View a set of fucntions'
 	@echo
 
 #----------------------------------------------------------------------
@@ -187,19 +181,19 @@ _lba_view_framework_targets ::
 # 
 
 _lba_add_permission:
-	@$(INFO) '$(AWS_UI_LABEL)Adding an event-source/trigger to function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Adding an event-source/trigger to function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda add-permission $(__LBA_FUNCTION_NAME) $(__LBA_STATEMENT_ID) $(__LBA_ACTION) $(__LBA_PRINCIPAL) $(__LBA_SOURCE_ARN)
 
 _lba_create_function:
-	@$(INFO) '$(AWS_UI_LABEL)Creating function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Creating function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda create-function $(strip $(__LBA_CODE) $(__LBA_DEAD_LETTER_CONFIG) $(__LBA_DESCRIPTION__FUNCTION) $(__LBA_ENVIRONMENT) $(__LBA_FUNCTION_NAME) $(__LBA_HANDLER) $(__LBA_KMS_KEY_ARN) $(__LBA_LAYERS) $(__LBA_MEMORY_SIZE) $(__LBA_PUBLISH) $(__LBA_ROLE) $(__LBA_RUNTIME) $(__LBA_TAGS) $(__LBA_TIMEOUT) $(__LBA_TRACING_CONFIG) $(__LBA_VPC_CONFIG) $(__LBA_ZIP_FILE))
 
 _lba_curl_function:
-	@$(INFO) '$(AWS_UI_LABEL)Curling function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Curling function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	curl $(LBA_FUNCTION_URL)
 
 _lba_delete_function:
-	@$(INFO) '$(AWS_UI_LABEL)Deleting existing function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Deleting existing function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	-$(AWS) lambda delete-function $(__LBA_FUNCTION_NAME)
 
 _lba_disable_function_trigger::
@@ -207,99 +201,100 @@ _lba_disable_function_trigger::
 _lba_enable_function_trigger::
 
 _lba_invoke_function:
-	@$(INFO) '$(AWS_UI_LABEL)Invoking function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Invoking function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation returns a status code which correspond to the REAL status of the execution'; $(NORMAL)
 	@$(WARN) 'The status code that may appear in the output/response is just a string!'; $(NORMAL)
 	@$(if $(LBA_FUNCTION_INVOKE_EVENTFILEPATH), cat $(LBA_FUNCTION_INVOKE_EVENTFILEPATH))
 	$(AWS) lambda invoke $(strip $(_LBA_CLIENT_CONTEXT) $(__LBA_FUNCTION_NAME) $(__LBA_INVOCATION_TYPE) $(__LBA_LOG_TYPE) $(__LBA_PAYLOAD) $(__LBA_QUALIFIER)) $(LBA_FUNCTION_INVOKE_RESPONSEFILEPATH) $(|_LBA_INVOKE_FUNCTION)
 
-_lba_show_function :: _lba_show_function_aliases _lba_show_function_code _lba_show_function_layers _lba_show_function_logs _lba_show_function_response _lba_show_function_role _lba_show_function_tags _lba_show_function_triggers _lba_show_function_triggerpolicy _lba_show_function_sampleevent _lba_show_function_versions _lba_show_function_description
+_lba_list_functions:
+	@$(INFO) '$(LBA_UI_LABEL)Listing ALL functions ...'; $(NORMAL)
+	$(AWS) lambda list-functions --query 'Functions[]$(_LBA_LIST_FUNCTIONS_FIELDS)'
+
+_lba_list_functions_set:
+	@$(INFO) '$(LBA_UI_LABEL)Listing functions-set "$(LBA_FUNCTIONS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Function are grouped based on provided query filter'; $(NORMAL)
+	$(AWS) lambda list-functions --query 'Functions[$(_LBA_LIST_FUNCTIONS_SET_QUERYFILTER)]$(_LBA_LIST_FUNCTIONS_SET_FIELDS)'
+
+_LBA_SHOW_FUNCTION_TARGETS?= _lba_show_function_aliases _lba_show_function_code _lba_show_function_layers _lba_show_function_logs _lba_show_function_response _lba_show_function_role _lba_show_function_tags _lba_show_function_triggers _lba_show_function_triggerpolicy _lba_show_function_sampleevent _lba_show_function_versions _lba_show_function_description
+_lba_show_function: $(_LBA_SHOW_FUNCTION_TARGETS)
 
 _lba_show_function_aliases:
-	@$(INFO) '$(AWS_UI_LABEL)Showing aliases of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing aliases of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda list-aliases $(__LBA_FUNCTION_NAME) $(__LBA_FUNCTION_VERSION)
 
 _lba_show_function_code:
-	@$(INFO) '$(AWS_UI_LABEL)Showing code of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing code of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation requires LBA_FUNCTION_CODE_URL to be set!'; $(NORMAL)
 	$(if $(LBA_FUNCTION_CODE_URL),curl -s '$(LBA_FUNCTION_CODE_URL)' | zcat)
 
 _lba_show_function_description:
-	@$(INFO) '$(AWS_UI_LABEL)Showing description of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing description of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation shows the details of the currently-active versions'; $(NORMAL)
 	@$(WARN) 'Cloudwatch logs @ $(LBA_FUNCTION_LOGGROUP_NAME)'; $(NORMAL)
-	$(AWS) lambda get-function-configuration  $(__LBA_FUNCTION_NAME) $(__LBA_QUALIFIER)
+	$(AWS) lambda get-function-configuration $(__LBA_FUNCTION_NAME) $(__LBA_QUALIFIER)
 
 _lba_show_function_layers:
-	@$(INFO) '$(AWS_UI_LABEL)Showing layers of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing layers of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda get-function $(__LBA_FUNCTION_NAME) $(__LBA_QUALIFER) --query "Configuration.Layers"
 
 _lba_show_function_logs::
-	@$(INFO) '$(AWS_UI_LABEL)Showing logs of latest invocation of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing logs of latest invocation of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation outputs the logs of the latest invoke-function call'; $(NORMAL)
 	@$(WARN) 'Logs were stored in $(LBA_FUNCTION_INVOKE_LOGSFILEPATH)'; $(NORMAL)
 	@$(WARN) 'Cloudwatch logs @ $(LBA_FUNCTION_LOGGROUP_NAME)'; $(NORMAL)
 	-$(if $(LBA_FUNCTION_INVOKE_LOGSFILEPATH),[ -f $(LBA_FUNCTION_INVOKE_LOGSFILEPATH) ] && cat $(LBA_FUNCTION_INVOKE_LOGSFILEPATH) $(|_LBA_SHOW_FUNCTION_LOGS))
 
 _lba_show_function_response:
-	@$(INFO) '$(AWS_UI_LABEL)Showing a response of latest invocation of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing a response of latest invocation of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation outputs the returned value of the latest invoke-function call'; $(NORMAL)
 	@$(WARN) 'Response was stored in $(LBA_FUNCTION_INVOKE_RESPONSEFILEPATH)'; $(NORMAL)
 	-$(if $(LBA_FUNCTION_INVOKE_RESPONSEFILEPATH),[ -f $(LBA_FUNCTION_INVOKE_RESPONSEFILEPATH) ] && cat $(LBA_FUNCTION_INVOKE_RESPONSEFILEPATH) $(|_LBA_SHOW_FUNCTION_RESPONSE))
 
 _lba_show_function_role ::
-	@$(INFO) '$(AWS_UI_LABEL)Showing execution-role of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing execution-role of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'TO BE IMPLEMENTED!'
 	# $(AWS) iam
 
 _lba_show_function_sampleevent:
-	@$(INFO) '$(AWS_UI_LABEL)Showing sample-event of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing sample-event of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Event file: $(LBA_FUNCTION_INVOKE_EVENTFILEPATH)'; $(NORMAL)
 	$(if $(LBA_FUNCTION_INVOKE_EVENTFILEPATH),cat $(LBA_FUNCTION_INVOKE_EVENTFILEPATH))
 
 _lba_show_function_tags:
-	@$(INFO) '$(AWS_UI_LABEL)Showing tags of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing tags of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda list-tags $(__LBA_RESOURCE__FUNCTION) --query "Tags"
 
 _lba_show_function_triggers::
 
 _lba_show_function_triggerpolicy:
-	@$(INFO) '$(AWS_UI_LABEL)Showing trigger-policy attached to function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing trigger-policy attached to function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation shows the external resources that can trigger or interact with the function'; $(NORMAL)
 	$(AWS) lambda get-policy $(__LBA_FUNCTION_NAME) $(__LBA_QUALIFIER) --query 'Policy' --output text  | jq --monochrome-output  '.'
 
 _lba_show_function_versions:
-	@$(INFO) '$(AWS_UI_LABEL)Showing available versions of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Showing available versions of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation shows the details for all available versions'; $(NORMAL)
 	$(AWS) lambda list-versions-by-function $(__LBA_FUNCTION_NAME)
 
 _lba_tag_function:
-	@$(INFO) '$(AWS_UI_LABEL)Tagging function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Tagging function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda tag-resource $(__LBA_RESOURCE__FUNCTION) $(__LBA_TAGS__FUNCTION)
 
 _lba_untag_function:
-	@$(INFO) '$(AWS_UI_LABEL)Tagging function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Tagging function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda untag-resource $(__LBA_RESOURCE__FUNCTION) $(__LBA_TAG_KEYS__FUNCTION)
 
 _lba_update_function_code:
-	@$(INFO) '$(AWS_UI_LABEL)Updating code of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Updating code of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda update-function-code $(__LBA_FUNCTION_NAME) $(__LBA_PUBLISH) $(__LBA_REVISION_ID) $(__LBA_S3_BUCKET) $(__LBA_S3_KEY) $(__LBA_S3_OBJECT_VERSION) $(__LBA_ZIP_FILE) 
 
 _lba_update_function_configuration:
-	@$(INFO) '$(AWS_UI_LABEL)Updating configuration of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Updating configuration of function "$(LBA_FUNCTION_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation patches the current configuration with the provided values'; $(NORMAL)
 	@$(WARN) 'This operation can be used for example to add or remove layers'; $(NORMAL)
 	$(AWS) lambda update-function-configuration $(strip $(__LBA_DEAD_LETTER_CONFIG) $(__LBA_DESCRIPTION__FUNCTION) $(__LBA_ENVIRONMENT) $(__LBA_FUNCTION_NAME) $(__LBA_HANDLER) $(__LBA_KMS_KEY_ARN) $(__LBA_LAYERS) $(__LBA_MEMORY_SIZE) $(__LBA_REVISION_ID) $(__LBA_ROLE) $(__LBA_RUNTIME) $(__LBA_TIMEOUT) $(__LBA_TRACING_CONFIG) $(__LBA_VPC_CONFIG))
 
 _lba_version_function:
-	@$(INFO) '$(AWS_UI_LABEL)Versioning function "$(LBA_VERSION_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(LBA_UI_LABEL)Versioning function "$(LBA_VERSION_NAME)" ...'; $(NORMAL)
 	$(AWS) lambda publish-version $(__LBA_CODE_SHA256) $(__LBA_DESCRIPTION__FUNCTION) $(__LBA_REVISION_ID) $(__LBA_VERSION_NAME)
-
-_lba_view_functions:
-	@$(INFO) '$(AWS_UI_LABEL)Viewing functions ...'; $(NORMAL)
-	$(AWS) lambda list-functions --query 'Functions[]$(LBA_UI_VIEW_FUNCTIONS_FIELDS)'
-
-_lba_view_functions_set:
-	@$(INFO) '$(AWS_UI_LABEL)Viewing functions-set "$(LBA_FUNCTIONS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Function are grouped based on provided query filter'; $(NORMAL)
-	$(AWS) lambda list-functions --query 'Functions[$(LBA_UI_VIEW_FUNCTIONS_SET_QUERY_FILTER)]$(LBA_UI_VIEW_FUNCTIONS_SET_FIELDS)'

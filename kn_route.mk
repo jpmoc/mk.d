@@ -12,13 +12,11 @@ KN_ROUTE_NAMESPACE_NAME?= $(KN_NAMESPACE_NAME)
 KN_ROUTES_NAMESPACE_NAME?= $(KN_ROUTE_NAMESPACE_NAME)
 # KN_ROUTES_SET_NAME?= knative-routes@@@$(KN_ROUTES_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KN_NAMESPACE__ROUTE= $(if $(KN_ROUTE_NAMESPACE_NAME),--namespace $(KN_ROUTE_NAMESPACE_NAME))
 __KN_NAMESPACE__ROUTES= $(if $(KN_ROUTES_NAMESPACE_NAME),--namespace $(KN_ROUTES_NAMESPACE_NAME))
 
-# Pipe parameters
-
-# UI parameters
+# Customizations
 
 #--- MACROS
 

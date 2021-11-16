@@ -5,9 +5,12 @@ _KUBECTL_SERVICEACCOUNT_MK_VERSION= $(_KUBECTL_MK_VERSION)
 # KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS?= key1 ...
 # KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES?= key1=value1 ...
 # KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR?= key1=value1 ...
-# KCL_SERVICEACCOUNT_LABELS_KEYVALUES?= istio-injection=enabled ...
+# KCL_SERVICEACCOUNT_FIELD_JSONPATH?=
+# KCL_SERVICEACCOUNT_LABELS_KEYS?= key1 ...
+# KCL_SERVICEACCOUNT_LABELS_KEYVALUES?= key1=value1 ...
 # KCL_SERVICEACCOUNT_NAME?= 
 # KCL_SERVICEACCOUNT_NAMESPACE_NAME?= kube-system
+KCL_SERVICEACCOUNT_OVERWRITE_FLAG?= false
 # KCL_SERVICEACCOUNT_PATCH_CONTENT?= '{\"imagePullSecrets\": [{\"name\": \"myregistrykey\"}]}'
 # KCL_SERVICEACCOUNT_PODS_SELECTOR?= key1=value1
 # KCL_SERVICEACCOUNT_ROLES_SELECTOR?= key1=value1
@@ -28,23 +31,24 @@ KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH?= $(if $(KCL_SERVICEACCOUNTS_MANIFEST_FILE
 KCL_SERVICEACCOUNTS_NAMESPACE_NAME?= $(KCL_SERVICEACCOUNT_NAMESPACE_NAME)
 KCL_SERVICEACCOUNTS_SET_NAME?= $(KCL_SERVICEACCOUNTS_NAMESPACE_NAME)
 
-# Option parameters
-__KCL_AS__SERVICEACCOUNT?= --as system:serviceaccount:$(KCL_SERVICEACCOUNT_NAMESPACE_NAME):$(KCL_SERVICEACCOUNT_NAME)
+# Options
+__KCL_AS__SERVICEACCOUNT= --as system:serviceaccount:$(KCL_SERVICEACCOUNT_NAMESPACE_NAME):$(KCL_SERVICEACCOUNT_NAME)
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH),--filename $(KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH))
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(filter true,$(KCL_SERVICEACCOUNTS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(KCL_SERVICEACCOUNTS_MANIFEST_URL),--filename $(KCL_SERVICEACCOUNTS_MANIFEST_URL))
 __KCL_FILENAME__SERVICEACCOUNTS+= $(if $(KCL_SERVICEACCOUNTS_MANIFESTS_DIRPATH),--filename $(KCL_SERVICEACCOUNTS_MANIFESTS_DIRPATH))
-__KCL_NAMESPACE__SERVICEACCOUNT?= $(if $(KCL_SERVICEACCOUNT_NAMESPACE_NAME),--namespace $(KCL_SERVICEACCOUNT_NAMESPACE_NAME))
-__KCL_NAMESPACE__SERVICEACCOUNTS?= $(if $(KCL_SERVICEACCOUNTS_NAMESPACE_NAME),--namespace $(KCL_SERVICEACCOUNTS_NAMESPACE_NAME))
-__KCL_PATCH__SERVICEACCOUNT?= $(if $(KCL_SERVICEACCOUNT_PATCH_CONTENT),--patch $(KCL_SERVICEACCOUNT_PATCH_CONTENT))
+__KCL_NAMESPACE__SERVICEACCOUNT= $(if $(KCL_SERVICEACCOUNT_NAMESPACE_NAME),--namespace $(KCL_SERVICEACCOUNT_NAMESPACE_NAME))
+__KCL_NAMESPACE__SERVICEACCOUNTS= $(if $(KCL_SERVICEACCOUNTS_NAMESPACE_NAME),--namespace $(KCL_SERVICEACCOUNTS_NAMESPACE_NAME))
+__KLC_OVERWRITE__SERVICEACCOUNT= $(if $(filter true,$(KCL_SERVICEACCOUNT_OVERWRITE_FLAG)),--overwrite)
+__KCL_PATCH__SERVICEACCOUNT= $(if $(KCL_SERVICEACCOUNT_PATCH_CONTENT),--patch $(KCL_SERVICEACCOUNT_PATCH_CONTENT))
 
-# Pipes and UI parameters
+# Customizations
 _KCL_APPLY_SERVICEACCOUNTS_|?= #
 _KCL_DIFF_SERVICEACCOUNTS_|?= $(_KCL_APPLY_SERVICEACCOUNTS_|)
 _KCL_UNAPPLY_SERVICEACCOUNTS_|?= $(_KCL_APPLY_SERVICEACCOUNTS_|)
 |_KCL_SHOW_SERVICEACCOUNT_RBACRULES?=
 
-#--- MACROS
+# Macros
 _kcl_get_serviceaccount_annotation_value= $(call _kcl_get_serviceaccount_annotation_value_K, $(KCL_SERVICEACCOUNT_ANNOTATION_KEY))
 _kcl_get_serviceaccount_annotation_value_K= $(call _kcl_get_serviceaccount_annotation_value_KN, $(1), $(KCL_SERVICEACCOUNT_NAME))
 _kcl_get_serviceaccount_annotation_value_KN= $(call _kcl_get_serviceaccount_annotation_value_KNN, $(1), $(2), $(KCL_SERVICEACCOUNT_NAMESPACE_NAME))
@@ -71,9 +75,12 @@ _kcl_list_parameters ::
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS=$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS)'
 	@echo '    KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES=$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR=$(KCL_SERVICEACCOUNT_CLUSTERROLEBINDINGS_SELECTOR)'
+	@echo '    KCL_SERVICEACCOUNT_FIELD_JSONPATH=$(KCL_SERVICEACCOUNT_FIELD_JSONPATH)'
+	@echo '    KCL_SERVICEACCOUNT_LABELS_KEYS=$(KCL_SERVICEACCOUNT_LABELS_KEYS)'
 	@echo '    KCL_SERVICEACCOUNT_LABELS_KEYVALUES=$(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)'
 	@echo '    KCL_SERVICEACCOUNT_NAME=$(KCL_SERVICEACCOUNT_NAME)'
 	@echo '    KCL_SERVICEACCOUNT_NAMESPACE_NAME=$(KCL_SERVICEACCOUNT_NAMESPACE_NAME)'
+	@echo '    KCL_SERVICEACCOUNT_OVERWRITE_FLAG=$(KCL_SERVICEACCOUNT_OVERWRITE_FLAG)'
 	@echo '    KCL_SERVICEACCOUNT_PODS_SELECTOR=$(KCL_SERVICEACCOUNT_PODS_SELECTOR)'
 	@echo '    KCL_SERVICEACCOUNT_ROLES_SELECTOR=$(KCL_SERVICEACCOUNT_ROLES_SELECTOR)'
 	@echo '    KCL_SERVICEACCOUNT_SECRET_NAME=$(KCL_SERVICEACCOUNT_SECRET_NAME)'
@@ -109,6 +116,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_show_serviceaccount_rbacrules              - Show RBAC-rules of a service-account'
 	@echo '    _kcl_show_serviceaccount_rolebindings           - Show role-bindings of a service-account'
 	@echo '    _kcl_show_serviceaccount_secrets                - Show the secret of a service-account'
+	@echo '    _kcl_unannotate_serviceaccount                  - Un-annotate a service-account'
 	@echo '    _kcl_unapply_serviceaccount                     - Un-apply a manifest for one-or-more service-accounts'
 	@echo '    _kcl_unlabel_serviceaccount                     - Un-label a service-accounts'
 	@echo '    _kcl_watch_serviceaccounts                      - Watch all service-accounts'
@@ -122,6 +130,7 @@ _kcl_list_targets ::
 
 _kcl_annotate_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Annotating service-account "$(KCL_SERVICEACCOUNT_NAME)"  ...'; $(NORMAL)
+	$(KUBECTL) annotate serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(__KCL_OVERWRITE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME) $(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYVALUES)
 
 _kcl_apply_serviceaccount: _kcl_apply_serviceaccounts
 _kcl_apply_serviceaccounts:
@@ -162,12 +171,13 @@ _kcl_edit_serviceaccount:
 	$(KUBECTL) edit serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME)
 
 _kcl_explain_serviceaccount:
-	@$(INFO) '$(KCL_UI_LABEL)Explaining service-account object ...'; $(NORMAL)
-	$(KUBECTL) explain serviceaccount
+	@$(INFO) '$(KCL_UI_LABEL)Explaining service-account object and its fields...'; $(NORMAL)
+	@$(WARN) 'This operation fails if you do not have access to a cluster'; $(NORMAL)
+	$(KUBECTL) explain serviceaccount$(KCL_SERVICEACCOUNT_FIELD_JSONPATH)
 
 _kcl_label_serviceaccount:
-	@$(INFO) '$(KCL_UI_LABEL)Labelling service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
-	$(KUBECTL) label serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME) $(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)
+	@$(INFO) '$(KCL_UI_LABEL)Labeling service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) label serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(__KCL_OVERWRITE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME) $(KCL_SERVICEACCOUNT_LABELS_KEYVALUES)
 
 _kcl_list_serviceaccounts:
 	@$(INFO) '$(KCL_UI_LABEL)Listing ALL service-accounts ...'; $(NORMAL)
@@ -224,6 +234,10 @@ _kcl_show_serviceaccount_secret:
 	@$(WARN) 'To display the full content of the secret, or the CAcert, get the yaml formatted output!'; $(NORMAL)
 	$(if $(KCL_SERVICEACCOUNT_SECRET_NAME), $(KUBECTL) describe secret $(__KCL_NAMESPACE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_SECRET_NAME), @echo 'KCL_SERVICEACCOUNT_SECRET_NAME not set') 
 
+_kcl_unannotate_serviceaccount:
+	@$(INFO) '$(KCL_UI_LABEL)Un-annotating service-account "$(KCL_SERVICEACCOUNT_NAME)"  ...'; $(NORMAL)
+	$(KUBECTL) annotate serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME) $(foreach K,)$(KCL_SERVICEACCOUNT_ANNOTATIONS_KEYS), $(K)-)
+
 _kcl_unapply_serviceaccount: _kcl_unapply_serviceaccounts
 _kcl_unapply_serviceaccounts:
 	@$(INFO) '$(KCL_UI_LABEL)Un-applying manifest for one-or-more service-accounts ...'; $(NORMAL)
@@ -235,6 +249,7 @@ _kcl_unapply_serviceaccounts:
 
 _kcl_unlabel_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) label serviceaccount $(__KCL_NAMESPACE__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME) $(foreach K,$(KCL_SERVICEACCOUNT_LABELS_KEYS), $(K)-)
 
 _kcl_watch_serviceaccounts:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL service-accounts ...'; $(NORMAL)

@@ -1,5 +1,6 @@
 _KUBECTL_HORIZONTALPODAUTOSCALER_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
+# KCL_HORIZONTALPODAUTOSCALER_DEPLOYMENT_NAME?= my-deployment
 # KCL_HORIZONTALPODAUTOSCALER_NAME?= hello
 # KCL_HORIZONTALPODAUTOSCALER_NAMESPACE_NAME?= default
 # KCL_HORIZONTALPODAUTOSCALER_REPLICASETS_FILEDSELECTOR?= metadata.name=toto
@@ -16,13 +17,14 @@ KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_STDINFLAG?= false
 # KCL_HORIZONTALPODAUTOSCALERS_SET_NAME?= my-horizontal-pod-autoscalers-set
 
 # Derived parameters
+KCL_HORIZONTALPODAUTOSCALER_DEPLOYMENT_NAME?= $(KCL_DEPLOYMENT_NAME)
 KCL_HORIZONTALPODAUTOSCALER_NAMESPACE_NAME?= $(KCL_NAMESPACE_NAME)
 KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_FILEPATH?= $(if $(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_FILENAME),$(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_DIRPATH)$(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_FILENAME))
 KCL_HORIZONTALPODAUTOSCALERS_NAMESPACE_NAME?= $(KCL_HORIZONTALPODAUTOSCALER_NAMESPACE_NAME)
 KCL_HORIZONTALPODAUTOSCALERS_SET_NAME?= $(KCL_HORIZONTALPODAUTOSCALERS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__HORIZONTALPODAUTOSCALERS= $(if $(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_FILEPATH),--filename $(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_FILEPATH))
 __KCL_FILENAME__HORIZONTALPODAUTOSCALERS= $(if $(filter true,$(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__HORIZONTALPODAUTOSCALERS= $(if $(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_URL),--filename $(KCL_HORIZONTALPODAUTOSCALERS_MANIFEST_URL))
@@ -31,7 +33,7 @@ __KCL_NAMESPACE__HORIZONTALPODAUTOSCALER= $(if $(KCL_HORIZONTALPODAUTOSCALER_NAM
 __KCL_NAMESPACE__HORIZONTALPODAUTOSCALERS= $(if $(KCL_HORIZONTALPODAUTOSCALERS_NAMESPACE_NAME),--namespace $(KCL_HORIZONTALPODAUTOSCALERS_NAMESPACE_NAME))
 __KCL_SELECTOR__HORIZONTALPODAUTOSCALERS= $(if $(KCL_HORIZONTALPODAUTOSCALERS_SELECTOR),--selector=$(KCL_HORIZONTALPODAUTOSCALERS_SELECTOR))
 
-# UI parameters
+# Customizations
 _KCL_APPLY_HORIZONTALPODAUTOSCALERS_|?= #
 _KCL_DIFF_HORIZONTALPODAUTOSCALERS_|?= $(_KCL_APPLY_HORIZONTALPODAUTOSCALERS_|)
 _KCL_UNAPPLY_HORIZONTALPODAUTOSCALERS_|?= $(_KCL_APPLY_HORIZONTALPODAUTOSCALERS_|)
@@ -52,6 +54,7 @@ _kcl_list_macros ::
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::HorizontalPodAutoscaler ($(_KUBECTL_HORIZONTALPODAUTOSCALER_MK_VERSION)) parameters:'
+	@echo '    KCL_HORIZONTALPODAUTOSCALER_DEPLOYMENT_NAME=$(KCL_HORIZONTALPODAUTOSCALER_DEPLOYMENT_NAME)'
 	@echo '    KCL_HORIZONTALPODAUTOSCALER_NAME=$(KCL_HORIZONTALPODAUTOSCALER_NAME)'
 	@echo '    KCL_HORIZONTALPODAUTOSCALER_NAMESPACE_NAME=$(KCL_HORIZONTALPODAUTOSCALER_NAMESPACE_NAME)'
 	@echo '    KCL_HORIZONTALPODAUTOSCALER_REPLICASETS_FIELDSELECTOR=$(KCL_HORIZONTALPODAUTOSCALER_REPLICASETS_FIELDSELECTOR)'
@@ -80,13 +83,13 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_horizontalpodautoscaler                   - Label a horizontal-pod-autoscaler'
 	@echo '    _kcl_list_horizonpodautoscalers                      - List all horizontal-pod-autoscalers'
 	@echo '    _kcl_list_horizonpodautoscalers_set                  - List set of horizontal-pod-autoscalers'
+	@echo '    _kcl_patch_horizontalpodautoscaler                   - Patch an horizontal-pod-autoscaler'
 	@echo '    _kcl_show_horizontalpodautoscaler                    - Show everything related to a horizontal-pod-autoscaler'
 	@echo '    _kcl_show_horizonpodautoscaler_description           - Show the description of a horizontal-pod-autoscaler'
 	@echo '    _kcl_show_horizonpodautoscaler_replicaset            - Show the replica-set of a horizontal-pod-autoscaler'
 	@echo '    _kcl_show_horizonpodautoscaler_state                 - Show the state of a horizontal-pod-autoscaler'
 	@echo '    _kcl_unapply_horizontalpodautoscalers                - Un-apply manifest for one-or-more horizontal-pod-autoscalers'
 	@echo '    _kcl_unlabel_horizontalpodautoscaler                 - Un-label an horizontal-pod-autoscaler'
-	@echo '    _kcl_update_horizontalpodautoscaler                  - Update an horizontal-pod-autoscaler'
 	@echo '    _kcl_watch_horizonpodautoscalers                     - Watch all horizontal-pod-autoscalers'
 	@echo '    _kcl_watch_horizonpodautoscalers_set                 - Watch a set of horizontal-pod-autoscalers'
 	@echo '    _kcl_write_horizonpodautoscalers                     - Write a manifest for one-or-more horizontal-pod-autoscalers'
@@ -110,7 +113,7 @@ _kcl_apply_horizontalpodautoscalers:
 
 _kcl_create_horizontalpodautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Creating horizontal-pod-autoscaler "$(KCL_HORIZONTALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
-	#$(KUBECTL) run $(KCL_HORIZONTALPODAUTOSCALER_NAME) $(__KCL_IMAGE__HORIZONTALPODAUTOSCALER) $(__KCL_NAMESPACE__HORIZONTALPODAUTOSCALER) $(__KCL_RSTART__HORIZONTALPODAUTOSCALER) -- $(KCL_HORIZONTALPODAUTOSCALER_COMMAND)
+	# $(KUBECTL) autoscale $(__KCL_CPU_PERCENT__HORIZONTALPODAUTOSCALER) $(__KCL_MAX__HORIZONTALPODAUTOSCALER) $(__KCL_MIN__HORIZONTALPODAUTOSCALER) $(__KCL_NAMESPACE__HORIZONTALPODAUTOSCALER) deployment $(KCL_HORIZONTALPODAUTOSCALER_DEPLOYMENT_NAME)
 
 _kcl_delete_horizontalpodautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Deleting horizontal-pod-autoscaler "$(KCL_HORIZONTALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
@@ -144,6 +147,10 @@ _kcl_list_horizontalpodautoscalers_set:
 	@$(INFO) '$(KCL_UI_LABEL)Listing horizontalpodautoscalers-set "$(KCL_HORIZONTALPODAUTOSCALERS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Horizontal-pod-autoscalers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get horizontalpodautoscalers --all-namespaces=false $(__KCL_NAMESPACE__HORIZONTALPODAUTOSCALERS) $(__KCL_SELECTOR__HORIZONTALPODAUTOSCALERS)
+
+_kcl_patch_horizontalpodautoscaler:
+	@$(INFO) '$(KCL_UI_LABEL)Patching horizontal-pod-autoscaler "$(KCL_HORIZONTALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) patch ...
 
 _KCL_SHOW_HORIZONTALPODAUTOSCALER_TARGETS?= _kcl_show_horizontalpodautoscaler_replicaset _kcl_show_horizontalpodautoscaler_state _kcl_show_horizontalpodautoscaler_description
 _kcl_show_horizontalpodautoscaler: $(_KCL_SHOW_HORIZONTALPODAUTOSCALER_TARGETS)
@@ -179,10 +186,6 @@ _kcl_unapply_horizontalpodautoscalers:
 _kcl_unlabel_horizontalpodautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling horizontal-pod-autoscaler "$(KCL_HORIZONTALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) label ...
-
-_kcl_update_horizontalpodautoscaler:
-	@$(INFO) '$(KCL_UI_LABEL)Updating horizontal-pod-autoscaler "$(KCL_HORIZONTALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
-	# $(KUBECTL) patch ...
 
 _kcl_watch_horizontalpodautoscalers:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL horizontal-pod-autoscalers ...'; $(NORMAL)

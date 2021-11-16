@@ -36,7 +36,7 @@ ELB2_LISTENERS_LOADBALANCER_ARN?= $(ELB2_LISTENER_LOADBALANCER_ARN)
 ELB2_LISTENERS_LOADBALANCER_NAME?= $(ELB2_LISTENER_LOADBALANCER_NAME)
 ELB2_LISTENERS_SET_NAME?= listeners@$(ELB_LISTENERS_LOADBALANCER_NAME)
 
-# Option parameters
+# Options
 __ELB2_ALPN_POLICY= $(if $(ELB2_LISTENER_ALPN_POLICY),--alpn-policy $(ELB2_LISTENER_ALPN_POLICY))
 __ELB2_CERTIFICATES= $(if $(ELB2_LISTENER_CERTIFICATES_ARNS),--certificates CertificateArn=$(ELB2_LISTENER_CERTIFICATES_ARNS))
 __ELB2_DEFAULT_ACTIONS= $(if $(ELB2_LISTENER_ACTIONS_CONFIGS),--default-actions $(ELB2_LISTENER_ACTIONS_CONFIGS))
@@ -51,13 +51,11 @@ __ELB2_SSL_POLICY= $(if $(ELB2_LISTENER_SSL_POLICY),--ssl-policy $(ELB2_LISTENER
 __ELB2_TAGS__LISTENER= $(if $(ELB2_LISTENER_TAGS_KEYVALUES),--tags $(ELB2_LISTENER_TAGS_KEYVALUES))
 __ELB2_TARGET_GROUP_ARNS__LISTENER= $(if $(ELB2_LISTENER_TARGETGROUP_ARN),--target-group-arns $(ELB2_LISTENER_TARGETGROUP_ARN))
 
-# UI parameters
-ELB2_UI_VIEW_LISTENERS_FIELDS?= .{ListenerArn:ListenerArn,port:Port,protocol:Protocol}
-ELB2_UI_VIEW_LISTENERS_SET_FIELDS?= $(ELB2_UI_VIEW_LISTENERS_FIELDS)
-ELB2_UI_VIEW_LISTENERS_SET_QUERYFILTER?=
-
-# Pipe
+# Customizations
 |_ELB2_CURL_LISTENER?= | head -10
+_ELB2_LIST_LISTENERS_FIELDS?= .{ListenerArn:ListenerArn,port:Port,protocol:Protocol}
+_ELB2_LIST_LISTENERS_SET_FIELDS?= $(_ELB2_LIST_LISTENERS_FIELDS)
+_ELB2_LIST_LISTENERS_SET_QUERYFILTER?=
 
 #--- MACROS
 
@@ -69,12 +67,12 @@ _elb2_get_listener_arn_AP= $(shell $(AWS) elbv2 describe-listeners --load-balanc
 # USAGE
 #
 
-_elb2_view_framework_macros ::
+_elb2_list_macros ::
 	@echo 'AWS::ElasticLoadBalancerV2::Listener ($(_AWS_ELBV2_LISTENER_MK_VERSION)) macros:'
 	@echo '    _elb2_get_listener_arn_{|N}                     - Get the ARN of a listener (Name)'
 	@echo
 
-_elb2_view_framework_parameters ::
+_elb2_list_parameters ::
 	@echo 'AWS::ElasticLoadBalancerV2::Listener ($(_AWS_ELBV2_LISTENER_MK_VERSION)) parameters:'
 	@echo '    ELB2_LISTENER_ACTION_CONFIG=$(ELB2_LISTENER_ACTION_CONFIG)'
 	@echo '    ELB2_LISTENER_ACTION_TARGETGROUPARN=$(ELB2_LISTENER_ACTION_TARGETGROUPARN)'
@@ -99,18 +97,18 @@ _elb2_view_framework_parameters ::
 	@echo '    ELB2_LISTENERS_SET_NAME=$(ELB2_LISTENERS_SET_NAME)'
 	@echo
 
-_elb2_view_framework_targets ::
+_elb2_list_targets ::
 	@echo 'AWS::ElasticLoadBalancerV2::Listener ($(_AWS_ELBV2_LISTENER_MK_VERSION)) targets:'
 	@echo '    _elb2_create_listener                           - Create a listener'
 	@echo '    _elb2_curl_listener                             - Curl a listener'
 	@echo '    _elb2_delete_listener                           - Delete an existing listener'
+	@echo '    _elb2_list_listeners                            - View all listeners of a load-balancer'
+	@echo '    _elb2_list_listeners_set                        - View a set of listeners'
 	@echo '    _elb2_show_listener                             - Show everything related to a listener'
 	@echo '    _elb2_show_listener_certificate                 - Show certificate of a listener'
 	@echo '    _elb2_show_listener_description                 - Show description of a listener'
 	@echo '    _elb2_show_listener_rules                       - Show rules of a listener'
 	@echo '    _elb2_show_listener_targetgroups                - Show the target-groups of a listener'
-	@echo '    _elb2_view_listeners                            - View all listeners of a load-balancer'
-	@echo '    _elb2_view_listeners_set                        - View a set of listeners'
 	@echo '    _elb2_watch_listeners                           - Watch all listeners of a load-balancer'
 	@echo '    _elb2_watch_listeners_set                       - Watch a set of listeners'
 	@echo 
@@ -137,7 +135,18 @@ _elb2_delete_listener:
 	@$(INFO) '$(ELB2_UI_LABEL)Deleting listener "$(ELB2_LISTENER_NAME)" ...'; $(NORMAL)
 	$(AWS) elbv2 delete-listener $(__ELB2_LISTENER_ARN)
 
-_elb2_show_listener: _elb2_show_listener_certificate _elb2_show_listener_rules _elb2_show_listener_targetgroups _elb2_show_listener_description
+_elb2_list_listeners:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing ALL listeners ...'; $(NORMAL)
+	@$(WARN) 'Listeners are grouped based on the provided load-balancer ARN'; $(NORMAL)
+	$(AWS) elbv2 describe-listeners $(__ELB2_LOAD_BALANCER_ARN__LISTENERS) $(_X__ELB2_LISTENER_ARNS__LISTENERS) --query "Listeners[]$(_ELB2_LIST_LISTENERS_FIELDS)"
+
+_elb2_list_listeners_set:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing listeners-set "$(ELB2_LISTENERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Listeners are grouped based on the provided load-balancer ARN, and query-filter'; $(NORMAL)
+	$(AWS) elbv2 describe-listeners $(__ELB2_LOAD_BALANCER_ARN__LISTENERS) $(__ELB2_LISTENER_ARNS__LISTENERS) --query "Listeners[$(_ELB2_LIST_LISTENERS_SET_QUERYFILTER)]$(_ELB2_LIST_LISTENERS_SET_FIELDS)"
+
+_ELB2_SHOW_LISTENER_TARGETS?= _elb2_show_listener_certificate _elb2_show_listener_rules _elb2_show_listener_targetgroups _elb2_show_listener_description
+_elb2_show_listener: $(_ELB2_SHOW_LISTENER_TARGETS)
 
 _elb2_show_listener_certificate:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing certificates of listener "$(ELB2_LISTENER_NAME)" ...'; $(NORMAL)
@@ -156,16 +165,6 @@ _elb2_show_listener_targetgroups:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing target-groups of listener "$(ELB2_LISTENER_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Many target-groups can be used as backend for the same listener'; $(NORMAL)
 	$(AWS) elbv2 describe-target-groups $(_X__ELB2_LOAD_BALANCER_ARN__LISTENER) $(__ELB2_TARGET_GROUP_ARNS__LISTENER) --query "TargetGroups[]"
-
-_elb2_view_listeners:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing ALL-LB listeners ...'; $(NORMAL)
-	@$(WARN) 'Listeners are grouped based on the provided load-balancer ARN'; $(NORMAL)
-	$(AWS) elbv2 describe-listeners $(__ELB2_LOAD_BALANCER_ARN__LISTENERS) $(_X__ELB2_LISTENER_ARNS__LISTENERS) --query "Listeners[]$(ELB2_UI_VIEW_LISTENERS_FIELDS)"
-
-_elb2_view_listeners_set:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing listeners-set "$(ELB2_LISTENERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Listeners are grouped based on the provided load-balancer ARN, and query-filter'; $(NORMAL)
-	$(AWS) elbv2 describe-listeners $(__ELB2_LOAD_BALANCER_ARN__LISTENERS) $(__ELB2_LISTENER_ARNS__LISTENERS) --query "Listeners[$(ELB2_UI_VIEW_LISTENERS_SET_QUERYFILTER)]$(ELB2_UI_VIEW_LISTENERS_SET_FIELDS)"
 
 _elb2_watch_listeners:
 	@$(INFO) '$(ELB2_UI_LABEL)Watching ALL-LB listeners ...'; $(NORMAL)

@@ -16,14 +16,14 @@ KCL_PERSISTENTVOLUMES_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_PERSISTENTVOLUMES_MANIFEST_FILEPATH?= $(KCL_PERSISTENTVOLUMES_MANIFEST_DIRPATH)$(KCL_PERSISTENTVOLUMES_MANIFEST_FILENAME)
 KCL_PERSISTENTVOLUMES_SET_NAME?= $(KCL_CLUSTER_NAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__PERSISTENTVOLUMES+= $(if $(KCL_PERSISTENTVOLUMES_MANIFEST_FILEPATH),--filename $(KCL_PERSISTENTVOLUMES_MANIFEST_FILEPATH))
 __KCL_FILENAME__PERSISTENTVOLUMES+= $(if $(KCL_PERSISTENTVOLUMES_MANIFEST_URL),--filename $(KCL_PERSISTENTVOLUMES_MANIFEST_URL))
 __KCL_FILENAME__PERSISTENTVOLUMES+= $(if $(KCL_PERSISTENTVOLUMES_MANIFESTS_DIRPATH),--filename $(KCL_PERSISTENTVOLUMES_MANIFESTS_DIRPATH))
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -98,6 +98,9 @@ _kcl_label_persistentvolume:
 
 _kcl_list_persistentvolumes:
 	@$(INFO) '$(KCL_UI_LABEL)Listing ALL persistent-volumes ...'; $(NORMAL)
+	@$(WARN) 'If the name of the volume starts with "pvc-", then it has been created using dynamic volume provisioning'; $(NORMAL)
+	@$(WARN) 'Reclaim policy is "Delete" means the PV is deleted once the PVC is deleted'; $(NORMAL)
+	@$(WARN) 'Note that PVs are namespaced because PVCs are and there is a 1-to-1 mapping!'; $(NORMAL)
 	$(KUBECTL) get persistentvolumes $(_X__KCL_SELECTOR_PERSISTENTVOLUMES)
 
 _kcl_list_persistentvolumes_set:

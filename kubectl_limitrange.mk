@@ -18,13 +18,13 @@ KCL_LIMITRANGE_NAMES?= $(KCL_LIMITRANGE_NAME)
 KCL_LIMITRANGES_NAMESPACE_NAME?= $(KCL_LIMITRANGE_NAMESPACE_NAME)
 KCL_LIMITRANGES_SET_NAME?= limitranges@$(KCL_LIMITRANGES_FILEDSELECTOR)@$(KCL_LIMITRANGES_SELECTOR)@$(KCL_LIMITRANGES_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__LIMITRANGE= $(if $(KCL_LIMITRANGE_MANIFEST_FILEPATH),--filename $(KCL_LIMITRANGE_AMNIFEST_FILEPATH))
 __KCL_NAMESPACE__LIMITRANGE= $(if $(KCL_LIMITRANGE_NAMESPACE_NAME),--namespace $(KCL_LIMITRANGE_NAMESPACE_NAME))
 __KCL_NAMESPACE__LIMITRANGES= $(if $(KCL_LIMITRANGES_NAMESPACE_NAME),--namespace $(KCL_LIMITRANGES_NAMESPACE_NAME))
 __KCL_SELECTOR__LIMITRANGES= $(if $(KCL_LIMITRANGES_SELECTOR),--selector $(KCL_LIMITRANGES_SELECTOR))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 
@@ -57,13 +57,13 @@ _kcl_list_targets ::
 	@echo '    _kcl_delete_limitrange                  - Delete an existing limit-range'
 	@echo '    _kcl_explain_limitrange                 - Explain the limit-range object'
 	@echo '    _kcl_label_limitrange                   - Label a limit-range'
+	@echo '    _kcl_list_limitranges                   - List all limit-ranges'
+	@echo '    _kcl_list_limitranges_set               - List a set of limit-ranges'
+	@echo '    _kcl_patch_limitrange                   - Patch a limit-range'
 	@echo '    _kcl_show_limitrange                    - Show everything related to an limit-range'
 	@echo '    _kcl_show_limitrange_description        - Show the description of an limit-range'
 	@echo '    _kcl_unapply_limitrange                 - Un-apply a manifest of one or more limit-ranges'
 	@echo '    _kcl_unlabel_limitrange                 - Un-label a limit-range'
-	@echo '    _kcl_update_limitrange                  - Update a limit-range'
-	@echo '    _kcl_list_limitranges                   - List all limit-ranges'
-	@echo '    _kcl_list_limitranges_set               - List a set of limit-ranges'
 	@echo '    _kcl_watch_limitranges                  - Watch all limit-ranges'
 	@echo '    _kcl_watch_limitranges_set              - Watch a set of limit-ranges'
 	@echo '    _kcl_write_limitranges                  - Write manifest for one-or-more limit-ranges'

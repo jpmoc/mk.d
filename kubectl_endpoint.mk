@@ -24,7 +24,7 @@ KCL_ENDPOINT_NAMESPACE_NAME?= $(KCL_NAMESPACE_NAME)
 KCL_ENDPOINTS_NAMESPACE_NAME?= $(KCL_ENDPOINT_NAMESPACE_NAME)
 KCL_ENDPOINTS_SET_NAME?= endpoints@$(KCL_ENDPOINTS_NAMESPACE_NAME)@$(KCL_ENDPOINTS_SELECTOR)
 
-# Option parameters
+# Options
 __KCL_FIELD_SELECTOR__ENDPOINTS?= $(if $(KCL_ENDPOINTS_FIELDSELECTOR),--field-selector $(KCL_ENDPOINT_FIELDSELECTOR))
 __KCL_FILENAME__ENDPOINTS= $(if $(KCL_ENDPOINTS_MANIFEST_FILEPATH),--filename $(KCL_ENDPOINTS_MANIFEST_FILEPATH))
 __KCL_FILENAME__ENDPOINTS= $(if $(filter true,$(KCL_ENDPOINTS_MANIFEST_STDINFLAG)),--filename -)
@@ -35,7 +35,7 @@ __KCL_NAMESPACE__ENDPOINTS?= $(if $(KCL_ENDPOINTS_NAMESPACE_NAME),--namespace $(
 __KCL_PATCH__ENDPOINT?= $(if $(KCL_ENDPOINT_PATCH_CONTENT),--patch $(KCL_ENDPOINT_PATCH_CONTENT))
 __KCL_SELECTOR__ENDPOINTS?= $(if $(KCL_ENDPOINTS_SELECTOR),--selector $(KCL_ENDPOINT_SELECTOR))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 
@@ -78,6 +78,9 @@ _kcl_list_targets ::
 	@echo '    _kcl_edit_endpoint                   - Edit an endpoint'
 	@echo '    _kcl_explain_endpoint                - Explain the endpoint object'
 	@echo '    _kcl_label_endpoint                  - Label an endpoint'
+	@echo '    _kcl_list_endpoints                  - List endpoints'
+	@echo '    _kcl_list_endpoints_set              - List a set of endpoints'
+	@echo '    _kcl_patch_endpoint                  - Patch an endpoint'
 	@echo '    _kcl_show_endpoint                   - Show everything related to an endpoint'
 	@echo '    _kcl_show_endpoint_description       - Show description of an endpoint'
 	@echo '    _kcl_show_endpoint_object            - Show object of an endpoint'
@@ -86,9 +89,6 @@ _kcl_list_targets ::
 	@echo '    _kcl_show_endpoint_state             - Show state of an endpoint'
 	@echo '    _kcl_unapply_endpoints               - Unapply manifest for one-or-more endpoint'
 	@echo '    _kcl_unlabel_endpoint                - Unlabel an endpoint'
-	@echo '    _kcl_update_endpoint                 - Update an endpoint'
-	@echo '    _kcl_list_endpoints                  - List endpoints'
-	@echo '    _kcl_list_endpoints_set              - List a set of endpoints'
 	@echo '    _kcl_watch_endpoints                 - Watch endpoints'
 	@echo '    _kcl_watch_endpoints_set             - Watch a set of endpoints'
 	@#echo '    _kcl_write_endpoints                 - Write manifest for one-or-more endpoints'
@@ -147,6 +147,10 @@ _kcl_list_endpoints_set:
 	@$(WARN) 'Endpoints are grouped based on provided namespace, field-selector, selector, ...'; $(NORMAL)
 	$(KUBECTL) get endpoints --all-namespaces=false $(__KCL_FIELD_SELECTOR__ENDPOINTS) $(__KCL_NAMESPACE__ENDPOINTS) $(__KCL_SELECTOR__ENDPOINTS)
 
+_kcl_patch_endpoint:
+	@$(INFO) '$(KCL_UI_LABEL)Patching endpoint "$(KCL_ENDPOINT_NAME)" ...'; $(NORMAL)
+	#$(KUBECTL) patch endpoints $(__KCL_PATCH__ENDPOINT) $(KCL_ENDPOINT_NAME)
+
 _KCL_SHOW_ENDPOINT_TARGETS?= _kcl_show_endpoint_object _kcl_show_endpoint_pods _kcl_show_endpoint_services _kcl_show_endpoint_state _kcl_show_endpoint_description
 _kcl_show_endpoint: $(_KCL_SHOW_ENDPOINT_TARGETS)
 
@@ -195,10 +199,6 @@ _kcl_unapply_endpoints:
 
 _kcl_unlabel_endpoint:
 	@$(INFO) '$(KCL_UI_LABEL)Un-labeling manifest for endpoint "$(KCL_ENDPOINT_NAME)" ...'; $(NORMAL)
-
-_kcl_update_endpoint:
-	@$(INFO) '$(KCL_UI_LABEL)Updating endpoint "$(KCL_ENDPOINT_NAME)" ...'; $(NORMAL)
-	#$(KUBECTL) patch endpoints $(__KCL_PATCH__ENDPOINT) $(KCL_ENDPOINT_NAME)
 
 _kcl_watch_endpoints:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL endpoints ...'; $(NORMAL)

@@ -48,7 +48,7 @@ ELB2_LOADBALANCER_URL_DNSNAME?= $(ELB2_LOADBALANCER_DNSNAME)
 ELB2_LOADBALANCERS_ARNS?= $(ELB2_LOADBALANCER_ARN)
 ELB2_LOADBALANCERS_NAMES?= $(ELB2_LOADBALANCER_NAME)
 
-# Option parameters
+# Options
 __ELB2_CUSTOMER_OWNED_IPV4_POOL= $(if $(ELB2_LOADBALANCER_IPADDRESS_POOL),--ip-address-type $(ELB2_LOADBALANCER_IPADDRESS_POOL))
 __ELB2_IP_ADDRESS_TYPE= $(if $(ELB2_LOADBALANCER_IPADDRESS_TYPE),--ip-address-type $(ELB2_LOADBALANCER_IPADDRESS_TYPE))
 __ELB2_LOAD_BALANCER_ARN= $(if $(ELB2_LOADBALANCER_ARN),--load-balancer-arn $(ELB2_LOADBALANCER_ARN))
@@ -63,16 +63,14 @@ __ELB2_SUBNETS= $(if $(ELB2_LOADBALANCER_SUBNETS_IDS),--subnets $(ELB2_LOADBALAN
 __ELB2_TAGS__LOADBALANCER= $(if $(ELB2_LOADBALANCER_TAGS_KEYVALUES),--tags $(ELB2_LOADBALANCER_TAGS_KEYVALUES))
 __ELB2_TYPE= $(if $(ELB2_LOADBALANCER_TYPE),--type $(ELB2_LOADBALANCER_TYPE))
 
-# UI parameters
-ELB2_SHOW_LOADBALANCER_LISTENERS_FIELDS?= # .{ListenerArn:ListenerArn,port:Port,protocol:Protocol}
-ELB2_UI_VIEW_LOADBALANCERS_FIELDS?= .{LoadBalancerName:LoadBalancerName,Type:Type,Scheme:Scheme,LoadBalancerArn:LoadBalancerArn}
-ELB2_UI_VIEW_LOADBALANCERS_SET_FIELDS?= $(ELB2_UI_VIEW_LOADBALANCERS_FIELDS)
-ELB2_UI_VIEW_LOADBALANCERS_SET_QUERYFILTER?=
-
-# Pipes
+# Customizations
 _ELB2_DIG_LOADBALANCER_|?= # watch -n 5
 _ELB2_DIG_LOADBALANCER_ALIASNAME_|?= $(_ELB2_DIG_LOADBALANCER_|)
 _ELB2_DIG_LOADBALANCER_DNSNAME_|?= $(_ELB2_DIG_LOADBALANCER_|)
+_ELB2_LIST_LOADBALANCERS_FIELDS?= .{LoadBalancerName:LoadBalancerName,Type:Type,Scheme:Scheme,LoadBalancerArn:LoadBalancerArn}
+_ELB2_LIST_LOADBALANCERS_SET_FIELDS?= $(_ELB2_LIST_LOADBALANCERS_FIELDS)
+_ELB2_LIST_LOADBALANCERS_SET_QUERYFILTER?=
+_ELB2_SHOW_LOADBALANCER_LISTENERS_FIELDS?= # .{ListenerArn:ListenerArn,port:Port,protocol:Protocol}
 
 #--- Utilities
 
@@ -95,7 +93,7 @@ _elb2_get_loadbalancer_vpc_id_N= $(shell $(AWS) elbv2 describe-load-balancers --
 # USAGE
 #
 
-_elb2_view_framework_macros ::
+_elb2_list_macros ::
 	@echo 'AWS::ElasticLoadBalancerV2::LoadBalancer ($(_AWS_ELBV2_LOADBALANCER_MK_VERSION)) macros:'
 	@echo '    _elb2_get_loadbalancer_arn_{|N}                     - Get the ARN of a load-balancer (Name)'
 	@echo '    _elb2_get_loadbalancer_dnsname_{|N}                 - Get the DNS name of a load-balancer (Name)'
@@ -103,7 +101,7 @@ _elb2_view_framework_macros ::
 	@echo '    _elb2_get_loadbalancer_vpc_id_{|N}                  - Get the VPC IP of a load-balancer (Name)'
 	@echo
 
-_elb2_view_framework_parameters ::
+_elb2_list_parameters ::
 	@echo 'AWS::ElasticLoadBalancerV2::LoadBalancer ($(_AWS_ELBV2_LOADBALANCER_MK_VERSION)) parameters:'
 	@echo '    ELB2_LOADBALANCER_ALIASNAME=$(ELB2_LOADBALANCER_ALIASNAME)'
 	@echo '    ELB2_LOADBALANCER_ALIASNAME_DOMAIN=$(ELB2_LOADBALANCER_ALIASNAME_DOMAIN)'
@@ -136,7 +134,7 @@ _elb2_view_framework_parameters ::
 	@echo '    ELB2_LOADBALANCERS_SET_NAME=$(ELB2_LOADBALANCERS_SET_NAME)'
 	@echo
 
-_elb2_view_framework_targets ::
+_elb2_list_targets ::
 	@echo 'AWS::ElasticLoadBalancerV2::LoadBalancer ($(_AWS_ELBV2_LOADBALANCER_MK_VERSION)) targets:'
 	@echo '    _elb2_create_loadbalancer                           - Create a load-balancer'
 	@echo '    _elb2_curl_loadbalancer                             - Curl a load-balancer'
@@ -144,13 +142,13 @@ _elb2_view_framework_targets ::
 	@echo '    _elb2_dig_loadbalancer                              - Dig alias and dns names of a load-balancer'
 	@echo '    _elb2_dig_loadbalancer_dnsname                      - Dig the dns-name of a load-balancer'
 	@echo '    _elb2_dig_loadbalancer_aliasname                    - Dig the alias-name of a lod-balancer'
+	@echo '    _elb2_list_loadbalancers                            - List all load-balancers'
+	@echo '    _elb2_list_loadbalancers_set                        - List a set of load-balancers'
 	@echo '    _elb2_show_loadbalancer                             - Show everything related to a load-balancer'
 	@echo '    _elb2_show_loadbalancer_attributes                  - Show attributes of a load-balancer'
 	@echo '    _elb2_show_loadbalancer_description                 - Show description of a load-balancer'
 	@echo '    _elb2_show_loadbalancer_listeners                   - Show listeners of a load-balancer'
 	@echo '    _elb2_show_loadbalancer_targetgroups                - Show target-group of a load-balancer'
-	@echo '    _elb2_view_loadbalancers                            - View all load-balancers'
-	@echo '    _elb2_view_loadbalancers_set                        - View a set of load-balancers'
 	@echo '    _elb2_watch_loadbalancers                           - Watch all load-balancers'
 	@echo '    _elb2_watch_loadbalancers_set                       - Watch a set of load-balancers'
 	@echo 
@@ -194,7 +192,17 @@ _elb2_dig_loadbalancer_dnsname:
 		@echo 'ELB2_LOADBALANCER_DNSNAME not set!' \
 	)
 
-_elb2_show_loadbalancer: _elb2_show_loadbalancer_attributes _elb2_show_loadbalancer_listeners _elb2_show_loadbalancer_targetgroups _elb2_show_loadbalancer_description
+_elb2_list_loadbalancers:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing ALL load-balancers ...'; $(NORMAL)
+	$(AWS) elbv2 describe-load-balancers $(_X__ELB2_LOAD_BALANCER_ARNS) $(_X__ELB2_NAMES__LOADBALANCERS) --query "LoadBalancers[]$(_ELB2_LIST_LOADBALANCERS_FIELDS)"
+
+_elb2_list_loadbalancers_set:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing load-balancers-set "$(ELB2_LOADBALANCERS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Load-balancers are grouped based on the provided ARNs, names, and slice'; $(NORMAL)
+	$(AWS) elbv2 describe-load-balancers $(__ELB2_LOAD_BALANCER_ARNS) $(__ELB2_NAMES__LOADBALANCERS) --query "LoadBalancers[$(_ELB2_LIST_LOADBALANCERS_SET_QUERYFILTER)]$(_ELB2_LIST_LOADBALANCERS_SET_FIELDS)"
+
+_ELB2_SHOW_LOADBALANCER_TARGETS?= _elb2_show_loadbalancer_attributes _elb2_show_loadbalancer_listeners _elb2_show_loadbalancer_targetgroups _elb2_show_loadbalancer_description
+_elb2_show_loadbalancer: $(_ELB2_SHOW_LOADBALANCER_TARGETS)
 
 _elb2_show_loadbalancer_attributes:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing attributes of load-balancer "$(ELB2_LOADBALANCER_NAME)" ...'; $(NORMAL)
@@ -207,21 +215,12 @@ _elb2_show_loadbalancer_description:
 _elb2_show_loadbalancer_listeners:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing listeners of load-balancer "$(ELB2_LOADBALANCER_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Beware: Make sure to configure at least one listener for the load balancer'; $(NORMAL)
-	$(AWS) elbv2 describe-listeners $(__ELB2_LOAD_BALANCER_ARN) $(_X__ELB2_LISTENER_ARNS__LOADBALANCER) --query "Listeners[]$(ELB2_SHOW_LOADBALANCER_LISTENERS_FIELDS)"
+	$(AWS) elbv2 describe-listeners $(__ELB2_LOAD_BALANCER_ARN) $(_X__ELB2_LISTENER_ARNS__LOADBALANCER) --query "Listeners[]$(_ELB2_SHOW_LOADBALANCER_LISTENERS_FIELDS)"
 
 _elb2_show_loadbalancer_targetgroups:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing target-group of load-balancer "$(ELB2_LOADBALANCER_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Target-groups are attached to the load-balancer through listeners'; $(NORMAL)
 	$(AWS) elbv2 describe-target-groups $(__ELB2_LOAD_BALANCER_ARN) $(_X__ELB2_NAMES__LOADBALANCER) $(_X__ELB2_TARGET_GROUP_ARNS__LOADBALANCER) --query "TargetGroups[]"
-
-_elb2_view_loadbalancers:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing ALL load-balancers ...'; $(NORMAL)
-	$(AWS) elbv2 describe-load-balancers $(_X__ELB2_LOAD_BALANCER_ARNS) $(_X__ELB2_NAMES__LOADBALANCERS) --query "LoadBalancers[]$(ELB2_UI_VIEW_LOADBALANCERS_FIELDS)"
-
-_elb2_view_loadbalancers_set:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing load-balancers-set "$(ELB2_LOADBALANCERS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Load-balancers are grouped based on the provided ARNs, names, and slice'; $(NORMAL)
-	$(AWS) elbv2 describe-load-balancers $(__ELB2_LOAD_BALANCER_ARNS) $(__ELB2_NAMES__LOADBALANCERS) --query "LoadBalancers[$(ELB2_UI_VIEW_LOADBALANCERS_SET_QUERYFILTER)]$(ELB2_UI_VIEW_LOADBALANCERS_SET_FIELDS)"
 
 _elb2_watch_loadbalancers:
 	@$(INFO) '$(ELB2_UI_LABEL)Watching ALL load-balancers ...'; $(NORMAL)

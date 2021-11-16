@@ -4,15 +4,15 @@ _KN_MK_VERSION= 0.99.4
 # KN_DIG?= dig
 KN_DNSNAME_DOMAIN?= example.com
 # KN_NAMESPACE_NAME?= default
+KN_UI_LABEL?= [kn] #
 
 # Derived parameters
 KN_CURL?= $(CURL)
 KN_DIG?= $(DIG)
 
-# Option parameters
+# Options
 
-# UI parameters
-KN_UI_LABEL?= [kn] #
+# Customizations
 
 #--- Utilities
 # __KUBECTL_OPTIONS+= $(if $(KUBECTL_VMODULE),--vmodule=$(KUBECTL_VMODULE))#
@@ -36,6 +36,7 @@ _kn_list_parameters ::
 	@echo 'KN ($(_KN_MK_VERSION)) parameters:'
 	@echo '    KN_DNSNAME_DOMAIN=$(KN_DNSNAME_DOMAIN)'
 	@echo '    KN_NAMESPACE_NAME=$(KN_NAMESPACE_NAME)'
+	@echo '    KN_UI_LABEL=$(KN_UI_LABEL)'
 	@echo
 
 _list_targets :: _kn_list_targets

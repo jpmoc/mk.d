@@ -41,7 +41,7 @@ KCL_CONFIGMAPS_MANIFEST_FILEPATH?= $(KCL_CONFIGMAPS_MANIFEST_DIRPATH)$(KCL_CONFI
 KCL_CONFIGMAPS_NAMESPACE_NAME?= $(KCL_CONFIGMAP_NAMESPACE_NAME)
 KCL_CONFIGMAPS_SET_NAME?= config-maps@$(KCL_CONFIGMAPS_FIELDSELECTOR)@$(KCL_CONFIGMAPS_SELECTOR)@$(KCL_CONFIGMAPS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__CONFIGMAPS+= $(if $(KCL_CONFIGMAPS_MANIFEST_FILEPATH),--filename $(KCL_CONFIGMAPS_MANIFEST_FILEPATH))
 __KCL_FILENAME__CONFIGMAPS+= $(if $(filter true,$(KCL_CONFIGMAPS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__CONFIGMAPS+= $(if $(KCL_CONFIGMAPS_MANIFEST_URL),--filename $(KCL_CONFIGMAPS_MANIFEST_URL))
@@ -56,15 +56,13 @@ __KCL_NAMESPACE__CONFIGMAPS= $(if $(KCL_CONFIGMAPS_NAMESPACE_NAME),--namespace $
 __KCL_PATCH__CONFIGMAP= $(if $(KCL_CONFIGMAP_PATCH_CONTENT),--patch $(KCL_CONFIGMAP_PATCH_CONTENT))
 __KCL_TYPE__CONFIGMAP= $(if $(KCL_CONFIGMAP_PATCH_TYPE),--type $(KCL_CONFIGMAP_PATCH_TYPE))
 
-# Pipe parameter
+# Customizations
 _KCL_APPLY_CONFIGMAPS_|?= #
 _KCL_DIFF_CONFIGMAPS_|?= $(_KCL_APPLY_CONFIGMAPS_|)
+_KCL_PATCH_CONFIGMAP_|?=
 _KCL_UNAPPLY_CONFIGMAPS_|?= $(_KCL_APPLY_CONFIGMAPS_|)
-_KCL_UPDATE_CONFIGMAP_|?=
 |_KCL_KUSTOMIZE_CONFIGMAP?=
-|_KCL_UPDATE_CONFIGMAP?=
-
-# UI parameters
+|_KCL_PATCH_CONFIGMAP?=
 
 #--- MACROS
 
@@ -118,14 +116,14 @@ _kcl_list_targets ::
 	@echo '    _kcl_explain_configmap                 - Explain the config-map object'
 	@echo '    _kcl_kustomize_configmap               - Kustomize one-or-more config-map'
 	@echo '    _kcl_label_configmap                   - Label a config-map'
+	@echo '    _kcl_list_configmaps                   - List all config-maps'
+	@echo '    _kcl_list_configmaps_set               - List a set of config-maps'
+	@echo '    _kcl_patch_configmap                   - Patch a config-map'
 	@echo '    _kcl_show_configmap                    - Show everything related to a config-map'
 	@echo '    _kcl_show_configmap_description        - Show the description of a config-map'
 	@echo '    _kcl_show_configmap_object             - Show the object of a config-map'
 	@echo '    _kcl_unapply_configmaps                - Un-apply a manifest for one-or-more config-maps'
 	@echo '    _kcl_unlabel_configmap                 - Un-label a config-map'
-	@echo '    _kcl_update_configmap                  - Update a config-map'
-	@echo '    _kcl_list_configmaps                   - List all config-maps'
-	@echo '    _kcl_list_configmaps_set               - List a set of config-maps'
 	@echo '    _kcl_watch_configmaps                  - Watch all config-maps'
 	@echo '    _kcl_watch_configmaps_set              - Watch a set of config-maps'
 	@echo '    _kcl_write_configmaps                  - Write manifest for one-or-more config-maps'
@@ -152,6 +150,7 @@ _kcl_create_configmap:
 	$(foreach D, $(KCL_CONFIGMAP_DIRS_DIRPATHS), echo $(D); cat $(D)* ;)
 	$(foreach E, $(KCL_CONFIGMAP_ENVFILES_FILEPATHS), echo $(E); cat $(E) ;)
 	$(foreach F, $(KCL_CONFIGMAP_FILES_FILEPATHS), echo $(F); cat $(F) ;)
+	$(if $(KCL_CONFIGMAP_LITERALS_KEYVALUES), @echo "KCL_CONFIGMAP_LITERALS_KEYVALUES=$(KCL_CONFIGMAP_LITERALS_KEYVALUES)")
 	$(KUBECTL) create configmap $(__KCL_FROM_DIR) $(__KCL_FROM_ENV_FILE) $(__KCL_FROM_FILE__CONFIGMAP) $(__KCL_FROM_LITERAL__CONFIGMAP) $(__KCL_NAMESPACE__CONFIGMAP) $(KCL_CONFIGMAP_NAME)
 
 _kcl_delete_configmap:
@@ -193,6 +192,10 @@ _kcl_list_configmaps_set:
 	@$(WARN) 'Config-maps are grouped based on the provided namespace, ...'; $(NORMAL)
 	$(KUBECTL) get configmaps --all-namespaces=false $(__KCL_NAMESPACE__CONFIGMAPS)
 
+_kcl_patch_configmap:
+	@$(INFO) '$(KCL_UI_LABEL)Patching config-map "$(KCL_CONFIGMAP_NAME)" ...'; $(NORMAL)
+	$(_KCL_PATCH_CONFIGMAP_|) $(KUBECTL) patch configmap $(__KCL_NAMESPACE__CONFIGMAP) $(__KCL_PATCH__CONFIGMAP) $(__KCL_TYPE__CONFIGMAP) $(KCL_CONFIGMAP_NAME) $(|_KCL_PATCH_CONFIGMAP)
+
 _KCL_SHOW_CONFIGMAP_TARGETS?= _kcl_show_configmap_object _kcl_show_configmap_description
 _kcl_show_configmap: $(_KCL_SHOW_CONFIGMAP_TARGETS)
 
@@ -212,10 +215,6 @@ _kcl_unapply_configmaps:
 	# curl -L $(KCL_CONFIGMAPS_MANIFEST_URL)
 	# ls -al $(KCL_CONFIGMAPS_MANIFESTS_DIRPATH)
 	$(_KCL_UNAPPLY_CONFIGMAPS_|)$(KUBECTL) delete $(__KCL_FILENAME__CONFIGMAPS) $(__KCL_NAMESPACE__CONFIGMAPS)
-
-_kcl_update_configmap:
-	@$(INFO) '$(KCL_UI_LABEL)Updating config-map "$(KCL_CONFIGMAP_NAME)" ...'; $(NORMAL)
-	$(_KCL_UPDATE_CONFIGMAP_|) $(KUBECTL) patch configmap $(__KCL_NAMESPACE__CONFIGMAP) $(__KCL_PATCH__CONFIGMAP) $(__KCL_TYPE__CONFIGMAP) $(KCL_CONFIGMAP_NAME) $(|_KCL_UPDATE_CONFIGMAP)
 
 _kcl_watch_configmaps:
 	@$(INFO) '$(KCL_UI_LABEL)Watching config-maps ...'; $(NORMAL)

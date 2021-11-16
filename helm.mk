@@ -9,6 +9,7 @@ _HELM_MK_VERSION= 0.99.4
 # HLM_HOME?= $(HOME)/.helm
 # HLM_INPUTS_DIRPATH?= ./in/
 # HLM_OUTPUTS_DIRPATH?= ./out/
+HLM_UI_LABEL?= [helm] #
 
 # Derived parameters
 HELM_KUBECONFIG_FILEPATH?= $(KUBECTL_KUBECONFIG_FILEPATH)
@@ -18,10 +19,9 @@ HLM_DIG?= $(DIG)
 HLM_INPUTS_DIRPATH?= $(CMN_INPUTS_DIRPATH)
 HLM_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
 
-# Option parameters
+# Options
 
-# UI parameters
-HLM_UI_LABEL?= [helm] #
+# Customizations
 
 #--- Utilities
 
@@ -58,6 +58,7 @@ _hlm_list_parameters ::
 	@echo '    HELM_MODE_DEBUG=$(HELM_MODE_DEBUG)'
 	@echo '    HLM_INPUTS_DIRPATH=$(HLM_INPUTS_DIRPATH)'
 	@echo '    HLM_OUTPUTS_DIRPATH=$(HLM_OUTPUTS_DIRPATH)'
+	@echo '    HLM_UI_LABEL=$(HLM_UI_LABEL)'
 	@echo
 
 _list_targets :: _hlm_list_targets
@@ -75,6 +76,8 @@ _hlm_list_targets ::
 MK_DIR?= .
 -include $(MK_DIR)/helm_chart.mk
 -include $(MK_DIR)/helm_chartdependency.mk
+-include $(MK_DIR)/helm_chartpackage.mk
+-include $(MK_DIR)/helm_chartsource.mk
 -include $(MK_DIR)/helm_manifest.mk
 -include $(MK_DIR)/helm_plugin.mk
 -include $(MK_DIR)/helm_release.mk

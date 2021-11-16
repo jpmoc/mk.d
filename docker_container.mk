@@ -50,7 +50,7 @@ DKR_CONTAINERS_VIEW_QUIET?= false
 # Derived variables
 DKR_CONTAINER_IMAGE_CNAME?= $(DKR_IMAGE_CNAME)
 
-# Option variables
+# Options
 __DKR_ALL= $(if $(DKR_CONTAINERS_VIEW_ALL),--all=$(DKR_CONTAINERS_VIEW_ALL))
 __DKR_ATTACH= $(foreach A, $(DKR_CONTAINER_RUN_ATTACH),--attach $(A))
 __DKR_AUTHOR= $(if $(DKR_CONTAINER_SNAPSHOT_AUTHOR),--author $(DKR_CONTAINER_SNAPSHOT_AUTHOR))
@@ -86,12 +86,9 @@ __DKR_TTY= $(if $(filter true, $(DKR_CONTAINER_RUN_TTY)),--tty)
 __DKR_VOLUME= $(foreach V, $(DKR_CONTAINER_VOLUMES),--volume $(V))
 __DKR_VOLUMES= $(if $(filter true, $(DKR_CONTAINER_REMOVE_VOLUMES)),--volumes)
 
-# UI variables
+# Customizations
 
-#--- Utility 
-
-#--- MACROS
-
+# Macros
 _dkr_get_container_id= $(call _dkr_get_container_id_N, $(DKR_CONTAINER_NAME))
 _dkr_get_container_id_N= $(shell $(DOCKER) ps ... )
 
@@ -99,12 +96,12 @@ _dkr_get_container_id_N= $(shell $(DOCKER) ps ... )
 # Usage
 #
 
-_dkr_view_framework_macros ::
+_dkr_list_macros ::
 	@echo 'Docker::Container ($(_DOCKER_CONTAINER_MK_VERSION)) targets:'
 	@echo '    _dkr_get_container_id_{|N}                - Get the ID of a container (Name)'
 	@echo
 
-_dkr_view_framework_parameters ::
+_dkr_list_parameters ::
 	@echo 'Docker::Container ($(_DOCKER_CONTAINER_MK_VERSION)) parameters:'
 	@echo '    DKR_CONTAINER_COMMITIMAGE_NAME= $(DKR_CONTAINER_COMMITIMAGE_NAME)'
 	@echo '    DKR_CONTAINER_COPY_FOLLOWLINK=$(DKR_CONTAINER_COPY_FOLLOWLINK)'
@@ -151,7 +148,7 @@ _dkr_view_framework_parameters ::
 	@echo '    DKR_CONTAINERS_SET_NAME=$(DKR_CONTAINERS_SET_NAME)'
 	@echo
 
-_dkr_view_framework_targets ::
+_dkr_list_targets ::
 	@echo 'Docker::Container ($(_DOCKER_CONTAINER_MK_VERSION)) targets:'
 	@echo '    _dkr_attach_container                    - Attach a container'
 	@echo '    _dkr_clean_containers                    - Clean all exited containers'
@@ -162,7 +159,8 @@ _dkr_view_framework_targets ::
 	@echo '    _dkr_create_container                    - Run/Instanciate a new container'
 	@echo '    _dkr_delete_container                    - Delete a container'
 	@echo '    _dkr_exec_container                      - Exec a command in a container'
-	@echo '    _dkr_list_processes                      - Report the status of container processes'
+	@echo '    _dkr_list_containers                     - List all containers'
+	@echo '    _dkr_list_containers_set                 - List a set of containers'
 	@echo '    _dkr_purge_containers                    - Purge all containers'
 	@echo '    _dkr_remove_container                    - Remove a containers'
 	@echo '    _dkr_restart_container                   - Restart/reboot a container'
@@ -179,8 +177,6 @@ _dkr_view_framework_targets ::
 	@echo '    _dkr_stats_container                     - Display statistics on a container'
 	@echo '    _dkr_stop_container                      - Stop a running container'
 	@echo '    _dkr_tail_container                      - Tail the logs of a container'
-	@echo '    _dkr_view_containers                     - View containers'
-	@echo '    _dkr_view_containers_set                 - View a set of containers'
 	@echo
 
 #----------------------------------------------------------------------
@@ -251,6 +247,16 @@ _dkr_kill_container:
 	@$(INFO) '$(DKR_UI_LABEL)Killing container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
 	$(DOCKER) kill $(__DKR_SIGNAL) $(DKR_CONTAINER_NAME)
 
+_dkr_list_containers:
+	@$(INFO) '$(DKR_UI_LABEL)Listing containers ...'; $(NORMAL)
+	@$(WARN) 'This operation displays running, stopped, and terminated containers'; $(NORMAL)
+	$(DOCKER) ps $(_X__DKR_ALL) --all $(__DKR_BEFORE) $(_X__DKR_FILTER__CONTAINERS) $(_X__DKR_LAST) $(__DKR_QUIET) $(__DKR_SINCE) $(__DKR_SIZE)
+
+_dkr_list_containers_set:
+	@$(INFO) '$(DKR_UI_LABEL)Listing containers-set "$(DKR_CONTAINERS_SET_NAME)"  ...'; $(NORMAL)
+	@$(WARN) 'Containers are grouped based on count, filter, state, instanciation time, ...'; $(NORMAL) 
+	$(DOCKER) ps $(__DKR_ALL) $(__DKR_BEFORE) $(__DKR_FILTER__CONTAINERS) $(__DKR_LAST) $(__DKR_QUIET) $(__DKR_SINCE) $(__DKR_SIZE)
+
 _dkr_purge_containers:
 	@$(INFO) '$(DKR_UI_LABEL)Purging containers ...'; $(NORMAL)
 	@$(WARN) 'This operation removes all containers'; $(NORMAL)
@@ -269,7 +275,8 @@ _dkr_restart_container:
 	@$(INFO) '$(DKR_UI_LABEL)Restarting container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
 	$(DOCKER) restart $(__DKR_TIME) $(DKR_CONTAINER_NAME)
 
-_dkr_show_container: _dkr_show_container_env _dkr_show_container_logs _dkr_show_container_object _dkr_show_container_ports _dkr_show_container_stats _dkr_show_container_description
+_DKR_SHOW_CONTAINER_TARGETS?= _dkr_show_container_env _dkr_show_container_logs _dkr_show_container_object _dkr_show_container_ports _dkr_show_container_stats _dkr_show_container_description
+_dkr_show_container: $(_DKR_SHOW_CONTAINER_TARGETS)
 
 _dkr_show_container_description:
 	@$(INFO) '$(DKR_UI_LABEL)Showing description of container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
@@ -319,13 +326,3 @@ _dkr_stop_container:
 _dkr_tail_container: _dkr_show_container_logs
 	@$(INFO) '$(DKR_UI_LABEL)Tailing logs of container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
 	$(DOCKER) logs $(__DKR_DETAILS) $(__DKR_FOLLOW) $(__DKR_TAIL) $(__DKR_TIMESTAMPS) $(DKR_CONTAINER_NAME)
-
-_dkr_view_containers:
-	@$(INFO) '$(DKR_UI_LABEL)Viewing containers ...'; $(NORMAL)
-	@$(WARN) 'This operation displays running, stopped, and terminated containers'; $(NORMAL)
-	$(DOCKER) ps $(_X__DKR_ALL) --all $(__DKR_BEFORE) $(_X__DKR_FILTER__CONTAINERS) $(_X__DKR_LAST) $(__DKR_QUIET) $(__DKR_SINCE) $(__DKR_SIZE)
-
-_dkr_view_containers_set:
-	@$(INFO) '$(DKR_UI_LABEL)Viewing containers-set "$(DKR_CONTAINERS_SET_NAME)"  ...'; $(NORMAL)
-	@$(WARN) 'Containers are grouped based on count, filter, state, instanciation time, ...'; $(NORMAL) 
-	$(DOCKER) ps $(__DKR_ALL) $(__DKR_BEFORE) $(__DKR_FILTER__CONTAINERS) $(__DKR_LAST) $(__DKR_QUIET) $(__DKR_SINCE) $(__DKR_SIZE)

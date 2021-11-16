@@ -100,6 +100,8 @@ _kcl_show_cluster__header ::
 
 _kcl_show_cluster_allocatedresources:
 	@$(INFO) '$(KCL_UI_LABEL)Showing allocated-resources of cluster "$(KCL_CLUSTER_NAME)" ...'; $(NORMAL)
+	$(WARN) 'This operation fails of the metrics-server is not running'; $(NORMAL)
+	$(WARN) 'For better results, review the resource requested by each pods'; $(NORMAL)
 	-$(KUBECTL) top pod --all-namespaces=true
 
 _kcl_show_cluster_apiresources:

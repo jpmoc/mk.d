@@ -37,7 +37,7 @@ KCL_INGRESSES_MANIFEST_FILEPATH?= $(if $(KCL_INGRESSES_MANIFEST_FILENAME),$(KCL_
 KCL_INGRESSES_NAMESPACE_NAME?= $(KCL_INGRESS_NAMESPACE_NAME)
 KCL_INGRESSES_SET_NAME?= $(KCL_INGRESSES_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__INGRESSES+= $(if $(KCL_INGRESSES_MANIFEST_FILEPATH),--filename $(KCL_INGRESSES_MANIFEST_FILEPATH))
 __KCL_FILENAME__INGRESSES+= $(if $(filter true,$(KCL_INGRESSES_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__INGRESSES+= $(if $(KCL_INGRESSES_MANIFEST_URL),--filename $(KCL_INGRESSES_MANIFEST_URL))
@@ -46,7 +46,7 @@ __KCL_NAMESPACE__INGRESS= $(if $(KCL_INGRESS_NAMESPACE_NAME),--namespace $(KCL_I
 __KCL_NAMESPACE__INGRESSES= $(if $(KCL_INGRESSES_NAMESPACE_NAME),--namespace $(KCL_INGRESSES_NAMESPACE_NAME))
 __KCL_SELECTOR__INGRESSES= $(if $(KCL_INGRESSES_SELECTOR),--selector=$(KCL_INGRESSES_SELECTOR))
 
-# UI parameters
+# Customizations
 _KCL_APPLY_INGRESSES_|?= #
 _KCL_CURL_INGRESS_|?= #
 _KCL_DIFF_INGRESSES_|?= $(_KCL_APPLY_INGRESSES_|)
@@ -177,6 +177,9 @@ _kcl_list_ingresses_set:
 	@$(WARN) 'Ingresses are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get ingress --all-namespaces=false $(__KCL_NAMESPACE__INGRESSES) $(__KCL_SELECTOR__INGRESSES)
 
+_kcl_patch_ingress:
+	@$(INFO) '$(KCL_UI_LABEL)Patching ingress "$(KCL_INGRESS_NAME)" ...'; $(NORMAL)
+
 _KCL_SHOW_INGRESS_TARGETS?= _kcl_show_ingress_certificates _kcl_show_ingress_services _kcl_show_ingress_description
 _kcl_show_ingress: $(_KCL_SHOW_INGRESS_TARGETS)
 
@@ -202,9 +205,6 @@ _kcl_unapply_ingresses:
 	# curl -L $(KCL_INGRESSES_MANIFEST_URL)
 	# ls -al $(KCL_INGRESSES_MANIFESTS_DIRPATH)
 	$(_KCL_UNAPPLY_INGRESSES_|)$(KUBECTL) apply $(__KCL_FILENAME__INGRESSES) $(__KCL_NAMESPACE__INGRESSES) --validate=true
-
-_kcl_update_ingress:
-	@$(INFO) '$(KCL_UI_LABEL)Updating ingress "$(KCL_INGRESS_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_ingresses:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL ingresses ...'; $(NORMAL)

@@ -11,12 +11,12 @@ GIT_SUBMODULE_MODE_QUIET?= false
 # Derived variables
 GIT_SUBMODULE_DIRPATH?= $(GIT_SUBMODULES_DIRPATH)$(GIT_SUBMODULE_NAME)
 
-# Option variables
+# Options
 __GIT_BRANCH__SUBMODULE?= $(if $(filter true, $(GIT_SUBMODULE_BRANCH_NAME)), -b $(GIT_SUBMODULE_BRANCH_NAME))
 __GIT_FORCE__SUBMODULE?= $(if $(filter true, $(GIT_SUBMODULE_MODE_FORCE)), --force)
 __GIT_QUIET__SUBMODULE?= $(if $(filter true, $(GIT_SUBMODULE_MODE_QUIET)), --quiet)
 
-# UI variables
+# Customizations
  
 #--- Utilities
 
@@ -26,11 +26,11 @@ __GIT_QUIET__SUBMODULE?= $(if $(filter true, $(GIT_SUBMODULE_MODE_QUIET)), --qui
 # USAGE
 #
 
-_git_view_framework_macros ::
+_git_list_macros ::
 	@#echo 'Git::Submodules ($(_GIT_SUBMODULE_MK_VERSION)) macros:'
 	@#echo
 
-_git_view_framework_parameters ::
+_git_list_parameters ::
 	@echo 'Git::Submodule ($(_GIT_SUBMODULE_MK_VERSION)) parameters:'
 	@echo '    GIT_SUBMODULE_BRANCH_NAME=$(GIT_SUBMODULE_BRANCH_NAME)'
 	@echo '    GIT_SUBMODULE_DIRPATH=$(GIT_SUBMODULE_DIRPATH)'
@@ -41,16 +41,17 @@ _git_view_framework_parameters ::
 	@echo '    GIT_SUBMODULES_DIRPATH=$(GIT_SUBMODULES_DIRPATH)'
 	@echo
 
-_git_view_framework_targets ::
+_git_list_targets ::
 	@echo 'Git::Submodule ($(_GIT_SUBMODULE_MK_VERSION)) targets:'
 	@echo '    _git_configure_submodule         - Configure a submodule'
 	@echo '    _git_create_submodule            - Create/add a new submodule'
 	@echo '    _git_delete_submodule            - Delete an existing submodule'
 	@echo '    _git_import_submodule            - Import the content of a submodule'
+	@echo '    _git_list_submodules             - List all submodules'
+	@echo '    _git_list_submodules_set         - List a set of submodules'
 	@echo '    _git_update_submodule            - Update a submodule'
 	@echo '    _git_update_submodule_content    - Update the content of a submodule'
 	@echo '    _git_update_submodule_metadata   - Update the metadata of a submodule'
-	@echo '    _git_view_submodules             - View all existing submodules'
 	@echo
 
 #-----------------------------------------------------------------------
@@ -77,6 +78,19 @@ _git_import_submodule:
 	@$(INFO) '$(GIT_UI_LABEL)Importing submodule "$(GIT_SUBMODULE_NAME)" ...'; $(NORMAL)
 	$(GIT) submodule $(__GIT_QUIET__SUBMODULE) update --init
 
+_git_list_submodules:
+	@$(INFO) '$(GIT_UI_LABEL)Listing ALL submodules ...'; $(NORMAL)
+	@$(WARN) 'cat REPO_TOP_DIR/.gitmodules'; $(NORMAL)
+	@# or: git submodule [--quiet] status [--cached] [--recursive] [--] [<path>...]
+	$(GIT) submodule $(__GIT_QUIET__SUBMODULE) status
+	# or ?
+	$(GIT) ls-files --stage | grep 160000 || true
+
+   # or: git submodule [--quiet] init [--] [<path>...]
+   # or: git submodule [--quiet] deinit [-f|--force] [--] <path>...
+   # or: git submodule [--quiet] summary [--cached|--files] [--summary-limit <n>] [commit] [--] [<path>...]
+   # or: git submodule [--quiet] foreach [--recursive] <command>
+
 _git_reset_submodule:
 	@$(INFO) '$(GIT_UI_LABEL)Reseting submodule "$(GIT_SUBMODULE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation wipes out all the changes in the submodule'; $(NORMAL)
@@ -88,14 +102,15 @@ _git_reset_submodule:
 	$(GIT) rm $(_X__GIT_FORCE__SUBMODULE) --force $(__GIT_RECURSE__SUBMODULE) $(GIT_SUBMODULE_DIRPATH)
 	$(GIT) submodule $(__GIT_QUIET__SUBMODULE) add $(__GIT_BRANCH_SUBMODULE) $(_X__GIT_FORCE__SUBMODULE) --force $(GIT_SUBMODULE_URL) $(GIT_SUBMODULE_DIRPATH)
 
-_git_show_submodule: _git_show_submodule_head _git_show_submodule_description
+_GIT_SHOW_SUBMODULE_TARGETS?= _git_show_submodule_head _git_show_submodule_description
+_git_show_submodule: $(_GIT_SHOW_SUBMODULE_TARGETS)
 
 _git_show_submodule_description:
 	@$(INFO) '$(GIT_UI_LABEL)Showing description of submodule "$(GIT_SUBMODULE_NAME)" ...'; $(NORMAL)
 	 ls -ld $(GIT_SUBMODULE_DIRPATH)
 
 _git_show_submodule_head:
-	@$(INFO) '$(GIT_UI_LABEL)Showing lst-commit of submodule "$(GIT_SUBMODULE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(GIT_UI_LABEL)Showing last-commit of submodule "$(GIT_SUBMODULE_NAME)" ...'; $(NORMAL)
 	cd $(GIT_SUBMODULE_DIRPATH); git show | cat
 
 _git_update_submodule: _git_update_submodule_content # _git_update_submodule_metadata
@@ -111,16 +126,3 @@ _git_update_submodule_metadata:
 	@$(WARN) 'This operation resynchronize info in submodule/.git/config with the info in local_repo/.gitmodule'; $(NORMAL)
 	@# or: git submodule [--quiet] sync [--recursive] [--] [<path>...]
 	$(GIT) submodule $(__GIT_QUIET__SUBMODULE) sync ...
-
-_git_view_submodules:
-	@$(INFO) '$(GIT_UI_LABEL)Viewing submodules ...'; $(NORMAL)
-	@$(WARN) 'cat REPO_TOP_DIR/.gitmodules'; $(NORMAL)
-	@# or: git submodule [--quiet] status [--cached] [--recursive] [--] [<path>...]
-	$(GIT) submodule $(__GIT_QUIET__SUBMODULE) status
-	# or ?
-	$(GIT) ls-files --stage | grep 160000 || true
-
-   # or: git submodule [--quiet] init [--] [<path>...]
-   # or: git submodule [--quiet] deinit [-f|--force] [--] <path>...
-   # or: git submodule [--quiet] summary [--cached|--files] [--summary-limit <n>] [commit] [--] [<path>...]
-   # or: git submodule [--quiet] foreach [--recursive] <command>

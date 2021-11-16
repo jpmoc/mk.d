@@ -1,13 +1,13 @@
 _GIT_MK_VERSION= 0.99.0
 
 # GIT_PARAMETER?= value
+GIT_UI_LABEL?= [git] #
 
 # Derived parameters
 
-# Option parameters
+# Options
 
-# UI parameters
-GIT_UI_LABEL?= [git] #
+# Customizations
  
 #--- Utilities
 GIT_BIN?= git
@@ -19,20 +19,21 @@ GIT?= $(strip $(__GIT_ENVIRONMENT) $(GIT_ENVIRONMENT) $(GIT_BIN) $(__GIT_OPTIONS
 # USAGE
 #
 
-_view_framework_macros :: _git_view_framework_macros
-_git_view_framework_macros ::
+_list_macros :: _git_list_macros
+_git_list_macros ::
 	@#echo 'Git:: ($(_GIT_MK_VERSION)) targets:'
 	@#echo
 
-_view_framework_parameters :: _git_view_framework_parameters
-_git_view_framework_parameters ::
-	@#echo 'Git:: ($(_GIT_MK_VERSION)) parameters:'
-	@#echo
+_list_parameters :: _git_list_parameters
+_git_list_parameters ::
+	@echo 'Git:: ($(_GIT_MK_VERSION)) parameters:'
+	@echo '    GIT_UI_LABEL=$(GIT_UI_LABEL)'
+	@echo
 
-_view_framework_targets :: _git_view_framework_targets
-_git_view_framework_targets ::
-	@#echo 'Git:: ($(_GIT_MK_VERSION)) targets:'
-	@#echo
+_list_targets :: _git_list_targets
+_git_list_targets ::
+	@echo 'Git:: ($(_GIT_MK_VERSION)) targets:'
+	@echo
 
 #-----------------------------------------------------------------------
 # PRIVATE TARGETS
@@ -49,3 +50,7 @@ MK_DIR?= .
 # PUBLIC TARGETS
 #
 
+_view_versions :: _git_view_versions
+_git_view_versions:
+	@$(INFO) '$(GIT_UI_LABEL)Viewing versions of dependencies'; $(NORMAL)
+	git --version

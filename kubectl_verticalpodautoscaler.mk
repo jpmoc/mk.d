@@ -1,5 +1,6 @@
 _KUBECTL_VERTICALPODAUTOSCALER_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
+# KCL_VERTICALPODAUTOSCALER_FIELD_JSONPATH?= .spec
 # KCL_VERTICALPODAUTOSCALER_NAME?= hello
 # KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME?= default
 # KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME?= default
@@ -11,14 +12,14 @@ KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME?= $(KCL_NAMESPACE_NAME)
 KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME?= $(KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME)
 KCL_VERTICALPODAUTOSCALERS_SET_NAME?= $(KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_NAMESPACE__VERTICALPODAUTOSCALER= $(if $(KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME), --namespace $(KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME))
 __KCL_NAMESPACE__VERTICALPODAUTOSCALERS= $(if $(KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME), --namespace $(KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME))
 __KCL_SELECTOR__VERTICALPODAUTOSCALERS= $(if $(KCL_VERTICALPODAUTOSCALERS_SELECTOR), --selector=$(KCL_VERTICALPODAUTOSCALERS_SELECTOR))
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -30,6 +31,7 @@ _kcl_list_macros ::
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::VerticalPodAutoscaler ($(_KUBECTL_VERTICALPODAUTOSCALER_MK_VERSION)) parameters:'
+	@echo '    KCL_VERTICALPODAUTOSCALER_FIELD_JSONPATH=$(KCL_VERTICALPODAUTOSCALER_FIELD_JSONPATH)'
 	@echo '    KCL_VERTICALPODAUTOSCALER_NAME=$(KCL_VERTICALPODAUTOSCALER_NAME)'
 	@echo '    KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME=$(KCL_VERTICALPODAUTOSCALER_NAMESPACE_NAME)'
 	@echo '    KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME=$(KCL_VERTICALPODAUTOSCALERS_NAMESPACE_NAME)'
@@ -81,10 +83,12 @@ _kcl_diff_verticalpodautoscalers:
 	@$(INFO) '$(KCL_UI_LABEL)Diff-ing manifest for one-or-more vertical-pod-autoscalers ...'; $(NORMAL)
 
 _kcl_edit_verticalpodautoscaler:
+	@$(INFO) '$(KCL_UI_LABEL)Editing vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
 
 _kcl_explain_verticalpodautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Explaining vertical-pod-autoscaler object ...'; $(NORMAL)
-	$(KUBECTL) explain verticalpodautoscaler
+	@$(WARN) 'This operation fails if you do not have access to a cluster'; $(NORMAL)
+	$(KUBECTL) explain verticalpodautoscaler$(KCL_VERTICALPODAUTOSCALER_FIELD_JSONPATH)
 
 _kcl_label_verticalpodautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Labeling vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
@@ -98,6 +102,9 @@ _kcl_list_verticalpodautoscalers_set:
 	@$(WARN) 'Vertical-pod-autoscalers are grouped based on the provided namespace, selector, and ...'; $(NORMAL)
 	$(KUBECTL) get verticalpodautoscalers --all-namespaces=false $(__KCL_NAMESPACE__VERTICALPODAUTOSCALERS) $(__KCL_SELECTOR__VERTICALPODAUTOSCALERS)
 
+_kcl_patch_verticalpodautoscaler:
+	@$(INFO) '$(KCL_UI_LABEL)Patching vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
+
 _KCL_SHOW_VERTICALPODAUTOSCALER_TARGETS?= _kcl_show_verticalpodautoscaler_state _kcl_show_verticalpodautoscaler_description
 _kcl_show_verticalpodautoscaler: $(_KCL_SHOW_VERTICALPODAUTOSCALER_TARGETS)
 
@@ -109,11 +116,15 @@ _kcl_show_verticalpodautoscaler_state:
 	@$(INFO) '$(KCL_UI_LABEL)Showing the state of vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) get verticalpodautoscaler $(__KCL_NAMESPACE__VERTICALPODAUTOSCALER) $(KCL_VERTICALPODAUTOSCALER_NAME)
 
+_kcl_unannotate_verticalpodautoscaler:
+	@$(INFO) '$(KCL_UI_LABEL)Un-annotating vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
+
 _kcl_unapply_verticalpodautoscaler: _kcl_unapply_verticalpodautoscalers
 _kcl_unapply_verticalpodautoscalers:
 	@$(INFO) '$(KCL_UI_LABEL)Un-applying manifest for one-or-more vertical-pod-autoscalers ...'; $(NORMAL)
 
-_kcl_update_verticalpodautoscaler:
+_kcl_unlabel_verticalpodautoscaler:
+	@$(INFO) '$(KCL_UI_LABEL)Un-labeling vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_verticalpodautoscalers:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL vertical-pod-autoscalers ...'; $(NORMAL)

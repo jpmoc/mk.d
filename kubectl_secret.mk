@@ -1,5 +1,7 @@
 _KUBECTL_SECRET_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
+# KCL_SECRET_ANNOTATIONS_KEYS= key1 ...
+# KCL_SECRET_ANNOTATIONS_KEYVALUES= key1=value1 ...
 # KCL_SECRET_CACERT?= 
 # KCL_SECRET_CACERT_DIRPATH?= ./in/ 
 KCL_SECRET_CACERT_FILENAME?= ca.crt
@@ -14,6 +16,7 @@ KCL_SECRET_CACERT_FILENAME?= ca.crt
 # KCL_SECRET_DOCKER_SERVER?= https://index.docker.io/v1/
 # KCL_SECRET_DOCKER_USERNAME?= malliot
 # KCL_SECRET_DOWNLOAD_DIRPATH?= ./
+# KCL_SECRET_FIELD_JSONPATH?= .spec
 # KCL_SECRET_FILE_DIRPATH?= ./in/
 # KCL_SECRET_FILE_FILENAME?= secret.txt
 # KCL_SECRET_FILE_FILEPATH?= ./in/secret.txt
@@ -21,10 +24,15 @@ KCL_SECRET_CACERT_FILENAME?= ca.crt
 # KCL_SECRET_JWT?=
 # KCL_SECRET_KEYS= "tls.crt" "tls.key" client-secret ...
 # KCL_SECRET_KUSTOMIZATION_DIRPATH= ./
+# KCL_SECRET_LABELS_KEYS= key1 ...
+# KCL_SECRET_LABELS_KEYVALUES= key1=value1 ...
 # KCL_SECRET_LITERALS_KEYVALUES= username=devuser ...
 # KCL_SECRET_NAME?= my-secret
 # KCL_SECRET_NAMESPACE_NAME?= default
-# KCL_SECRET_PATCH_CONTENT?=
+# KCL_SECRET_PATCH?= "$(cat patch.yaml)"
+# KCL_SECRET_PATCH_DIRPATH?= ./in/
+# KCL_SECRET_PATCH_FILENAME?= patch.yaml
+# KCL_SECRET_PATCH_FILEPATH?= ./in/patch.yaml
 # KCL_SECRET_PATCH_TYPE?= merge
 # KCL_SECRET_PRIVATEKEY_DIRPATH?= ./in/
 # KCL_SECRET_PRIVATEKEY_FILENAME?= certificate.key
@@ -62,7 +70,7 @@ KCL_SECRET_PRIVATEKEY_FILEPATH?= $(KCL_SECRET_PRIVATEKEY_DIRPATH)$(KCL_SECRET_PR
 KCL_SECRETS_NAMESPACE_NAME?= $(KCL_SECRET_NAMESPACE_NAME)
 KCL_SECRETS_SET_NAME?= secrets@$(KCL_SECRETS_FIELDSELECTOR)@$(KCL_SECRETS_SELECTOR)@$(KCL_SECRETS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __KCL_CERT__SECRET= $(if $(KCL_SECRET_CERTIFICATE_FILEPATH),--cert $(KCL_SECRET_CERTIFICATE_FILEPATH))
 __KCL_DOCKER_EMAIL= $(if $(KCL_SECRET_DOCKER_EMAIL),--docker-email $(KCL_SECRET_DOCKER_EMAIL))
 __KCL_DOCKER_SERVER= $(if $(KCL_SECRET_DOCKER_SERVER),--docker-server $(KCL_SECRET_DOCKER_SERVER))
@@ -79,21 +87,21 @@ __KCL_KEY__SECRET= $(if $(KCL_SECRET_PRIVATEKEY_FILEPATH),--key $(KCL_SECRET_PRI
 __KCL_NAMESPACE__SECRET= $(if $(KCL_SECRET_NAMESPACE_NAME),--namespace $(KCL_SECRET_NAMESPACE_NAME))
 __KCL_NAMESPACE__SECRETS= $(if $(KCL_SECRETS_NAMESPACE_NAME),--namespace $(KCL_SECRETS_NAMESPACE_NAME))
 __KCL_OUTPUT__SECRET= $(if $(KCL_SECRET_OUTPUT_FORMAT),--output $(KCL_SECRET_OUTPUT_FORMAT))
+__KCL_OVERWRITE__SECRET=
 __KCL_PATCH__SECRET=
+__KCL_RECURSIVE__SECRET=
 __KCL_TYPE__SECRET=
 
-# Pipe parameters
+# Customizations
 _KCL_APPLY_SECRETS_|?= #
 _KCL_DIFF_SECRETS_|?= $(_KCL_APPLY_SECRETS_|)
+_KCL_PATCH_SECRET_|?= #
 _KCL_UNAPPLY_SECRETS_|?= $(_KCL_APPLY_SECRETS_|)
-_KCL_UPDATE_SECRET_|?= #
 |_KCL_CREATE_SECRET?= # --dry-run -o yaml | kubectl apply -f -
 |_KCL_KUSTOMIZE_SECRET?= #
-|_KCL_UPDATE_SECRET?= #
+|_KCL_PATCH_SECRET?= #
 
-# UI parameters
-
-#--- MACROS
+# Macros
 
 # Used with service-account's secrets
 _kcl_get_secret_cacert= $(call _kcl_get_secret_cacert_N, $(KCL_SECRET_NAME))
@@ -118,6 +126,8 @@ _kcl_list_macros ::
 
 _kcl_list_parameters ::
 	@echo 'KubeCtL::Secret ($(_KUBECTL_SECRET_MK_VERSION)) parameters:'
+	@echo '    KCL_SECRET_ANNOTATIONS_KEYS=$(KCL_SECRET_ANNOTATIONS_KEYS)'
+	@echo '    KCL_SECRET_ANNOTATIONS_KEYVALUES=$(KCL_SECRET_ANNOTATIONS_KEYVALUES)'
 	@echo '    KCL_SECRET_CACERT=$(KCL_SECRET_CACERT)'
 	@echo '    KCL_SECRET_CACERT_DIRPATH=$(KCL_SECRET_CACERT_DIRPATH)'
 	@echo '    KCL_SECRET_CACERT_FILENAME=$(KCL_SECRET_CACERT_FILENAME)'
@@ -130,17 +140,23 @@ _kcl_list_parameters ::
 	@echo '    KCL_SECRET_DOCKER_SERVER=$(KCL_SECRET_DOCKER_SERVER)'
 	@echo '    KCL_SECRET_DOCKER_USERNAME=$(KCL_SECRET_DOCKER_USERNAME)'
 	@echo '    KCL_SECRET_DOWNLOAD_DIRPATH=$(KCL_SECRET_DOWNLOAD_DIRPATH)'
+	@echo '    KCL_SECRET_FIELD_JSONPATH=$(KCL_SECRET_FIELD_JSONPATH)'
 	@echo '    KCL_SECRET_FILE_DIRPATH=$(KCL_SECRET_FILE_DIRPATH)'
 	@echo '    KCL_SECRET_FILE_FILENAME=$(KCL_SECRET_FILE_FILENAME)'
 	@echo '    KCL_SECRET_FILE_FILEPATH=$(KCL_SECRET_FILE_FILEPATH)'
 	@echo '    KCL_SECRET_FILES_FILEPATHS=$(KCL_SECRET_FILES_FILEPATHS)'
 	@echo '    KCL_SECRET_KEYS=$(KCL_SECRET_KEYS)'
 	@echo '    KCL_SECRET_KUSTOMIZATION_DIRPATH=$(KCL_SECRET_KUSTOMIZATION_DIRPATH)'
+	@echo '    KCL_SECRET_LABELS_KEYS=$(KCL_SECRET_LABELS_KEYS)'
+	@echo '    KCL_SECRET_LABELS_KEYVALUES=$(KCL_SECRET_LABELS_KEYVALUES)'
 	@echo '    KCL_SECRET_LITERALS_KEYVALUES=$(KCL_SECRET_LITERALS_KEYVALUES)'
 	@echo '    KCL_SECRET_JWT=$(KCL_SECRET_JWT)'
 	@echo '    KCL_SECRET_NAME=$(KCL_SECRET_NAME)'
 	@echo '    KCL_SECRET_NAMESPACE_NAME=$(KCL_SECRET_NAMESPACE_NAME)'
-	@echo '    KCL_SECRET_PATCH_CONTENT=$(KCL_SECRET_PATCH_CONTENT)'
+	@echo '    KCL_SECRET_PATCH=$(KCL_SECRET_PATCH)'
+	@echo '    KCL_SECRET_PATCH_DIRPATH=$(KCL_SECRET_PATCH_DIRPATH)'
+	@echo '    KCL_SECRET_PATCH_FILENAME=$(KCL_SECRET_PATCH_FILENAME)'
+	@echo '    KCL_SECRET_PATCH_FILEPATH=$(KCL_SECRET_PATCH_FILEPATH)'
 	@echo '    KCL_SECRET_PATCH_TYPE=$(KCL_SECRET_PATCH_TYPE)'
 	@echo '    KCL_SECRET_PRIVATEKEY_DIRPATH=$(KCL_SECRET_PRIVATEKEY_DIRPATH)'
 	@echo '    KCL_SECRET_PRIVATEKEY_FILENAME=$(KCL_SECRET_PRIVATEKEY_FILENAME)'
@@ -173,13 +189,14 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_secret                   - Label a secret'
 	@echo '    _kcl_list_secrets                   - List all secrets'
 	@echo '    _kcl_list_secrets_set               - List a set ofsecrets'
+	@echo '    _kcl_patch_secret                   - Patch a secret'
 	@echo '    _kcl_show_secret                    - Show everything related to a secret'
 	@echo '    _kcl_show_secret_description        - Show the description of a secret'
 	@echo '    _kcl_show_secret_endpoints          - Show the endpoints of a secret'
 	@echo '    _kcl_show_secret_pods               - Show the pods using a secret'
+	@echo '    _kcl_unannotate_secret              - Un-annotate a secret'
 	@echo '    _kcl_unapply_secrets                - Un-apply a manifest for one-or-more secrets'
 	@echo '    _kcl_unlabel_secret                 - Un-label a secret'
-	@echo '    _kcl_update_secret                  - Update a secret'
 	@echo '    _kcl_watch_secrets                  - Watch all secrets'
 	@echo '    _kcl_watch_secrets_set              - Watch a set of secrets'
 	@echo '    _kcl_write_secrets                  - Write a manifest for one-or-more secrets'
@@ -197,6 +214,7 @@ _kcl_list_targets ::
 
 _kcl_annotate_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Annotating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) annotate $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) $(KCL_SECRET_ANNOTATIONS_KEYVALUES)
 
 _kcl_apply_secret: _kcl_apply_secrets
 _kcl_apply_secrets:
@@ -266,7 +284,8 @@ _kcl_edit_secret:
 
 _kcl_explain_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Explaining service object ...'; $(NORMAL)
-	$(KUBECTL) explain secret
+	@$(WARN) 'This operation fails if you do not have access to a cluster'; $(NORMAL)
+	$(KUBECTL) explain secret$(KCL_SECRET_FIELD_JSONPATH) $(__KCL_RECURSIVE__SECRET)
 
 _kcl_kustomize_secret: _kcl_kustomize_secrets
 _kcl_kustomize_secrets:
@@ -285,7 +304,12 @@ _kcl_list_secrets_set:
 	@$(WARN) 'Secrets are grouped based on the provided namespace'; $(NORMAL)
 	$(KUBECTL) get secret --all-namespaces=false $(__KCL_NAMESPACE__SECRETS)
 
-_kcl_show_secret: _kcl_show_secret_data _kcl_show_secret_state _kcl_show_secret_type _kcl_show_secret_description
+_kcl_patch_secret:
+	@$(INFO) '$(KCL_UI_LABEL)Updating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
+	$(_KCL_PATCH_SECRET_|) $(KUBECTL) patch secret $(__KCL_NAMESPACE__SECRET) $(__KCL_PATCH__SECRET) $(__KCL_TYPE__SECRET) $(KCL_SECRET_NAME) $(|_KCL_PATCH_SECRET)
+
+_KCL_SHOW_SECRET_TARGETS?= _kcl_show_secret_data _kcl_show_secret_state _kcl_show_secret_type _kcl_show_secret_description
+_kcl_show_secret: $(_KCL_SHOW_SECRET_TARGETS)
 
 _kcl_show_secret_data:
 	@$(INFO) '$(KCL_UI_LABEL)Showing data secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
@@ -326,6 +350,10 @@ _kcl_show_secret_type:
 		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['tls\.key']}" | base64 --decode | head -3; echo '...'\
 	)
 
+_kcl_unannotate_secret:
+	@$(INFO) '$(KCL_UI_LABEL)Un-annotate secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) annotate secret $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) $(foreach K, $(KCL_SECRET_ANNOTATIONS_KEYS), $(K)-)
+
 _kcl_unapply_secret: _kcl_unapply_secrets
 _kcl_unapply_secrets:
 	@$(INFO) '$(KCL_UI_LABEL)Un-applying manifest for one-or-more secrets ...'; $(NORMAL)
@@ -337,10 +365,7 @@ _kcl_unapply_secrets:
 
 _kcl_unlabel_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Un-label secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
-
-_kcl_update_secret:
-	@$(INFO) '$(KCL_UI_LABEL)Updating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
-	$(_KCL_UPDATE_SECRET_|) $(KUBECTL) patch secret $(__KCL_NAMESPACE__SECRET) $(__KCL_PATCH__SECRET) $(__KCL_TYPE__SECRET) $(KCL_SECRET_NAME)             $(|_KCL_UPDATE_SECRET)
+	$(KUBECTL) label secret $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) $(foreach K, $(KCL_SECRET_LABELS_KEYS), $(K)-)
 
 _kcl_watch_secrets:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL secrets ...'; $(NORMAL)

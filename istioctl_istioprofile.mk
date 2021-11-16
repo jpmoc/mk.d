@@ -4,13 +4,10 @@ ICL_ISTIOPROFILE_NAME?= default
 
 # Derived parameters
 
-# Option parameters
+# Options
 __ICL_CONFIG_PATH=
 
-# UI parameters
-
-#--- Utilities
-
+# Customizations
 
 #--- Macros
 

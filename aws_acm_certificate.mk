@@ -24,7 +24,7 @@ ACM_CERTIFICATE_OPTIONS?= CertificateTransparencyLoggingPreference=ENABLED
 # Derived parameters
 ACM_CERTIFICATE_NAME?= $(ACM_CERTIFICATE_DOMAIN_NAME)
 
-# Option parameters
+# Options
 __ACM_CERTIFICATE= $(if $(ACM_CERTIFICATE_FILEPATH),--certificate fileb://$(ACM_CERTIFICATE_FILEPATH))
 __ACM_CERTIFICATE_ARN= $(if $(ACM_CERTIFICATE_ARN),--certificate-arn $(ACM_CERTIFICATE_ARN))
 __ACM_CERTIFICATE_AUTHORITY_ARN= $(if $(ACM_CERTIFICATE_AUTHORITY_ARN),--certificate-authority-arn $(ACM_CERTIFICATE_AUTHORITY_ARN))
@@ -43,10 +43,10 @@ __ACM_TAGS__CERTIFICATE= $(if $(ACM_CERTIFICATE_TAGS_KEYVALUES),--tags $(ACM_CER
 __ACM_VALIDATION_DOMAIN= $(if $(ACM_CERTIFICATE_VALIDATION_DOMAIN),--validation-domain $(ACM_CERTIFICATE_VALIDATION_DOMAIN))
 __ACM_VALIDATION_METHOD= $(if $(ACM_CERTIFICATE_VALIDATION_METHOD),--validation-method $(ACM_CERTIFICATE_VALIDATION_METHOD))
 
-# UI parameters
-ACM_UI_VIEW_CERTIFICATES_FIELDS?=
-ACM_UI_VIEW_CERTIFICATES_SET_FIELDS?= $(ACM_UI_VIEW_CERTIFICATES_FIELDS)
-ACM_UI_VIEW_CERTIFICATES_SET_SLICE?=
+# Customizations
+_ACM_LIST_CERTIFICATES_FIELDS?=
+_ACM_LIST_CERTIFICATES_SET_FIELDS?= $(_ACM_LIST_CERTIFICATES_FIELDS)
+_ACM_LIST_CERTIFICATES_SET_SLICE?=
 
 #--- MACROS
 _acm_get_certificate_arn= $(call _acm_get_certificate_arn_N, $(ACM_CERTIFICATE_DOMAIN_NAME))
@@ -62,13 +62,13 @@ _acm_get_certificate_validation_record_A= $(shell $(AWS) acm describe-certificat
 # USAGE
 #
 
-_acm_view_framework_macros ::
+_acm_list_macros ::
 	@echo 'AWS::ACM::Certificate ($(_AWS_ACM_CERTIFICATE_MK_VERSION)) macros:'
 	@echo '    _get_certificate_arn_{|N}                   - Get ARN of a certificate (Name)'
 	@echo '    _get_certificate_validation_record_{|A}     - Get the validation record of a certificate (Arn)'
 	@echo
 
-_acm_view_framework_parameters ::
+_acm_list_parameters ::
 	@echo 'AWS::ACM::Certificate ($(_AWS_ACM_CERTIFICATE_MK_VERSION)) parameters:'
 	@echo '    ACM_CERTIFICATE_ALTERNATIVE_NAMES=$(ACM_CERTIFICATE_ALTERNATIVE_NAMES)'
 	@echo '    ACM_CERTIFICATE_ARN=$(ACM_CERTIFICATE_ARN)'
@@ -92,12 +92,14 @@ _acm_view_framework_parameters ::
 	@echo '    ACM_CERTIFICATES_STATUSES=$(ACM_CERTIFICATES_STATUSES)'
 	@echo
 
-_acm_view_framework_targets ::
+_acm_list_targets ::
 	@echo 'AWS::ACM::Certificate ($(_AWS_ACM_CERTIFICATE_MK_VERSION)) targets:'
 	@echo '    _acm_delete_certificate                 - Delete an existing certificate'
 	@echo '    _acm_export_certificate                 - Export an ACM certificate'
 	@echo '    _acm_import_certificate                 - Import an ACM certificate'
 	@echo '    _acm_issue_certificate                  - Issue a private-certificate with a private CA'
+	@echo '    _acm_list_certificates                  - List all certificates'
+	@echo '    _acm_list_certificates_set              - List a set of certificates'
 	@echo '    _acm_request_certificate                - Request a certificates'
 	@echo '    _acm_resend_validationemail             - Resend validation-email'
 	@echo '    _acm_revoke_certificate                 - Revoke a private-certificate from a private CA'
@@ -111,8 +113,6 @@ _acm_view_framework_targets ::
 	@echo '    _acm_tag_certificate                    - Tag a certificate'
 	@echo '    _acm_untag_certificate                  - Untag a certificate'
 	@echo '    _acm_update_certificate                 - Update an ACM certificate'
-	@echo '    _acm_view_certificates                  - View existing certificates'
-	@echo '    _acm_view_certificates_set              - View a set of certificates'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -127,17 +127,17 @@ _acm_view_framework_targets ::
 _acm_create_certificate: _acm_request_certificate
 
 _acm_delete_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Deleting certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Deleting certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(AWS) acm delete-certificate $(__ACM_CERTIFICATE_ARN)
 
 _acm_export_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Exporting private-certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Exporting private-certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Certificate issued by AWS through ACM are NOT private certificates!'; $(NORMAL)
 	@$(WARN) 'Private certificates are issued by a private-certificate-authority!'; $(NORMAL)
 	$(AWS) acm export-certificate $(__ACM_CERTIFICATE_ARN) $(__ACM_PASSPHRASE)
 
 _acm_import_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Importing certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Importing certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Public and private certificates can be imported!'; $(NORMAL)
 	@$(WARN) 'The certificate chain must be provided if the certificate is not self signed!'; $(NORMAL)
 	$(AWS) acm import-certificate $(__ACM_CERTIFICATE) $(_X__ACM_CERTIFICATE_ARN) $(__ACM_CERTIFICATE_CHAIN) $(__ACM_PRIVATE_KEY)
@@ -145,35 +145,35 @@ _acm_import_certificate:
 _acm_issue_certificate: _asm_issue_certificate_by_certificateauthority
 
 _acm_request_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Requesting a certificate for domain "$(ACM_CERTIFICATE_DOMAIN_NAME) "...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Requesting a certificate for domain "$(ACM_CERTIFICATE_DOMAIN_NAME) "...'; $(NORMAL)
 	$(AWS) acm request-certificate $(__ACM_CERTIFICATE_AUTHORITY_ARN) $(__ACM_DOMAIN_NAME) $(__ACM_DOMAIN_VALIDATION_OPTIONS) $(__ACM_IDEMPOTENCY_TOKEN__CERTIFICATE) $(__ACM_OPTIONS) $(__ACM_SUBJECT_ALTERNATIVE_NAMES) $(__ACM_VALIDATION_METHOD)
 
 _acm_revoke_certificate: _acm_revoke_certificate_by_certificateauthority
 
 _acm_resend_validationemail:
-	@$(INFO) '$(AWS_UI_LABEL)Resending validation-email for domain "$(ACM_CERTIFICATE_DOMAIN_NAME) "...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Resending validation-email for domain "$(ACM_CERTIFICATE_DOMAIN_NAME) "...'; $(NORMAL)
 	$(AWS) acm resend-validation-email $(__ACM_CERTIFICATE_ARN) $(__ACM_DOMAIN) $(__ACM_VALIDATION_DOMAIN)
 
 _acm_show_certificate: _acm_show_certificate_body _acm_show_certificate_chain _acm_show_certificate_privatekey _acm_show_certificate_tags _acm_show_certificate_validationrecord  _acm_show_certificate_description
 
 _acm_show_certificate_body:
-	@$(INFO) '$(AWS_UI_LABEL)Showing body/content of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Showing body/content of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the certificate is not in the ISSUED state'; $(NORMAL)
 	-echo; $(AWS) acm get-certificate $(__ACM_CERTIFICATE_ARN) --query "Certificate" --output text
 
 _acm_show_certificate_chain:
-	@$(INFO) '$(AWS_UI_LABEL)Showing certificate-chain of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Showing certificate-chain of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the certificate is not in the ISSUED state'; $(NORMAL)
 	@$(WARN) 'All certificates in the certificate-chain can be invalidated any time'; $(NORMAL)
 	@$(WARN) 'No root certificates should be used in a certificate-chain, only intermediate certificates'; $(NORMAL)
 	-echo; $(AWS) acm get-certificate $(__ACM_CERTIFICATE_ARN) --query "CertificateChain" --output text
 
 _acm_show_certificate_description:
-	@$(INFO) '$(AWS_UI_LABEL)Showing description of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Showing description of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(AWS) acm describe-certificate $(__ACM_CERTIFICATE_ARN) --query "Certificate"
 
 _acm_show_certificate_privatekey:
-	@$(INFO) '$(AWS_UI_LABEL)Showing private-key of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Showing private-key of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'The returned private-key needs to be kept secret!'; $(NORMAL)
 	$(if $(ACM_CERTIFICATE_PRIVATEKEY_FILEPATH), \
 		cat $(ACM_CERTIFICATE_PRIVATEKEY_FILEPATH), \
@@ -181,11 +181,11 @@ _acm_show_certificate_privatekey:
 	)
 
 _acm_show_certificate_tags:
-	@$(INFO) '$(AWS_UI_LABEL)Showing tags of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Showing tags of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(AWS) acm list-tags-for-certificate $(__ACM_CERTIFICATE_ARN) --query "Tags[]"
 
 _acm_show_certificate_validationrecord:
-	@$(INFO) '$(AWS_UI_LABEL)Showing validation-record of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Showing validation-record of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Operation is skipped if ACM_CERTIFICATE_VALIDATION_RECORD is not set'; $(NORMAL)
 	@$(WARN) 'The validation record needs to be present only at the issuance of the certificate. It can be deleted thereafter.'; $(NORMAL)
 	$(if $(ACM_CERTIFICATE_VALIDATION_RECORD), \
@@ -194,29 +194,29 @@ _acm_show_certificate_validationrecord:
 	)
 
 _acm_tag_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Tagging certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Tagging certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(AWS) acm add-tags-to-certificate $(__ACM_CERTIFICATE_ARN) $(__ACM_TAGS__CERTIFICATE)
 
 _acm_untag_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Untagging certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Untagging certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(AWS) acm remove-tags-from-certificate $(__ACM_CERTIFICATE_ARN) $(__ACM_TAGS__CERTIFICATE)
 
 _acm_update_certificate:
-	@$(INFO) '$(AWS_UI_LABEL)Updating certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Updating certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Public and private certificates can be imported!'; $(NORMAL)
 	@$(WARN) 'The certificate chain must be provided if the certificate is not self signed!'; $(NORMAL)
 	$(AWS) acm import-certificate $(__ACM_CERTIFICATE) $(__ACM_CERTIFICATE_ARN) $(__ACM_CERTIFICATE_CHAIN) $(__ACM_PRIVATE_KEY)
 
 _acm_update_certificate_option:
-	@$(INFO) '$(AWS_UI_LABEL)Updating options of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(ACM_UI_LABEL)Updating options of certificate "$(ACM_CERTIFICATE_NAME)" ...'; $(NORMAL)
 	$(AWS) acm update-certificate-options $(__ACM_CERTIFICATE_ARN) $(__ACM_OPTIONS)
 
-_acm_view_certificates:
-	@$(INFO) '$(AWS_UI_LABEL)Viewing certificates ...'; $(NORMAL)
+_acm_list_certificates:
+	@$(INFO) '$(ACM_UI_LABEL)Listing ALL certificates ...'; $(NORMAL)
 	@$(WARN) 'The returned certificates may or may NOT be used'; $(NORMAL)
-	$(AWS) acm list-certificates $(_X__ACM_CERTIFICATE_STATUSES) $(_X__ACM_INCLUDES) --query "CertificateSummaryList[]$(ACM_UI_VIEW_CERTIFICATES_FIELDS)"
+	$(AWS) acm list-certificates $(_X__ACM_CERTIFICATE_STATUSES) $(_X__ACM_INCLUDES) --query "CertificateSummaryList[]$(_ACM_LIST_CERTIFICATES_FIELDS)"
 
-_acm_view_certificates_set:
-	@$(INFO) '$(AWS_UI_LABEL)Viewing certificates-set "$(ACM_CERTIFICATES_SET_NAME)" ...'; $(NORMAL)
+_acm_list_certificates_set:
+	@$(INFO) '$(ACM_UI_LABEL)Listing certificates-set "$(ACM_CERTIFICATES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Certificates are grouped based on status, includes, and slice'; $(NORMAL)
-	$(AWS) acm list-certificates $(__ACM_CERTIFICATE_STATUSES) $(__ACM_INCLUDES) --query "CertificateSummaryList[$(ACM_UI_VIEW_CERTIFICATES_SET_SLICE)]$(ACM_UI_VIEW_CERTIFICATES_SET_FIELDS)"
+	$(AWS) acm list-certificates $(__ACM_CERTIFICATE_STATUSES) $(__ACM_INCLUDES) --query "CertificateSummaryList[$(_ACM_LIST_CERTIFICATES_SET_SLICE)]$(_ACM_LIST_CERTIFICATES_SET_FIELDS)"

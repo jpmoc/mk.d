@@ -2,13 +2,13 @@ _CALICOCTL_MK_VERSION= 0.99.4
 
 # CCL_AS_GROUP?=
 # CCL_AS_USER?=
+CCL_UI_LABEL?= [clicoctl] #
 
 # Derived parameters
 
-# Option parameters
+# Options
 
-# UI parameters
-CCL_UI_LABEL?= [clicoctl] #
+# Customizations
 
 #--- Utilities
 # __KUBECTL_OPTIONS+= $(if $(KUBECTL_VMODULE),--vmodule=$(KUBECTL_VMODULE))#
@@ -32,6 +32,7 @@ _ccl_list_parameters ::
 	@echo 'CalicoCtL ($(_CALICOCTL_MK_VERSION)) parameters:'
 	@echo '    CCL_AS_GROUP=$(CCL_AS_GROUP)'
 	@echo '    CCL_AS_USER=$(CCL_AS_USER)'
+	@echo '    CCL_UI_LABEL=$(CCL_UI_LABEL)'
 	@echo
 
 _list_targets :: _ccl_list_targets

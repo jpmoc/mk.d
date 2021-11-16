@@ -6,13 +6,13 @@ _KUBECTL_API_MK_VERSION= $(_KUBECTL_MK_VERSION)
 
 # Derived parameters
 
-# Option parameters
+# Options
 __KCL_API_GROUP=
 __KCL_NAMESPACED= $(if $(KCL_API_RESOURCES_NAMESPACED),--namespaced=$(KCL_API_RESOURCES_NAMESPACES))
 __KCL_OUTPUT__API= $(if $(KCL_API_OUTPUT_FORMAT),--output $(KCL_API_OUTPUT_FORMAT))
 __KCL_VERBS= $(if $(KCL_API_RESOURCES_VERBS),--verbs $(subst $(SPACE),$(COMMA),$(KCL_API_RESOURCES_VERBS)))
 
-# UI parameters
+# Customizations
 
 #--- Utilities
 

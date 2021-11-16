@@ -31,19 +31,17 @@ ELB2_TARGETS_SET_NAME?= targets@$(ELB2_TARGETS_TARGETGROUP_NAME)
 ELB2_TARGETS_TARGETGROUP_ARN?= $(ELB2_TARGET_TARGETGROUP_ARN)
 ELB2_TARGETS_TARGETGROUP_NAME?= $(ELB2_TARGET_TARGETGROUP_NAME)
 
-# Option parameters
+# Options
 __ELB2_TARGET_GROUP_ARN__TARGET= $(if $(ELB2_TARGET_TARGETGROUP_ARN),--target-group-arn $(ELB2_TARGET_TARGETGROUP_ARN))
 __ELB2_TARGET_GROUP_ARN__TARGETS= $(if $(ELB2_TARGETS_TARGETGROUP_ARN),--target-group-arn $(ELB2_TARGETS_TARGETGROUP_ARN))
 __ELB2_TARGETS__TARGET= $(if $(ELB2_TARGET_CONFIG),--targets $(ELB2_TARGET_CONFIG)) 
 __ELB2_TARGETS__TARGETS= $(if $(ELB2_TARGETS_CONFIGS),--targets $(ELB2_TARGETS_CONFIGS)) 
 
-# UI parameters
-ELB2_UI_VIEW_TARGETS_FIELDS?= # .{TargetGroupName:TargetGroupName,protocol:Protocol,port:Port,targetType:TargetType,vpcId:VpcId,protocolVersion:ProtocolVersion,TargetGroupArn:TargetGroupArn}
-ELB2_UI_VIEW_TARGETS_SET_FIELDS?= $(ELB2_UI_VIEW_TARGETGROUPS_FIELDS)
-ELB2_UI_VIEW_TARGETS_SET_QUERYFILTER?=
-
-# Pipe
-|_CURL_TARGET?= | head -10
+# Customizations
+|_ELB2_CURL_TARGET?= | head -10
+_ELB2_LIST_TARGETS_FIELDS?= # .{TargetGroupName:TargetGroupName,protocol:Protocol,port:Port,targetType:TargetType,vpcId:VpcId,protocolVersion:ProtocolVersion,TargetGroupArn:TargetGroupArn}
+_ELB2_LIST_TARGETS_SET_FIELDS?= $(_ELB2_LIST_TARGETGROUPS_FIELDS)
+_ELB2_LIST_TARGETS_SET_QUERYFILTER?=
 
 #--- MACROS
 
@@ -51,11 +49,11 @@ ELB2_UI_VIEW_TARGETS_SET_QUERYFILTER?=
 # USAGE
 #
 
-_elb2_view_framework_macros ::
-	@echo 'AWS::ElasticLoadBalancerV2::Target ($(_AWS_ELBV2_TARGET_MK_VERSION)) macros:'
-	@echo
+_elb2_list_macros ::
+	@#echo 'AWS::ElasticLoadBalancerV2::Target ($(_AWS_ELBV2_TARGET_MK_VERSION)) macros:'
+	@#echo
 
-_elb2_view_framework_parameters ::
+_elb2_list_parameters ::
 	@echo 'AWS::ElasticLoadBalancerV2::Target($(_AWS_ELBV2_TARGET_MK_VERSION)) parameters:'
 	@echo '    ELB2_TARGET_ARN=$(ELB2_TARGET_ARN)'
 	@echo '    ELB2_TARGET_AZ_ID=$(ELB2_TARGET_AZ_ID)'
@@ -75,7 +73,7 @@ _elb2_view_framework_parameters ::
 	@echo '    ELB2_TARGETS_SET_NAME=$(ELB2_TARGETS_SET_NAME)'
 	@echo
 
-_elb2_view_framework_targets ::
+_elb2_list_targets ::
 	@echo 'AWS::ElasticLoadBalancerV2::Target($(_AWS_ELBV2_TARGET_MK_VERSION)) targets:'
 	@#echo '    _elb2_create_target                           - Create a target'
 	@#echo '    _elb2_delete_target                           - Delete an target'
@@ -83,12 +81,12 @@ _elb2_view_framework_targets ::
 	@echo '    _elb2_deregister_targets                      - Deregister a group of targets'
 	@echo '    _elb2_register_target                         - Register a target'
 	@echo '    _elb2_register_targets                        - Register a group of targets'
+	@echo '    _elb2_list_targets_                           - List all targets'
+	@echo '    _elb2_list_targets_set                        - List a set of targets'
 	@echo '    _elb2_show_target                             - Show everything related to a target'
 	@echo '    _elb2_show_target_description                 - Show description of a target'
 	@echo '    _elb2_show_target_health                      - Show the health of a target'
 	@echo '    _elb2_show_target_targetgroup                 - Show the target-group of a target'
-	@echo '    _elb2_view_targets                            - View all targets'
-	@echo '    _elb2_view_targets_set                        - View a set of targets'
 	@echo '    _elb2_watch_targets                           - Watch all targets'
 	@echo '    _elb2_watch_targets_set                       - Watch a set of targets'
 	@echo 
@@ -105,7 +103,7 @@ _elb2_create_target: _elb2_register_target
 
 _elb2_curl_target:
 	@$(INFO) '$(ELB2_UI_LABEL)Curling target "$(ELB2_TARGET_NAME)" ...'; $(NORMAL)
-	$(ELB2_CURL) $(ELB2_TARGET_URL) $(|_CURL_TARGET)
+	$(ELB2_CURL) $(ELB2_TARGET_URL) $(|_ELB2_CURL_TARGET)
 
 _elb2_delete_target:
 	@$(INFO) '$(ELB2_UI_LABEL)Deleting/Deregister target "$(ELB2_TARGET_NAME)" ...'; $(NORMAL)
@@ -127,7 +125,17 @@ _elb2_register_targets:
 	@$(INFO) '$(ELB2_UI_LABEL)Registering targets "$(ELB2_TARGETS_NAME)" ...'; $(NORMAL)
 	$(AWS) elbv2 register-targets $(__ELB2_TARGET_GROUP_ARN__TARGETS) $(__ELB2_TARGETS__TARGETS)
 
-_elb2_show_target: _elb2_show_target_health _elb2_show_target_targetgroup _elb2_show_target_description
+_elb2_list_targets_:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing ALL targets ...'; $(NORMAL)
+	$(AWS) elbv2 describe-target-groups $(_X__ELB2_LOAD_BALANCER_ARNS) $(_X__ELB2_NAMES__TARGETGROUPS) --query "TargetGroups[]$(_ELB2_LIST_TARGETGROUPS_FIELDS)"
+
+_elb2_list_targets_set:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing targets-set "$(ELB2_TARGETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Targets are grouped based on the provided target-group ARNs/names, and query-filter'; $(NORMAL)
+	$(AWS) elbv2 describe-target-groups $(__ELB2_LOAD_BALANCER_ARN__TARGETGROUPS) $(__ELB2_NAMES__TARGETGROUPS) $(__ELB2_TARGETGROUP_ARNS) --query "TargetGroups[$(_ELB2_LIST_TARGETGROUPS_SET_QUERYFILTER)]$(_ELB2_LIST_TARGETGROUPS_SET_FIELDS)"
+
+_ELB2_SHOW_TARGET_TARGETS?= _elb2_show_target_health _elb2_show_target_targetgroup _elb2_show_target_description
+_elb2_show_target: $(_ELB2_SHOW_TARGET_TARGETS)
 
 _elb2_show_target_description:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing description of target "$(ELB2_TARGET_NAME)" ...'; $(NORMAL)
@@ -142,15 +150,6 @@ _elb2_show_target_targetgroup:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing target-group of target "$(ELB2_TARGET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the target-group does not exist'; $(NORMAL)
 	-$(AWS) elbv2 describe-target-groups $(_X__ELB2_LOAD_BALANCER_ARNS__TARGETGROUP) $(__ELB2_NAMES__TARGETGROUP) $(_X__ELB2_TARGET_GROUP_ARNS) --query "TargetGroups[]"
-
-_elb2_view_targets:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing ALL targets ...'; $(NORMAL)
-	$(AWS) elbv2 describe-target-groups $(_X__ELB2_LOAD_BALANCER_ARNS) $(_X__ELB2_NAMES__TARGETGROUPS) --query "TargetGroups[]$(ELB2_UI_VIEW_TARGETGROUPS_FIELDS)"
-
-_elb2_view_targets_set:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing targets-set "$(ELB2_TARGETS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Targets are grouped based on the provided target-group ARNs/names, and query-filter'; $(NORMAL)
-	$(AWS) elbv2 describe-target-groups $(__ELB2_LOAD_BALANCER_ARN__TARGETGROUPS) $(__ELB2_NAMES__TARGETGROUPS) $(__ELB2_TARGETGROUP_ARNS) --query "TargetGroups[$(ELB2_UI_VIEW_TARGETGROUPS_SET_QUERYFILTER)]$(ELB2_UI_VIEW_TARGETGROUPS_SET_FIELDS)"
 
 _elb2_watch_targets:
 	@$(INFO) '$(ELB2_UI_LABEL)Watching ALL targets ...'; $(NORMAL)

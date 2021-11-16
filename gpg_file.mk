@@ -7,10 +7,10 @@ _GPG_FILE_MK_VERSION= $(_GPG_MK_VERSION)
 # Derived parameters
 GPG_FILE_DECRYPTED_FILEPATH?= $(if $(GPG_FILE_ENCRYPTED_FILEPATH),$(GPG_FILE_ENCRYPTED_FILEPATH).gpg)
 
-# Option parameters
+# Options
 __GPG_SYMMETRIC?= $(if $(filter true, $(GPG_FILE_SYMMETRIC_ENABLE)),--symmetric)
 
-# UI parameters
+# Customizations
 
 #--- Utilities
 

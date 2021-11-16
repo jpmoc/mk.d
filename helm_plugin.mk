@@ -6,10 +6,10 @@ _HELM_PLUGIN_MK_VERSION= $(_HELM_MK_VERSION)
 
 # Derived parameters
 
-# Option parameters
+# Options
 __HLM_VERSION__PLUGIN= $(if $(HLM_PLUGIN_VERSION),--version $(HLM_PLUGIN_VERSION))
 
-# UI parameters
+# Customizations
 
 #--- Utilities
 

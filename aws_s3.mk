@@ -1,15 +1,15 @@
 _AWS_S3_MK_VERSION= 0.99.1
 
 # S3_PARAMETER?= value
+S3_UI_LABEL?= $(AWS_UI_LABEL)
 
 # Derived parameters 
 
 # Options
 
-# UI parameters
-S3_UI_LABEL?= $(AWS_UI_LABEL)
+# Customizations
 
-# Commands
+# Utilities
 
 #--- MACROS
 
@@ -30,7 +30,7 @@ _s3_list_parameters ::
 _aws_list_targets :: _s3_list_targets
 _s3_list_targets ::
 	@echo 'AWS::S3:: ($(_AWS_S3_MK_VERSION)) targets:'
-	@echo '    _s3_view_account_limits            - View related AWS limits'
+	@echo '    _s3_view_limits            - View S3 limits'
 	@echo
 
 #----------------------------------------------------------------------
@@ -46,7 +46,8 @@ MK_DIR?= .
 # PUBLIC TARGETS
 #
 
-_aws_view_account_limits :: _s3_view_account_limits
-_s3_view_account_limits:
-	@$(INFO) '$(S3_UI_LABEL)Viewing S3 account limits ...'; $(NORMAL)
+_aws_view_limits :: _s3_view_limits
+_s3_view_limits:
+	@$(INFO) '$(S3_UI_LABEL)Viewing S3 limits ...'; $(NORMAL)
+	@$(WARN) 'This operations returns account-limits as S3 is a global service'; $(NORMAL) 
 	@echo 'Maximum bucket count=1000'

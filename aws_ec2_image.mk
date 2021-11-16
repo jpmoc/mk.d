@@ -29,8 +29,8 @@ EC2_IMAGE_OWNERS?= $(EC2_IMAGE_OWNER)
 EC2_SOURCE_IMAGE_NAME?= $(EC2_IMAGE_NAME)
 EC2_SOURCE_IMAGE_OWNER?= $(EC2_IMAGE_OWNER)
 
-# Option parameters
-__EC2_DESCRIPTION_IMAGE= $(if $(EC2_IMAGE_DESCRIPTION),--description $(EC2_IMAGE_DESCRIPTION))
+# Options
+__EC2_DESCRIPTION__IMAGE= $(if $(EC2_IMAGE_DESCRIPTION),--description $(EC2_IMAGE_DESCRIPTION))
 __EC2_ENCRYPTED= $(if $(EC2_ENCRYPTED_IMAGE),--encrypted,--no-encrypted)
 __EC2_IMAGE_FILTERS= $(if $(EC2_IMAGE_FILTERS),--filters $(EC2_IMAGE_FILTERS))
 __EC2_IMAGE_ID= $(if $(EC2_IMAGE_ID),--image-id $(EC2_IMAGE_ID))
@@ -42,13 +42,13 @@ __EC2_OWNER= $(if $(EC2_IMAGE_OWNER),--owner $(EC2_IMAGE_OWNER))
 __EC2_OWNERS= $(if $(EC2_IMAGE_OWNERS),--owners $(EC2_IMAGE_OWNERS))
 __EC2_SOURCE_IMAGE_ID= $(if $(EC2_SOURCE_IMAGE_ID),--source-image-id $(EC2_SOURCE_IMAGE_ID))
 __EC2_SOURCE_REGION= $(if $(EC2_SOURCE_IMAGE_REGION),--source-region $(EC2_SOURCE_IMAGE_REGION))
-__EC2_IMAGE_TAGS= $(if $(EC2_IMAGE_TAGS),--tags $(EC2_IMAGE_TAGS))
+__EC2_TAGS__IMAGE= $(if $(EC2_IMAGE_TAGS),--tags $(EC2_IMAGE_TAGS))
 
-# UI parameters
-EC2_UI_SHOW_IMAGE_OVERVIEW_FIELDS?=
-EC2_UI_SHOW_IMAGE_USAGE_FIELDS?= .{Name:Tags[?Key=='Name'] | [0].Value, InstanceType:InstanceType}
-EC2_UI_VIEW_IMAGES_FIELDS?= .{creationDate:CreationDate,ImageId:ImageId,Name:Name}
-EC2_UI_VIEW_IMAGE_STATES_FIELDS?= .{CreationDate:CreationDate,ImageId:ImageId,Name:Name,_State:State}
+# Customizations
+_EC2_LIST_IMAGES_FIELDS?= .{creationDate:CreationDate,ImageId:ImageId,Name:Name}
+_EC2_LIST_IMAGE_STATES_FIELDS?= .{CreationDate:CreationDate,ImageId:ImageId,Name:Name,_State:State}
+_EC2_SHOW_IMAGE_OVERVIEW_FIELDS?=
+_EC2_SHOW_IMAGE_USAGE_FIELDS?= .{Name:Tags[?Key=='Name'] | [0].Value, InstanceType:InstanceType}
 
 #--- Macros
 
@@ -69,7 +69,7 @@ _ec2_get_snapshot_id_ID= $(if $(1),$(shell $(AWS) ec2 describe-images --query 'I
 # USAGE
 #
 
-_ec2_view_framework_macros ::
+_ec2_list_macros ::
 	@echo 'AWS::EC2::Image ($(_AWS_EC2_IMAGE_MK_VERSION)) macros:'
 	@echo '    _ec2_get_image_id_{|N|VF}               - Get an Image ID (Name,Value,Field)'
 	@echo '    _ec2_get_image_name_{|I}                - Get an Image name (Id)'
@@ -77,22 +77,7 @@ _ec2_view_framework_macros ::
 	@echo '    _ec2_get_snapshot_id_ID                 - Get a snapshot ID (Image Id, Default)'
 	@echo
 
-_ec2_view_framework_targets ::
-	@echo 'AWS::EC2::Image ($(_AWS_EC2_IMAGE_MK_VERSION)) targets:'
-	@echo '    _ec2_create_image                - Create an image from a running instance'
-	@echo '    _ec2_deregister_image            - Deregister an existing image'
-	@echo '    _ec2_tag_image                   - Tag an existing image'
-	@echo '    _ec2_update_image                - Replace an existing image'
-	@echo '    _ec2_show_image                  - Show everything related to  an image'
-	@echo '    _ec2_show_image_attribute        - Show the attributes of an images'
-	@echo '    _ec2_show_image_description      - Show description of an image'
-	@echo '    _ec2_show_image_instances        - Show instances with an image'
-	@echo '    _ec2_show_image_tags             - Show tags of an image'
-	@echo '    _ec2_view_images                 - Display the list of image with same basename'
-	@echo '    _ec2_view_image_set              - View a set/famliy of images'
-	@echo 
-
-_ec2_view_framework_parameters ::
+_ec2_list_parameters ::
 	@echo 'AWS::EC2::Image ($(_AWS_EC2_IMAGE_MK_VERSION)) parameters:'
 	@echo '    EC2_IMAGE_ATTRIBUTES=$(EC2_IMAGE_ATTRIBUTES)'
 	@echo '    EC2_IMAGE_BASENAME=$(EC2_IMAGE_BASENAME)'
@@ -114,6 +99,22 @@ _ec2_view_framework_parameters ::
 	@echo '    EC2_SOURCE_IMAGE_REGION=$(EC2_SOURCE_IMAGE_REGION)'
 	@echo
 
+_ec2_list_targets ::
+	@echo 'AWS::EC2::Image ($(_AWS_EC2_IMAGE_MK_VERSION)) targets:'
+	@echo '    _ec2_create_image                - Create an image from a running instance'
+	@echo '    _ec2_deregister_image            - Deregister an existing image'
+	@echo '    _ec2_list_images                 - List all images'
+	@echo '    _ec2_list_image_set              - List a set of images'
+	@echo '    _ec2_show_image                  - Show everything related to  an image'
+	@echo '    _ec2_show_image_attribute        - Show the attributes of an images'
+	@echo '    _ec2_show_image_description      - Show description of an image'
+	@echo '    _ec2_show_image_instances        - Show instances with an image'
+	@echo '    _ec2_show_image_tags             - Show tags of an image'
+	@echo '    _ec2_tag_image                   - Tag an image'
+	@echo '    _ec2_untag_image                 - Un-tag an image'
+	@echo '    _ec2_update_image                - Replace an existing image'
+	@echo 
+
 #----------------------------------------------------------------------
 # PRIVATE TARGETS
 #
@@ -124,10 +125,10 @@ _ec2_view_framework_parameters ::
 #
 
 _ec2_create_image:
-	@$(INFO) '$(EC2_UI_LABEL)Creating an image "$(EC2_IMAGE_NAME)" based on instance "$(EC2_INSTANCE_ID)" ...'
+	@$(INFO) '$(EC2_UI_LABEL)Creating image "$(EC2_IMAGE_NAME)" based on instance "$(EC2_INSTANCE_ID)" ...'
 	@$(WARN) 'If you want to replace an existing image, deregisted it first!'
 	@$(NORMAL)
-	$(AWS) ec2 create-image --instance-id $(EC2_INSTANCE_ID) $(__EC2I_NAME) $(__EC2_DESCRIPTION_IMAGE)
+	$(AWS) ec2 create-image --instance-id $(EC2_INSTANCE_ID) $(__EC2I_NAME) $(__EC2_DESCRIPTION__IMAGE)
 	@$(WARN) 'The image creation process forces a REBOOT of the host that is being imaged.'
 	@$(WARN) -n 'The image creation process can take a few minutes ...'; 
 	@while [ -z $${_IMAGE_ID} ]; do \
@@ -168,7 +169,18 @@ _ec2_copy_image:
         done; echo
 	@$(INFO) '$(EC2_UI_LABEL)Image now available in $(AWS_REGION): $(EC2_IMAGE_NAME) ($(EC2_IMAGE_ID))'; $(NORMAL)
 
-_ec2_show_image:: _ec2_show_image_attributes _ec2_show_image_instances _ec2_show_image_tags _ec2_show_image_description
+_ec2_list_images:
+	@$(INFO) '$(EC2_UI_LABEL)Listing ALL images ...'; $(NORMAL)
+	@$(WARN) 'Owners: $(EC2_IMAGE_OWNERS)'; $(NORMAL)
+	$(AWS) ec2 describe-images $(__EC2_IMAGE_FILTERS) $(__EC2_OWNERS) --query "sort_by(Images,&Name)[]$(_EC2_LIST_IMAGES_FIELDS)"
+
+_ec2_list_images_set:
+	@$(INFO) '$(EC2_UI_LABEL)Listing images-set "$(EC2_IMAGES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Images are grouped based on the provided image-ids'; $(NORMAL)
+	$(AWS) ec2 describe-images $(__EC2_IMAGE_IDS__IMAGES)
+
+_EC2_SHOW_IMAGE_TARGES?= _ec2_show_image_attributes _ec2_show_image_instances _ec2_show_image_tags _ec2_show_image_description
+_ec2_show_image: $(_EC2_SHOW_IMAGE_TARGETS)
 
 _ec2_show_image_attributes:
 	@$(INFO) '$(EC2_UI_LABEL)Showing attributes for image "$(EC2_IMAGE_NAME)" ...'; $(NORMAL)
@@ -180,31 +192,23 @@ _ec2_show_image_attributes:
 
 _ec2_show_image_description:
 	@$(INFO) '$(EC2_UI_LABEL)Showing description of image "$(EC2_IMAGE_NAME)" ...'; $(NORMAL)
-	$(AWS) ec2 describe-images $(__EC2_IMAGE_IDS__IMAGE) --query 'Images[]$(EC2_UI_SHOW_IMAGE_OVERVIEW_FIELDS)'
+	$(AWS) ec2 describe-images $(__EC2_IMAGE_IDS__IMAGE) --query 'Images[]$(_EC2_SHOW_IMAGE_OVERVIEW_FIELDS)'
 
 _ec2_show_image_instances:
 	@$(INFO) '$(EC2_UI_LABEL)Showing instances that are using image "$(EC2_IMAGE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'The returned instances are in the current account!'; $(NORMAL)
 	@$(WARN) 'This operation does NOT return the instances in the other AWS account with which the image was shared'; $(NORMAL)
-	$(AWS) ec2 describe-instances --filters "Name=image-id,Values=$(EC2_IMAGE_ID)" --query "Reservations[].Instances[]$(EC2_UI_SHOW_IMAGE_USAGE_FIELDS)"
+	$(AWS) ec2 describe-instances --filters "Name=image-id,Values=$(EC2_IMAGE_ID)" --query "Reservations[].Instances[]$(_EC2_SHOW_IMAGE_USAGE_FIELDS)"
 
 _ec2_show_image_tags:
 	@$(INFO) '$(EC2_UI_LABEL)Showing tags of image "$(EC2_IMAGE_NAME)" ...'; $(NORMAL)
 	$(AWS) ec2 describe-images $(__EC2_IMAGE_IDS__IMAGE) --query 'Images[].Tags[]'
 
 _ec2_tag_image:
-	@$(INFO) '$(EC2_UI_LABEL)Tagging image "$(EC2_IMAGE_ID)" ...'
-	@$(WARN) 'The image needs to be available in this region for this operation to complete successfully.'
-	@$(WARN) 'If you just created, exported, or copied the image, it may not be accessible yet.'
-	@$(NORMAL)
-	$(AWS) ec2 create-tags $(__EC2_IMAGE_TAGS) --resources $(EC2_IMAGE_ID)
+	@$(INFO) '$(EC2_UI_LABEL)Tagging image "$(EC2_IMAGE_ID)" ...'; $(NORMAL)
+	@$(WARN) 'The image needs to be available in this region for this operation to complete successfully.'; $(NORMAL)
+	@$(WARN) 'If you just created, exported, or copied the image, it may not be accessible yet.'; $(NORMAL)
+	$(AWS) ec2 create-tags $(__EC2_TAGS__IMAGE) --resources $(EC2_IMAGE_ID)
 
-_ec2_view_images:
-	@$(INFO) '$(EC2_UI_LABEL)View images ...'; $(NORMAL)
-	@$(WARN) 'Owners: $(EC2_IMAGE_OWNERS)'; $(NORMAL)
-	$(AWS) ec2 describe-images $(__EC2_IMAGE_FILTERS) $(__EC2_OWNERS) --query "sort_by(Images,&Name)[]$(EC2_UI_VIEW_IMAGES_FIELDS)"
-
-_ec2_view_images_set:
-	@$(INFO) '$(EC2_UI_LABEL)Viewing images-set "$(EC2_IMAGES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Images are grouped based on the provided image-ids'; $(NORMAL)
-	$(AWS) ec2 describe-images $(__EC2_IMAGE_IDS__IMAGES)
+_ec2_untag_image:
+	@$(INFO) '$(EC2_UI_LABEL)Un-tagging image "$(EC2_IMAGE_ID)" ...'; $(NORMAL)

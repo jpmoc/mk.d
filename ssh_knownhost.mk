@@ -19,11 +19,11 @@ __SSH_KNOWNHOSTS_FILE?= $(if $(SSH_KNOWNHOSTS_FILEPATH),-f $(SSH_KNOWNHOSTS_FILE
 # USAGE
 #
 
-_ssh_view_framework_macros ::
+_ssh_list_macros ::
 	@echo 'SSH::KnownHost ($(_SSH_KNWONHOST_MK_VERSION)) macros:'
 	@echo
 
-_ssh_view_framework_parameters ::
+_ssh_list_parameters ::
 	@echo 'SSH::KnownHost ($(_SSH_KNWONHOST_MK_VERSION)) parameters:'
 	@echo '    SSH_KNOWNHOST_IP=$(SSH_KNOWNHOST_IP)'
 	@echo '    SSH_KNOWNHOST_IP_OR_NAME=$(SSH_KNOWNHOST_IP_OR_NAME)'
@@ -31,13 +31,14 @@ _ssh_view_framework_parameters ::
 	@echo '    SSH_KNOWNHOSTS_FILEPATH=$(SSH_KNOWNHOSTS_FILEPATH)'
 	@echo
 
-_ssh_view_framework_targets ::
+_ssh_list_targets ::
 	@echo 'SSH::KnownHost ($(_SSH_KNWONHOST_MK_VERSION)) targets:'
 	@echo '    _ssh_create_knownhost                - Create a known-host'
 	@echo '    _ssh_delete_knownhost                - Delete a known-host'
 	@echo '    _ssh_show_knownhost                  - Show everything related to a known-host'
 	@echo '    _ssh_show_knownhost_description      - Show description of a known-host'
-	@echo '    _ssh_view_knownhosts                 - View all known-hosts'
+	@echo '    _ssh_list_knownhosts                 - List all known-hosts'
+	@echo '    _ssh_list_knownhosts_set             - List a set of known-hosts'
 	@echo
 
 #----------------------------------------------------------------------
@@ -54,9 +55,13 @@ _ssh_delete_knownhost:
 _ssh_show_knownhost: _ssh_show_knownhost_description
 
 _ssh_show_knownhost_description:
-	@$(INFO) '$(SSH_UI_LABEL)Viewing known-hosts ...'; $(NORMAL)
+	@$(INFO) '$(SSH_UI_LABEL)Showing description of known-host ...'; $(NORMAL)
 	cat $(SSH_KNOWNHOSTS_FILEPATH) | grep $(SSH_KNWONHOST_IP_OR_NAME)
 
-_ssh_view_knownhosts:
-	@$(INFO) '$(SSH_UI_LABEL)Viewing known-hosts ...'; $(NORMAL)
+_ssh_list_knownhosts:
+	@$(INFO) '$(SSH_UI_LABEL)Listing ALL known-hosts ...'; $(NORMAL)
 	cat $(SSH_KNOWNHOSTS_FILEPATH)
+
+_ssh_list_knownhosts_set:
+	@$(INFO) '$(SSH_UI_LABEL)Listing known-hosts-set ...'; $(NORMAL)
+	cat $(SSH_KNOWNHOSTS_FILEPATH) | grep REGEX

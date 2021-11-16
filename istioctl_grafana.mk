@@ -17,14 +17,11 @@ ICL_GRAFANA_NAMESPACE_NAME?= $(ICL_ISTIO_NAMESPACE_NAME)
 ICL_GRAFANA_PORTFORWARD_PORTS?= $(ICL_GRAFANA_PORT):$(ICL_GRAFANA_PORT)
 ICL_GRAFANA_URL?= http://$(ICL_GRAFANA_IP_OR_HOST):$(ICL_GRAFANA_PORT)
 
-# Option parameters
+# Options
 __ICL_NAMESPACE__GRAFANA= $(if $(ICL_GRAFANA_NAMESPACE_NAME),--namespace $(ICL_GRAFANA_NAMESPACE_NAME))
 __ICL_SELECTOR__GRAFANA= $(if $(ICL_GRAFANA_PODS_SELECTOR),--selector $(ICL_GRAFANA_PODS_SELECTOR))
 
-# UI parameters
-
-#--- Utilities
-
+# Customizations
 
 #--- Macros
 _icl_get_grafana_pods_names= $(call _icl_get_grafana_pods_names_S, $(ICL_GRAFANA_PODS_SELECTOR))

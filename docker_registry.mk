@@ -27,7 +27,7 @@ DKR_REGISTRY_REGISTRYCONFIG_DIRPATH?= $(DKR_REGISTRYCONFIG_DIRPATH)
 DKR_REGISTRY_REGISTRYCONFIG_FILENAME?= $(DKR_REGISTRYCONFIG_FILENAME)
 DKR_REGISTRY_REGISTRYCONFIG_FILEPATH?= $(DKR_REGISTRY_REGISTRYCONFIG_DIRPATH)$(DKR_REGISTRY_REGISTRYCONFIG_FILENAME)
 
-# Option parameters
+# Options
 __DKR_FORMAT__REGISTRY= $(if $(DKR_REGISTRY_SEARCH_FORMAT),--format $(DKR_REGSITRY_SEARCH_FORMAT))
 __DKR_FILTER= $(if $(DKR_REGISTRY_SEARCH_FILTER),--filter $(DKR_REGISTRY_SEARCH_FILTER))
 __DKR_LIMIT= $(if $(DKR_REGISTRY_SEARCH_LIMIT),--limit $(DKR_REGISTRY_SEARCH_LIMIT))
@@ -36,20 +36,20 @@ __DKR_PASSWORD= $(if $(DKR_REGISTRY_USER_PASSWORD),--password $(DKR_REGISTRY_USE
 __DKR_PASSWORD_STDIN= $(if $(filter true,$(DKR_REGISTRY_PASSWORD_STDIN)),--password-stdin)
 __DKR_USERNAME= $(if $(DKR_REGISTRY_USER_NAME),--username $(DKR_REGISTRY_USER_NAME))
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_dkr_view_framework_macros ::
+_dkr_list_macros ::
 	@echo 'DocKeR::Registry ($(_DOCKER_REGISTRY_MK_VERSION)) targets:'
 	@echo '    _dkr_get_image_id_{|N}        - Get the ID of an image (Name)'
 	@echo
 
-_dkr_view_framework_parameters ::
+_dkr_list_parameters ::
 	@echo 'DocKeR::Registry ($(_DOCKER_REGISTRY_MK_VERSION)) parameters:'
 	@echo '    DKR_REGISTRY_API_HOSTPORT=$(DKR_REGISTRY_API_HOSTPORT)'
 	@echo '    DKR_REGISTRY_API_PROTOCOL=$(DKR_REGISTRY_API_PROTOCOL)'
@@ -70,13 +70,13 @@ _dkr_view_framework_parameters ::
 	@echo '    DKR_REGISTRY_USER_NAME=$(DKR_REGISTRY_USER_NAME)'
 	@echo
 
-_dkr_view_framework_targets ::
+_dkr_list_targets ::
 	@echo 'DocKeR::Registry ($(_DOCKER_REGISTRY_MK_VERSION)) targets:'
 	@echo '    _dkr_login_registry                     - Log in a Docker registry'
 	@echo '    _dkr_logout_registry                    - Log out of a Docker registry'
 	@echo '    _dkr_run_registry                       - Run a local registry'
 	@echo '    _dkr_search_registry                    - Crawl Docker Hub for images whose name match'
-	@echo '    _dkr_show_regsitry                      - Show everything related to a registry'
+	@echo '    _dkr_show_registry                      - Show everything related to a registry'
 	@echo '    _dkr_show_registry_config               - Show the config for a registry'
 	@echo '    _dkr_show_registry_repositories         - Show the repositories in a registry'
 	@echo
@@ -84,7 +84,6 @@ _dkr_view_framework_targets ::
 #----------------------------------------------------------------------
 # PRIVATE TARGETS
 #
-
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
@@ -114,7 +113,8 @@ _dkr_search_registry:
 	@$(WARN) 'On DockerHub, repository-names are username/repo_id'; $(NORMAL)
 	@$(WARN) 'On DockerHub, repository-uris are docker.io/username/repo_id'; $(NORMAL)
 
-_dkr_show_registry :: _dkr_show_registry_config  _dkr_show_registry_repositories
+_DKR_SHOW_REGISTRY_TARGETS?= _dkr_show_registry_config  _dkr_show_registry_repositories
+_dkr_show_registry: $(_DKR_SHOW_REGISTRY_TARGETS)
 
 _dkr_show_registry_config:
 	@$(INFO) '$(DKR_UI_LABEL)Showing config for registry "$(DKR_REGISTRY_NAME)" ...'; $(NORMAL)

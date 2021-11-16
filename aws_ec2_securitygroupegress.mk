@@ -38,10 +38,10 @@ __EC2_PORT__SECURITYGROUPEGRESS+= $(if $(EC2_SECURITYGROUPEGRESS_RULE_PORTRANGE)
 __EC2_PROTOCOL__SECURITYGROUPEGRESS= $(if $(EC2_SECURITYGROUPEGRESS_RULE_PROTOCOL),--protocol $(EC2_SECURITYGROUPEGRESS_RULE_PROTOCOL))
 
 # UI parameters
-EC2_UI_SHOW_SECURITYGROUPEGRESS_FIELDS?= # .{FromPort:FromPort,ipProtocol:IpProtocol,ToPort:ToPort,ipRanges:IpRanges[*].CidrIp|join('  ',@),description:IpRanges[0].Description}
-EC2_UI_VIEW_SECURITYGROUPEGRESSES_FIELDS?= # .{GroupId:GroupId,GroupName:GroupName,description:Description,vpcId:VpcId}
-EC2_UI_VIEW_SECURITYGROUPEGRESSES_SET_FIELDS?= $(EC2_UI_VIEW_SECURITYGROUPEGRESSES_FIELDS)
-EC2_UI_VIEW_SECURITYGROUPEGRESSES_SET_QUERYFILTER?=
+_EC2_LIST_SECURITYGROUPEGRESSES_FIELDS?= # .{GroupId:GroupId,GroupName:GroupName,description:Description,vpcId:VpcId}
+_EC2_LIST_SECURITYGROUPEGRESSES_SET_FIELDS?= $(_EC2_LIST_SECURITYGROUPEGRESSES_FIELDS)
+_EC2_LIST_SECURITYGROUPEGRESSES_SET_QUERYFILTER?=
+_EC2_SHOW_SECURITYGROUPEGRESS_FIELDS?= # .{FromPort:FromPort,ipProtocol:IpProtocol,ToPort:ToPort,ipRanges:IpRanges[*].CidrIp|join('  ',@),description:IpRanges[0].Description}
 
 #--- Macros
 
@@ -49,11 +49,11 @@ EC2_UI_VIEW_SECURITYGROUPEGRESSES_SET_QUERYFILTER?=
 # USAGE
 #
 
-_ec2_view_framework_macros ::
-	@echo 'AWS::EC2::SecurityGroupEgress ($(_AWS_EC2_SECURITYGROUPEGRESS_MK_VERSION)) macros:'
-	@echo
+_ec2_list_macros ::
+	@#echo 'AWS::EC2::SecurityGroupEgress ($(_AWS_EC2_SECURITYGROUPEGRESS_MK_VERSION)) macros:'
+	@#echo
 
-_ec2_view_framework_parameters ::
+_ec2_list_parameters ::
 	@echo 'AWS::EC2::SecurityGroupEgress ($(_AWS_EC2_SECURITYGROUPEGRESS_MK_VERSION)) parameters:'
 	@echo '    EC2_SECURITYGROUPEGRESS_DESCRIPTION=$(EC2_SECURITYGROUPEGRESS_DESCRIPTION)'
 	@echo '    EC2_SECURITYGROUPEGRESS_NAME=$(EC2_SECURITYGROUPEGRESS_NAME)'
@@ -72,7 +72,7 @@ _ec2_view_framework_parameters ::
 	@echo '    EC2_SECURITYGROUPEGRESSES_SET_NAME=$(EC2_SECURITYGROUPEGRESSES_SET_NAME)'
 	@echo
 
-_ec2_view_framework_targets ::
+_ec2_list_targets ::
 	@echo 'AWS::EC2::SecurityGroupEgress ($(_AWS_EC2_SECURITYGROUPEGRESS_MK_VERSION)) targets:'
 	@echo '    _ec2_create_securitygroupegress              - Create a security-group-egress'
 	@echo '    _ec2_create_securitygroupegresses            - Create a set of security-group-egresses'
@@ -81,8 +81,8 @@ _ec2_view_framework_targets ::
 	@echo '    _ec2_show_securitygroupegress                - Show everything related to a security-group-egress'
 	@echo '    _ec2_show_securitygroupegress_description    - Show description for a security-group-egress'
 	@echo '    _ec2_show_securitygroupegress_securitygroup  - Show egress-rules for a security-group'
-	@echo '    _ec2_view_securitygroupegresses              - View all security-group-egresses'
-	@echo '    _ec2_view_securitygroupegresses_set          - View a set of security-group-egresses'
+	@echo '    _ec2_list_securitygroupegresses              - List all security-group-egresses'
+	@echo '    _ec2_list_securitygroupegresses_set          - List a set of security-group-egresses'
 	@echo '    _ec2_watch_securitygroupegresses             - Watch all security-group-egresses'
 	@echo '    _ec2_watch_securitygroupegresses_set         - Watch a set of security-group-egresses'
 	@echo 
@@ -110,25 +110,26 @@ _ec2_delete_securitygroupegress:
 	@$(WARN) 'You can revoke rules that do not exist!'; $(NORMAL)
 	$(AWS) ec2 revoke-security-group-egress $(__EC2_CIDR) $(__EC2_GROUPEGRESS_ID) $(_X__EC2_GROUPEGRESS_NAME) $(__EC2_GROUP_OWNER) $(__EC2_IP_PERMISSIONS) $(__EC2_PORT) $(__EC2_PROTOCOL) $(__EC2_SOURCE_GROUP)
 
-_ec2_show_securitygroupegress: _ec2_show_securitygroupegress_securitygroup _ec2_show_securitygroupegress_description
+_ec2_list_securitygroupegresses:
+	@$(INFO) '$(EC2_UI_LABEL)Listing ALL security-group-egresses ...'; $(NORMAL)
+
+_ec2_list_securitygroupegresses_set:
+	@$(INFO) '$(EC2_UI_LABEL)Listing security-group-egresses-set "$(EC2_SECURITYGROUPEGRESSES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Security-group-egresses are grouped based on the provided security-group and query-filter'; $(NORMAL)
+
+_EC2_SHOW_SECURITYGROUPEGRESS_TARGETS?= _ec2_show_securitygroupegress_securitygroup _ec2_show_securitygroupegress_description
+_ec2_show_securitygroupegress: $(_EC2_SHOW_SECURITYGROUPEGRESS_TARGETS)
 
 _ec2_show_securitygroupegress_description:
 	@$(INFO) '$(EC2_UI_LABEL)Showing description of security-group-egress "$(EC2_SECURITYGROUPEGRESS_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'If IpProtocol is set to -1, all destination ports are allowed'; $(NORMAL)
 	@$(WARN) 'If IpRange is set to 0.0.0.0/0, the rule is applicable for all source IP addresses'; $(NORMAL)
 	@$(WARN) 'If UserIdGroupPairs is set, the rule applies to hosts in the UserId AWS account that belong to the GroupId security group'; $(NORMAL)
-	$(AWS) ec2 describe-security-groups $(__EC2_GROUPS_IDS__SECURITYGROUPEGRESS) --query "SecurityGroups[].IpPermissions[]$(EC2_UI_SHOW_SECURITYGROUPEGRESS_EGRESS_FIELDS)"
+	$(AWS) ec2 describe-security-groups $(__EC2_GROUPS_IDS__SECURITYGROUPEGRESS) --query "SecurityGroups[].IpPermissions[]$(_EC2_SHOW_SECURITYGROUPEGRESS_EGRESS_FIELDS)"
 
 _ec2_show_securitygroupegress_securitygroup:
 	@$(INFO) '$(EC2_UI_LABEL)Showing security-group of security-group-egress "$(EC2_SECURITYGROUPEGRESS_NAME)" ...'; $(NORMAL)
 	$(AWS) ec2 describe-security-groups $(__EC2_GROUPS_IDS__SECURITYGROUPEGRESS)
-
-_ec2_view_securitygroupegresses:
-	@$(INFO) '$(EC2_UI_LABEL)Viewing ALL security-group-egresses ...'; $(NORMAL)
-
-_ec2_view_securitygroupegresses_set:
-	@$(INFO) '$(EC2_UI_LABEL)Viewing security-group-egresses-set "$(EC2_SECURITYGROUPEGRESSES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Security-group-egresses are grouped based on the provided security-group and query-filter'; $(NORMAL)
 
 _ec2_watch_securitygroupegresses:
 	@$(INFO) '$(EC2_UI_LABEL)Watching ALL security-group-egresses ...'; $(NORMAL)

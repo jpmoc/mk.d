@@ -13,7 +13,6 @@ _HELM_RELEASE_MK_VERSION= $(_HELM_MK_VERSION)
 HLM_RELEASE_MAX_COUNT?= 256
 # HLM_RELEASE_NAME?= happy-panda
 # HLM_RELEASE_NAMESPACE_NAME?= default
-# HLM_RELEASE_PURGE_FLAG?= false
 # HLM_RELEASE_REVISION_ID?= 1
 # HLM_RELEASE_UPGRADE_INSTALLENABLE?= true
 # HLM_RELEASE_URL?= http://host.sub.example.com
@@ -54,16 +53,20 @@ HLM_RELEASE_DNSNAME_SUBDOMAIN?= $(HLM_RELEASE_NAMESPACE_NAME).$(HLM_RELEASE_DNSN
 HLM_RELEASE_VALUES_DIRPATH?= $(HLM_INPUTS_DIRPATH)
 HLM_RELEASE_VALUES_FILEPATH?= $(if $(HLM_RELEASE_VALUES_FILENAME),$(HLM_RELEASE_VALUES_DIRPATH)$(HLM_RELEASE_VALUES_FILENAME))
 HLM_RELEASE_URL?= $(HLM_RELEASE_URL_PROTOCOL)$(HLM_RELEASE_DNSNAME)#:$(HLM_RELEASE_URL_PORT)
+HLM_RELEASES_LISTBYDATE_FLAG?= false
+HLM_RELEASES_LISTREVERSE_FLAG?= false
+HLM_RELEASES_LISTSHORT_FLAG?= false
+# HLM_RELEASES_LISTWIDTH_COUNT?= 60
 HLM_RELEASES_NAMESPACE_NAME= $(HLM_RELEASE_NAMESPACE_NAME)
 HLM_RELEASES_SET_NAME?= releases@$(HLM_RELEASES_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 __HLM_ALL=
 __HLM_ALL_NAMESPACE=
 __HLM_CA_FILE=
 __HLM_CERT_FILE=
-__HLM_COL_WIDTH= $(if $(HLM_UI_RELEASES_WIDTH),--col-width $(HLM_UI_LIST_RELEASE_WIDTH))
-__HLM_DATE__RELEASES= $(if $(filter true, $(HLM_UI_LIST_RELEASES_BYDATE)),--date)
+__HLM_COL_WIDTH= $(if $(HLM_RELEASES_LISTWIDTH_COUNT),--col-width $(HLM_RELEASES_LISTWIDTH_COUNT))
+__HLM_DATE__RELEASES= $(if $(filter true, $(HLM_RELEASES_LISTBYDATE_FLAG)),--date)
 __HLM_DEPLOYED= $(if $(filter true, $(HLM_RELEASES_DEPLOYED_FLAG)),--deployed)
 __HLM_DEP_UP=
 __HLM_DEVEL=
@@ -85,17 +88,16 @@ __HLM_OFFSET= $(if $(HLM_RELEASES_OFFSET),--offset $(HLM_RELEASES_OFFSET))
 __HLM_OUTPUT__RELEASE=
 __HLM_PASSWORD=
 __HLM_PENDING= $(if $(filter true, $(HLM_RELEASES_PENDING_FLAG)),--pending)
-__HLM_PURGE= $(if $(filter true, $(HLM_RELEASE_PURGE_FLAG)),--purge)
 __HLM_RECREATE_PODS=
 __HLM_REPLACE=
 __HLM_REPO=
 __HLM_RESET_VALUES=
 __HLM_REUSE_VALUE=
-__HLM_REVERSE= $(if $(filter true, $(HLM_UI_LIST_RELEASES_REVERSE)),--reverse)
+__HLM_REVERSE= $(if $(filter true, $(HLM_RELEASES_LISTREVERSE_FLAG)),--reverse)
 __HLM_REVISION= $(if $(HLM_RELEASE_REVISION_ID),--revision $(HLM_RELEASE_REVISION_ID))
 __HLM_SET__RELEASE= $(if $(HLM_RELEASE_VALUES_KEYVALUES),--set $(subst $(SPACE),$(COMMA),$(strip $(HLM_RELEASE_VALUES_KEYVALUES))))
 __HLM_SET_STRING__RELEASE=
-__HLM_SHORT= $(if $(filter true, $(HLM_UI_LIST_RELEASES_SHORT)),--short)
+__HLM_SHORT= $(if $(filter true, $(HLM_RELEASES_LISTSHORT_FLAG)),--short)
 __HLM_SUPERSEDED= $(if $(filter true, $(HLM_RELEASES_SUPERSEDED_FLAG)),--superseded)
 __HLM_TIMEOUT=
 __HLM_TLS=
@@ -108,18 +110,17 @@ __HLM_UNINSTALLING= $(if $(filter true, $(HLM_RELEASES_UNINSTALLING_FLAG)),--uni
 __HLM_USERNAME=
 __HLM_VALUES__RELEASE= $(if $(HLM_RELEASE_VALUES_FILEPATH),--values $(HLM_RELEASE_VALUES_FILEPATH))
 __HLM_VERIFY= $(if $(filter true, $(HLM_RELEASE_VERIFY_FLAG)),--verify)
-__HLM_VERSION= $(if $(HLM_RELEASE_CHART_VERSION),--version $(HLM_RELEASE_CHART_VERSION))
+__HLM_VERSION= $(if $(filter-out latest, $(HLM_RELEASE_CHART_VERSION)),--version $(HLM_RELEASE_CHART_VERSION))
 __HLM_WAIT= $(if $(filter true, $(HLM_RELEASE_WAIT_FLAG)),--wait)
 
-# UI parameters
-HLM_UI_LIST_RELEASES_BYDATE?= false
-HLM_UI_LIST_RELEASES_REVERSE?= false
-HLM_UI_LIST_RELEASES_SHORT?= false
-HLM_UI_LIST_RELEASES_WIDTH?= 60
-
-#--- Pipe
+# Customizations
 _HLM_DELETE_RELEASE_|?= -#
 |_HLM_LIST_RELEASES_SET?= #
+|_HLM_SHOW_RELEASE_HISTORY?= # | head -15; echo '...'
+|_HLM_SHOW_RELEASE_HOOKS?= ; echo#
+|_HLM_SHOW_RELEASE_MANIFEST?= | head -15; echo '...'
+|_HLM_SHOW_RELEASE_STATUS?= # | head -15; echo '...'
+|_HLM_SHOW_RELEASE_VALUES?= | head -15; echo '...'
 
 #--- MACROS
 
@@ -157,7 +158,6 @@ _hlm_list_parameters ::
 	@echo '    HLM_RELEASE_DRY_RUN=$(HLM_RELEASE_DRY_RUN)'
 	@echo '    HLM_RELEASE_NAME=$(HLM_RELEASE_NAME)'
 	@echo '    HLM_RELEASE_NAMESPACE_NAME=$(HLM_RELEASE_NAMESPACE_NAME)'
-	@echo '    HLM_RELEASE_PURGE_FLAG=$(HLM_RELEASE_PURGE_FLAG)'
 	@echo '    HLM_RELEASE_REVISION_ID=$(HLM_RELEASE_REVISION_ID)'
 	@echo '    HLM_RELEASE_UPGRADE_INSTALLENABLE=$(HLM_RELEASE_UPGRADE_INSTALLENABLE)'
 	@echo '    HLM_RELEASE_VALUES_DIRPATH=$(HLM_RELEASE_VALUES_DIRPATH)'
@@ -168,6 +168,10 @@ _hlm_list_parameters ::
 	@echo '    HLM_RELEASE_WAIT_FLAG=$(HLM_RELEASE_WAIT_FLAG)'
 	@echo '    HLM_RELEASES_DEPLOYED_FLAG=$(HLM_RELEASES_DEPLOYED_FLAG)'
 	@echo '    HLM_RELEASES_FILTER_REGEX=$(HLM_RELEASES_FILTER_REGEX)'
+	@echo '    HLM_RELEASES_LISTBYDATE_FLAG=$(HLM_RELEASES_LISTBYDATE_FLAG)'
+	@echo '    HLM_RELEASES_LISTREVERSE_FLAG=$(HLM_RELEASES_LISTREVERSE_FLAG)'
+	@echo '    HLM_RELEASES_LISTSHORT_FLAG=$(HLM_RELEASES_LISTSHORT_FLAG)'
+	@echo '    HLM_RELEASES_LISTWIDTH_COUNT=$(HLM_RELEASES_LISTWIDTH_COUNT)'
 	@echo '    HLM_RELEASES_MAX_COUNT=$(HLM_RELEASES_MAX_COUNT)'
 	@echo '    HLM_RELEASES_NAMESPACE_NAME=$(HLM_RELEASES_NAMESPACE_NAME)'
 	@echo '    HLM_RELEASES_OFFSET=$(HLM_RELEASES_OFFSET)'
@@ -236,7 +240,7 @@ _hlm_curl_release:
 _hlm_delete_release:
 	@$(INFO) '$(HLM_UI_LABEL)Deleting release "$(HLM_RELEASE_NAME)" '; $(NORMAL)
 	@$(WARN) 'The associated chart is "$(HLM_RELEASE_CHART_NAME)" ...'; $(NORMAL)
-	$(_HLM_DELETE_RELEASE_|)$(HELM) delete $(strip $(__HLM_DRY_RUN) $(__HLM_NAMESPACE__RELEASE) $(__HLM_NO_HOOKS) $(__HLM_PURGE) $(__HLM_TIMEOUT) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(HLM_RELEASE_NAME))
+	$(_HLM_DELETE_RELEASE_|)$(HELM) delete $(strip $(__HLM_DRY_RUN) $(__HLM_NAMESPACE__RELEASE) $(__HLM_NO_HOOKS) $(__HLM_TIMEOUT) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(HLM_RELEASE_NAME))
 
 _hlm_dig_release:
 	@$(INFO) '$(HLM_UI_LABEL)Dig-ing release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
@@ -278,6 +282,7 @@ _hlm_list_releases_set:
 
 _hlm_rollback_release:
 	@$(INFO) '$(HLM_UI_LABEL)Rolling back release "$(HLM_RELEASE_NAME)" to revision "$(HLM_RELEASE_REVISION_ID)" ... '; $(NORMAL)
+	@$(WARN) 'This operation is supported only on releases that have been created and then upgraded'; $(NORMAL)
 	$(HELM) rollback $(strip $(__HLM_DRY_RUN) $(__HLM_FORCE) $(__HLM_NO_HOOKS) $(__HLM_RECREATE_PODS) $(__HLM_TIMEOUT) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(__HLM_WAIT) $(HLM_RELEASE_NAME) $(HLM_RELEASE_REVISION_ID))
 
 _HLM_SHOW_RELEASE_TARGETS?= _hlm_show_release_hooks _hlm_show_release_manifest _hlm_show_release_values _hlm_show_release_description
@@ -287,19 +292,20 @@ _hlm_show_release_description: _hlm_show_release_status _hlm_show_release_histor
 
 _hlm_show_release_history:
 	@$(INFO) '$(HLM_UI_LABEL)Showing history of release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
-	$(HELM) history $(strip $(__HLM_COL_WIDTH) $(__HLM_MAX__RELEASE) $(__HLM_OUTPUT) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(HLM_RELEASE_NAME))
+	$(HELM) history $(strip $(__HLM_COL_WIDTH) $(__HLM_MAX__RELEASE) $(__HLM_OUTPUT) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) ) $(HLM_RELEASE_NAME) $(|_HLM_SHOW_RELEASE_HISTORY)
 
 _hlm_show_release_hooks:
 	@$(INFO) '$(HLM_UI_LABEL)Showing hooks of release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
-	$(HELM) get hooks $(strip $(__HLM_OUTPUT) $(__HLM_REVISION) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(HLM_RELEASE_NAME)); echo
+	$(HELM) get hooks $(strip $(__HLM_OUTPUT) $(__HLM_REVISION) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) ) $(HLM_RELEASE_NAME) $(|_HLM_SHOW_RELEASE_HOOKS)
 
 _hlm_show_release_manifest:
 	@$(INFO) '$(HLM_UI_LABEL)Showing manifest of release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
-	$(HELM) get manifest $(strip $(__HLM_OUTPUT) $(__HLM_REVISION) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(HLM_RELEASE_NAME))
+	@$(WARN) 'This operation returns the manifest to recreate the release'; $(NORMAL)
+	$(HELM) get manifest $(strip $(__HLM_OUTPUT) $(__HLM_REVISION) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) ) $(HLM_RELEASE_NAME) $(|_HLM_SHOW_RELEASE_MANIFEST)
 
 _hlm_show_release_status:
 	@$(INFO) '$(HLM_UI_LABEL)Showing status of release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
-	$(HELM) status $(strip $(__HLM_OUTPUT) $(__HLM_REVISION) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) $(HLM_RELEASE_NAME))
+	$(HELM) status $(strip $(__HLM_OUTPUT) $(__HLM_REVISION) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_TLS_KEY) $(__HLM_TLS_VERIFY) ) $(HLM_RELEASE_NAME) $(|_HLM_SHOW_RELEASE_STATUS)
 
 _hlm_show_release_values :: _hlm_show_release_values_usersupplied _hlm_show_release_values_computed
 
@@ -309,12 +315,12 @@ _hlm_show_release_values_usersupplied:
 	@$(WARN) 'Values supplied in the command line override values supplied in files'; $(NORMAL)
 	$(if $(HLM_RELEASE_VALUES_FILEPATH), cat $(HLM_RELEASE_VALUES_FILEPATH); echo)
 	$(if $(HLM_RELEASE_VALUES_KEYVALUES), echo $(HLM_RELEASE_VALUES_KEYVALUES); echo)
-	$(HELM) get values $(HLM_RELEASE_NAME)
+	$(HELM) get values $(HLM_RELEASE_NAME) $(|_HLM_SHOW_RELEASE_VALUES)
 
 _hlm_show_release_values_computed:
 	@$(INFO) '$(HLM_UI_LABEL)Showing computed-values for release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Computed-values = User-supplied values + non-overriden default values'; $(NORMAL)
-	$(HELM) get values --all $(HLM_RELEASE_NAME)
+	$(HELM) get values --all $(HLM_RELEASE_NAME) $(|_HLM_SHOW_RELEASE_VALUES)
 
 _hlm_test_release:
 	@$(INFO) '$(HLM_UI_LABEL)Testing release "$(HLM_RELEASE_NAME)" with release-tests ...'; $(NORMAL)
@@ -323,6 +329,7 @@ _hlm_test_release:
 _hlm_upgrade_release:
 	@$(INFO) '$(HLM_UI_LABEL)Upgrading release "$(HLM_RELEASE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation upgrades a release with new parameter-values or a new chart-version'; $(NORMAL)
+	@$(WARN) 'Note: If required an upgraded release can be rolled-back'; $(NORMAL)
 	$(if $(HLM_RELEASE_VALUES_FILEPATH), cat $(HLM_RELEASE_VALUES_FILEPATH); echo)
 	$(HELM) upgrade $(strip $(__HLM_CA_FILE) $(__HLM_CERT_FILE) $(__HLM_DEVEL) $(__HLM_DRY_RUN) $(__HLM_FORCE) $(__HLM_INSTALL) $(__HLM__KEY_FILE) $(__HLM_KEYRING) $(__HLM_NAMESPACE__RELEASE) $(__HLM_NO_HOOOKS )$(__HLM_PASSWORD) $(__HLM_RECREATE_PODS) $(__HLM_REPO) $(__HLM_RESET_VALUES) $(__HLM_REUSE_VALUES) $(__HLM_SET__RELEASE) $(__HLM__SET_STRING) $(__HLM_TIMEOUT) $(__HLM_TLS) $(__HLM_TLS_CA_CERT) $(__HLM_TLS_CERT) $(__HLM_KEY) $(__HLM_VERIFY) $(__HLM_USERNAME) $(__HLM_VALUES__RELEASE) $(__HLM_VERIFY) $(__HLM_VERSION) $(__HLM_WAIT) $(HLM_RELEASE_NAME) $(HLM_RELEASE_CHART_CNAME))
 

@@ -19,7 +19,7 @@ TKN_TASK_SHOWLOG_FLAG?= $(TKN_SHOWLOG_FLAG)
 TKN_TASKS_NAMESPACE_NAME?= $(TKN_TASK_NAMESPACE_NAME)
 TKN_TASKS_SET_NAME?= tasks@@@$(TKN_TASKS_NAMESPACE_NAME)
 
-# Option parameters
+# Options
 # __TKN_ALL_NAMESPACES__TASKS=
 __TKN_NAMESPACE__TASK= $(if $(TKN_TASK_NAMESPACE_NAME),--namespace $(TKN_TASK_NAMESPACE_NAME))
 __TKN_NAMESPACE__TASKS= $(if $(TKN_TASKS_NAMESPACE_NAME),--namespace $(TKN_TASKS_NAMESPACE_NAME))
@@ -27,9 +27,7 @@ __TKN_PARAM__TASK= $(if $(TKN_TASK_PARAMETERS_KEYVALUES),--param $(TKN_TASK_PARA
 __TKN_SHOWLOG__TASK= $(if $(filter true,$(TKN_TASK_SHOWLOG_FLAG)),--showlog)
 __TKN_USE_PARAM_DEFAULTS__TASK= $(if $(filter true,$(TKN_TASK_USEDEFAULTS_FLAG)),--use-param-defaults)
 
-# Pipe parameters
-
-# UI parameters
+# Customizations
 
 #--- MACROS
 
@@ -37,11 +35,11 @@ __TKN_USE_PARAM_DEFAULTS__TASK= $(if $(filter true,$(TKN_TASK_USEDEFAULTS_FLAG))
 # USAGE
 #
 
-_kn_view_framework_macros ::
-	@echo 'TKN::Task ($(_TKN_TASK_MK_VERSION)) macros:'
-	@echo
+_kn_list_macros ::
+	@#echo 'TKN::Task ($(_TKN_TASK_MK_VERSION)) macros:'
+	@#echo
 
-_kn_view_framework_parameters ::
+_kn_list_parameters ::
 	@echo 'TKN::Task ($(_TKN_TASK_MK_VERSION)) parameters:'
 	@echo '    TKN_TASK_MANIFEST_DIRPATH=$(TKN_TASK_MANIFEST_DIRPATH)'
 	@echo '    TKN_TASK_MANIFEST_FILENAME=$(TKN_TASK_MANIFEST_FILENAME)'
@@ -55,16 +53,16 @@ _kn_view_framework_parameters ::
 	@echo '    TKN_TASKS_SET_NAME=$(TKN_TASKS_SET_NAME)'
 	@echo
 
-_kn_view_framework_targets ::
+_kn_list_targets ::
 	@echo 'TKN::Task ($(_TKN_TASK_MK_VERSION)) targets:'
 	@echo '    _tkn_create_task                  - Create a new task'
 	@echo '    _tkn_delete_task                  - Delete an existing task'
+	@echo '    _tkn_list_tasks                   - List all tasks'
+	@echo '    _tkn_list_tasks_set               - List a set of tasks'
 	@echo '    _tkn_show_task                    - Show everything related to a task'
 	@echo '    _tkn_show_task_description        - Show the description of a task'
 	@echo '    _tkn_show_task_taskruns           - Show the taskruns of a task'
 	@echo '    _tkn_start_task                   - Start a task'
-	@echo '    _tkn_view_tasks                   - View all tasks'
-	@echo '    _tkn_view_tasks_set               - View a set of tasks'
 	@#echo '    _tkn_watch_tasks                  - Watch tasks'
 	@#echo '    _tkn_watch_tasks_set              - Watch a set of tasks'
 	@echo
@@ -80,7 +78,17 @@ _tkn_create_task:
 _tkn_delete_task:
 	@$(INFO) '$(TKN_UI_LABEL)Deleting task "$(TKN_TASK_NAME)" ...'; $(NORMAL)
 
-_tkn_show_task: _tkn_show_task_parameters _tkn_show_task_taskruns _tkn_show_task_workspaces _tkn_show_task_description
+_tkn_list_tasks:
+	@$(INFO) '$(TKN_UI_LABEL)Listing ALL tasks ...'; $(NORMAL)
+	$(TKN) task list --all-namespaces=true $(_X__TKN_NAMESPACE__TASKS)
+
+_tkn_list_tasks_set:
+	@$(INFO) '$(TKN_UI_LABEL)Listing tasks-set "$(TKN_TASKS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Tasks are grouped based on the provided namespace, and ...'; $(NORMAL)
+	$(TKN) task list --all-namespaces=false $(__TKN_NAMESPACE__TASKS)
+
+_TKN_SHOW_TASK_TARGETS?= _tkn_show_task_parameters _tkn_show_task_taskruns _tkn_show_task_workspaces _tkn_show_task_description
+_tkn_show_task: $(_TKN_SHOW_TASK_TARGETS)
 
 _tkn_show_task_description:
 	@$(INFO) '$(TKN_UI_LABEL)Showing description of task "$(TKN_TASK_NAME)" ...'; $(NORMAL)
@@ -101,15 +109,6 @@ _tkn_start_task:
 
 _tkn_update_task:
 	@$(INFO) '$(TKN_UI_LABEL)Updating task "$(TKN_TASK_NAME)" ...'; $(NORMAL)
-
-_tkn_view_tasks:
-	@$(INFO) '$(TKN_UI_LABEL)Viewing ALL tasks ...'; $(NORMAL)
-	$(TKN) task list --all-namespaces=true $(_X__TKN_NAMESPACE__TASKS)
-
-_tkn_view_tasks_set:
-	@$(INFO) '$(TKN_UI_LABEL)Viewing tasks-set "$(TKN_TASKS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Tasks are grouped based on the provided namespace, and ...'; $(NORMAL)
-	$(TKN) task list --all-namespaces=false $(__TKN_NAMESPACE__TASKS)
 
 _tkn_watch_tasks:
 	@$(INFO) '$(TKN_UI_LABEL)Watching tasks ...'; $(NORMAL)

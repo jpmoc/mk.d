@@ -2,18 +2,18 @@ _AWS_LAMBDA_MK_VERSION= 0.99.0
 
 # LBA_ACCOUNT_ID?= 123456789012
 # LBA_REGION_NAME?= us-west-2
+# LBA_UI_LABEL?= [lambda] #
 
 # Derived parameters
 LBA_ACCOUNT_ID?= $(AWS_ACCOUNT_ID)
 LBA_REGION_NAME?= $(AWS_REGION_NAME)
+LBA_UI_LABEL?= $(AWS_UI_LABEL)
 
-# Option parameters
+# Options
 
-# UI parameters
+# Customizations
 
-#--- Utilities
-
-#--- Macros
+# Macros
 
 
 #----------------------------------------------------------------------
@@ -33,22 +33,22 @@ _lba_install_software_dependencies ::
 	sudo apt-get install -y build-essential
 
 
-_aws_view_framework_macros :: _lba_view_framework_macros
-_lba_view_framework_macros ::
+_aws_list_macros :: _lba_list_macros
+_lba_list_macros ::
 	@#echo 'AWS::LamBdA:: ($(_AWS_LAMBDA_MK_VERSION)) targets:'
 	@#echo
 
-_aws_view_framework_parameters :: _lba_view_framework_parameters
-_lba_view_framework_parameters ::
+_aws_list_parameters :: _lba_list_parameters
+_lba_list_parameters ::
 	@echo 'AWS::LamBdA:: ($(_AWS_LAMBDA_MK_VERSION)) parameters:'
 	@echo '    LBA_ACCOUNT_ID=$(LBA_ACCOUNT_ID)'
 	@echo '    LBA_REGION_NAME=$(LBA_REGION_NAME)'
 	@echo
 
-_aws_view_framework_targets :: _lba_view_framework_targets
-_lba_view_framework_targets ::
+_aws_list_targets :: _lba_list_targets
+_lba_list_targets ::
 	@echo 'AWS::LamBdA:: ($(_AWS_LAMBDA_MK_VERSION)) targets:'
-	@echo '    _lba_view_account_limits            - Retrieve lambda-service limits information'
+	@echo '    _lba_view_limits            - Retrieve lambda-service limits information'
 	@echo
 
 #----------------------------------------------------------------------
@@ -67,7 +67,7 @@ MK_DIR?= .
 # PUBLIC TARGETS
 # 
 
-_aws_view_account_limits :: _lba_view_account_limits
-_lba_view_account_limits:
-	@$(INFO) '$(AWS_UI_LABEL)Retrieving lambda service limits information ...'; $(NORMAL)
+_aws_view_limits :: _lba_view_limits
+_lba_view_limits:
+	@$(INFO) '$(LBA_UI_LABEL)Viewing lambda-service limits ...'; $(NORMAL)
 	$(AWS) lambda get-account-settings

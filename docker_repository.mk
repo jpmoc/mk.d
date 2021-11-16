@@ -14,22 +14,22 @@ DKR_REPOSITORY_REGISTRY_CNAME?= $(DKR_REGISTRY_CNAME)
 DKR_REPOSITORY_REGISTRYAPI_URI?= $(DKR_REGISTRY_API_URI)
 DKR_REPOSITORY_REGISTRYAPI_VERSION?= $(DKR_REGISTRY_API_VERSION)
 
-# Option parameters
+# Options
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_dkr_view_framework_macros ::
+_dkr_list_macros ::
 	@echo 'DocKeR::Repository ($(_DOCKER_REPOSITORY_MK_VERSION)) targets:'
 	@echo '    _dkr_get_image_id_{|N}        - Get the ID of an image (Name)'
 	@echo
 
-_dkr_view_framework_parameters ::
+_dkr_list_parameters ::
 	@echo 'DocKeR::Repository ($(_DOCKER_REPOSITORY_MK_VERSION)) parameters:'
 	@echo '    DKR_REPOSITORY_API_URI=$(DKR_REPOSITORY_API_URI)'
 	@echo '    DKR_REPOSITORY_CNAME=$(DKR_REPOSITORY_CNAME)'
@@ -38,7 +38,7 @@ _dkr_view_framework_parameters ::
 	@echo '    DKR_REPOSITORY_REGISTRYAPI_VERSION=$(DKR_REPOSITORY_REGISTRYAPI_VERSION)'
 	@echo
 
-_dkr_view_framework_targets ::
+_dkr_list_targets ::
 	@echo 'DocKeR::Registry ($(_DOCKER_REPOSITORY_MK_VERSION)) targets:'
 	@echo '    _dkr_show_repository               - Show everything related to a repository'
 	@echo '    _dkr_show_repository_tags          - Show the available tags in a repository'
@@ -47,7 +47,6 @@ _dkr_view_framework_targets ::
 #----------------------------------------------------------------------
 # PRIVATE TARGETS
 #
-
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

@@ -15,17 +15,14 @@ TKN_PIPELINE_SHOWLOG_FLAG?= $(TKN_SHOWLOG_FLAG)
 TKN_PIPELINES_NAMESPACE_NAME?= $(TKN_PIPELINE_NAMESPACE_NAME)
 TKN_PIPELINES_SET_NAME?= tekton-pipelines@@@$(TKN_PIPELINES_NAMESPACE_NAME)
 
-# Option parameters
-# __TKN_ALL_NAMESPACES__PIPELINES=
+# Options
 __TKN_NAMESPACE__PIPELINE= $(if $(TKN_PIPELINE_NAMESPACE_NAME),--namespace $(TKN_PIPELINE_NAMESPACE_NAME))
 __TKN_NAMESPACE__PIPELINES= $(if $(TKN_PIPELINES_NAMESPACE_NAME),--namespace $(TKN_PIPELINES_NAMESPACE_NAME))
 __TKN_PARAM__PIPELINE= $(if $(TKN_PIPELINE_PARAMETERS_KEYVALUES),--param $(TKN_PIPELINE_PARAMETERS_KEYVALUES))
 __TKN_SERVICEACCOUNT__PIPELINE= $(if $(TKN_PIPELINE_SERVICEACCOUNT_NAME),--serviceaccount $(TKN_PIPELINE_SERVICEACCOUNT_NAME))
 __TKN_SHOWLOG__PIPELINE= $(if $(filter true,$(TKN_PIPELINE_SHOWLOG_FLAG)),--showlog)
 
-# Pipe parameters
-
-# UI parameters
+# Customizations
 
 #--- MACROS
 
@@ -33,11 +30,11 @@ __TKN_SHOWLOG__PIPELINE= $(if $(filter true,$(TKN_PIPELINE_SHOWLOG_FLAG)),--show
 # USAGE
 #
 
-_tkn_view_framework_macros ::
-	@echo 'TKN::Pipeline ($(_TKN_PIPELINE_MK_VERSION)) macros:'
-	@echo
+_tkn_list_macros ::
+	@#echo 'TKN::Pipeline ($(_TKN_PIPELINE_MK_VERSION)) macros:'
+	@#echo
 
-_tkn_view_framework_parameters ::
+_tkn_list_parameters ::
 	@echo 'TKN::Pipeline ($(_TKN_PIPELINE_MK_VERSION)) parameters:'
 	@echo '    TKN_PIPELINE_NAME=$(TKN_PIPELINE_NAME)'
 	@echo '    TKN_PIPELINE_NAMESPACE_NAME=$(TKN_PIPELINE_NAMESPACE_NAME)'
@@ -48,10 +45,12 @@ _tkn_view_framework_parameters ::
 	@echo '    TKN_PIPELINES_SET_NAME=$(TKN_PIPELINES_SET_NAME)'
 	@echo
 
-_tkn_view_framework_targets ::
+_tkn_list_targets ::
 	@echo 'TKN::Pipeline ($(_TKN_PIPELINE_MK_VERSION)) targets:'
 	@echo '    _tkn_create_pipeline                  - Create a new pipeline'
 	@echo '    _tkn_delete_pipeline                  - Delete an existing pipeline'
+	@echo '    _tkn_list_pipelines                   - List all pipelines'
+	@echo '    _tkn_list_pipelines_set               - List a set of pipelines'
 	@echo '    _tkn_show_pipeline                    - Show everything related to a pipeline'
 	@echo '    _tkn_show_pipeline_description        - Show the description of a pipeline'
 	@echo '    _tkn_show_pipeline_parameters         - Show the parameters of a pipeline'
@@ -59,8 +58,6 @@ _tkn_view_framework_targets ::
 	@echo '    _tkn_show_pipeline_tasks              - Show the tasks in a pipeline'
 	@echo '    _tkn_show_pipeline_workspaces         - Show the workspaces of a pipeline'
 	@echo '    _tkn_start_pipeline                   - Start a pipelines'
-	@echo '    _tkn_view_pipelines                   - View all pipelines'
-	@echo '    _tkn_view_pipelines_set               - View a set of pipelines'
 	@#echo '    _tkn_watch_pipelines                  - Watch pipelines'
 	@#echo '    _tkn_watch_pipelines_set              - Watch a set of pipelines'
 	@echo
@@ -76,7 +73,17 @@ _tkn_create_pipeline:
 _tkn_delete_pipeline:
 	@$(INFO) '$(TKN_UI_LABEL)Deleting pipeline "$(TKN_PIPELINE_NAME)" ...'; $(NORMAL)
 
-_tkn_show_pipeline: _tkn_show_pipeline_parameters _tkn_show_pipeline_pipelineruns _tkn_show_pipeline_tasks _tkn_show_pipeline_workspaces _tkn_show_pipeline_description
+_tkn_list_pipelines:
+	@$(INFO) '$(TKN_UI_LABEL)Listing ALL pipelines ...'; $(NORMAL)
+	$(TKN) pipeline list --all-namespaces=true $(_X__TKN_NAMESPACE__PIPELINES)
+
+_tkn_list_pipelines_set:
+	@$(INFO) '$(TKN_UI_LABEL)Listing pipelines-set "$(KN_PIPELINES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Pipelines are grouped based on the provided namespace, and ...'; $(NORMAL)
+	$(TKN) pipeline list --all-namespaces=false $(__TKN_NAMESPACE__PIPELINES)
+
+_TKN_SHOW_PIPELINE_TARGETS?= _tkn_show_pipeline_parameters _tkn_show_pipeline_pipelineruns _tkn_show_pipeline_tasks _tkn_show_pipeline_workspaces _tkn_show_pipeline_description
+_tkn_show_pipeline: $(_TKN_SHOW_PIPELINE_TARGETS)
 
 _tkn_show_pipeline_description:
 	@$(INFO) '$(TKN_UI_LABEL)Showing description pipeline "$(TKN_PIPELINE_NAME)" ...'; $(NORMAL)
@@ -101,15 +108,6 @@ _tkn_start_pipeline:
 
 _tkn_update_pipeline:
 	@$(INFO) '$(TKN_UI_LABEL)Updating pipeline "$(KN_PIPELINE_NAME)" ...'; $(NORMAL)
-
-_tkn_view_pipelines:
-	@$(INFO) '$(TKN_UI_LABEL)Viewing ALL pipelines ...'; $(NORMAL)
-	$(TKN) pipeline list --all-namespaces=true $(_X__TKN_NAMESPACE__PIPELINES)
-
-_tkn_view_pipelines_set:
-	@$(INFO) '$(TKN_UI_LABEL)Viewing pipelines-set "$(KN_PIPELINES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Pipelines are grouped based on the provided namespace, and ...'; $(NORMAL)
-	$(TKN) pipeline list --all-namespaces=false $(__TKN_NAMESPACE__PIPELINES)
 
 _tkn_watch_pipelines:
 	@$(INFO) '$(TKN_UI_LABEL)Watching pipelines ...'; $(NORMAL)

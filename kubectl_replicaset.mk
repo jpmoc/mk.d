@@ -21,7 +21,7 @@ KCL_REPLICASET_SSH_SHELL?= $(KCL_POD_SSH_SHELL)
 KCL_REPLICASETS_MANIFEST_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_REPLICASETS_MANIFEST_FILEPATH?= $(KCL_REPLICASETS_MANIFEST_DIRPATH)$(KCL_REPLICASETS_MANIFEST_FILENAME)
 
-# Option parameters
+# Options
 __KCL_FILENAME__REPLICASETS?= $(if $(KCL_REPLICASETS_MANIFEST_FILEPATH),--filename $(KCL_REPLICASETS_MANIFEST_FILEPATH))
 __KCL_FILENAME__REPLICASETS?= $(if $(filter true,$(KCL_REPLICASETS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__REPLICASETS?= $(if $(KCL_REPLICASETS_MANIFEST_URL),--filename $(KCL_REPLICASETS_MANIFEST_URL))
@@ -29,7 +29,7 @@ __KCL_FILENAME__REPLICASETS?= $(if $(KCL_REPLICASETS_MANIFESTS_DIRPATH),--filena
 __KCL_NAMESPACE__REPLICASET?= $(if $(KCL_REPLICASET_NAMESPACE_NAME),--namespace $(KCL_REPLICASET_NAMESPACE_NAME))
 __KCL_NAMESPACE__REPLICASETS?= $(if $(KCL_REPLICASETS_NAMESPACE_NAME),--namespace $(KCL_REPLICASETS_NAMESPACE_NAME))
 
-# UI parameters
+# Customizations
 _KCL_APPLY_REPLICASETS_|?= #
 _KCL_DIFF_REPLICASETS_|?= $(_KCL_APPLY_DEPLICASETS_|)
 _KCL_UNAPPLY_REPLICASETS_|?= $(_KCL_APPLY_DEPLICASETS_|)
@@ -74,6 +74,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_replicaset                  - Label a replica-set'
 	@echo '    _kcl_list_replicasets                  - List all replica-sets'
 	@echo '    _kcl_list_replicasets_set              - List a set of replica-sets'
+	@echo '    _kcl_patch_replicaset                  - Patch replica-set'
 	@echo '    _kcl_show_replicaset                   - Show everything related to a replica-set'
 	@echo '    _kcl_show_replicaset_description       - Show description of a replica-set'
 	@echo '    _kcl_show_replicaset_pods              - Show pods of a replica-set'
@@ -81,7 +82,6 @@ _kcl_list_targets ::
 	@echo '    _kcl_tail_replicaset                   - Tail logs of a pod in a replica-set'
 	@echo '    _kcl_unapply_replicaset                - Un-apply a manifest for a replica-set'
 	@echo '    _kcl_unlabel_replicaset                - Un-label a replica-set'
-	@echo '    _kcl_update_replicaset                 - Update replica-set'
 	@echo '    _kcl_watch_replicasets                 - Watch all replica-sets'
 	@echo '    _kcl_watch_replicasets_set             - Watch a set of a replica-sets'
 	@echo '    _kcl_write_replicasets                 - Write a manifest for one-or-more replica-sets'
@@ -138,6 +138,9 @@ _kcl_list_replicasets_set:
 	@$(WARN) 'Replica-sets are grouped based on namespace, ...'; $(NORMAL)
 	$(KUBECTL) get replicasets --all-namespaces=false $(__KCL_NAMESPACE__REPLICASETS)
 
+_kcl_patch_replicaset:
+	@$(INFO) '$(KCL_UI_LABEL)Patching replica-set "$(KCL_REPLICASET_NAME)" ...'; $(NORMAL)
+
 _KCL_SHOW_REPLICASET_TARGETS?= _kcl_show_replicaset_pods _kcl_show_replicaset_description
 _kcl_show_replicaset: $(_KCL_SHOW_REPLICASET_TARGETS)
 
@@ -163,9 +166,6 @@ _kcl_unapply_replicasets:
 
 _kcl_unlabel_replicaset:
 	@$(INFO) '$(KCL_UI_LABEL)Unlabel replica-set "$(KCL_REPLICASET_NAME)" ...'; $(NORMAL)
-
-_kcl_update_replicaset:
-	@$(INFO) '$(KCL_UI_LABEL)Updating replica-set "$(KCL_REPLICASET_NAME)" ...'; $(NORMAL)
 
 _kcl_watch_replicasets:
 	@$(INFO) '$(KCL_UI_LABEL)Watching replica-sets ...'; $(NORMAL)

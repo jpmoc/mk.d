@@ -2,15 +2,15 @@ _KUSTOMIZE_MK_VERSION= 0.99.4
 
 # KZE_INPUTS_DIRPATH?= ./in/
 # KZE_OUTPUTS_DIRPATH?= ./out/
+KZE_UI_LABEL?= [kustomize] #
 
 # Derived parameters
 KZE_INPUTS_DIRPATH?= $(CMN_INPUTS_DIRPATH)
 KZE_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
 
-# Option parameters
+# Options
 
-# UI parameters
-KZE_UI_LABEL?= [kustomize] #
+# Customizations
 
 #--- Utilities
 # __KUSTOMIZE_OPTIONS+= $(if $(KUSTOMIZE_VMODULE),--vmodule=$(KUSTOMIZE_VMODULE))#
@@ -34,6 +34,7 @@ _kze_list_parameters ::
 	@echo 'KustomiZE:: ($(_KUSTOMIZE_MK_VERSION)) parameters:'
 	@echo '    KZE_INPUTS_DIRPATH=$(KZE_INPUTS_DIRPATH)'
 	@echo '    KZE_OUTPUTS_DIRPATH=$(KZE_OUTPUTS_DIRPATH)'
+	@echo '    KZE_UI_LABEL=$(KZE_UI_LABEL)'
 	@echo '    KUSTOMIZE=$(KUSTOMIZE)'
 	@echo
 

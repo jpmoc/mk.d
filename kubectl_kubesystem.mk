@@ -5,10 +5,10 @@ KCL_KUBESYSTEM_NAMESPACE_NAME?= kube-system
 
 # Derived parameters
 
-# Option parameters
+# Options
 __KCL_NAMESPACE__KUBESYSTEM= $(if $(KCL_KUBESYSTEM_NAMESPACE_NAME), --namespace $(KCL_KUBESYSTEM_NAMESPACE_NAME))
 
-# UI parameters
+# Customizations
 
 #--- MACROS
 _kcl_get_kubesystem_pod_names= $(shell $(KUBECTL) get pods --namespace kube-system --output jsonpath="{.items[*].metadata.name}")

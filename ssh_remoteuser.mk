@@ -42,11 +42,11 @@ __SSH_PSEUDO_TERMINAL__REMOTEUSER= $(if $(filter true, $(SSH_REMOTEUSER_PSEUDOTE
 # USAGE
 #
 
-_ssh_view_framework_macros ::
+_ssh_list_macros ::
 	@#echo 'SSH::RemoteUser ($(_SSH_REMOTEUSER_MK_VERSION)) macros:'
 	@#echo
 
-_ssh_view_framework_parameters ::
+_ssh_list_parameters ::
 	@echo 'SSH::RemoteUser ($(_SSH_REMOTEUSER_MK_VERSION)) parameters:'
 	@echo '    SSH_REMOTEUSER=$(SSH_REMOTEUSER)'
 	@echo '    SSH_REMOTEUSER_CONFIG_DIRPATH=$(SSH_REMOTEUSER_CONFIG_DIRPATH)'
@@ -64,7 +64,7 @@ _ssh_view_framework_parameters ::
 	@echo '    SSH_REMOTEUSER_SHORTNAME=$(SSH_REMOTEUSER_SHORTNAME)'
 	@echo
 
-_ssh_view_framework_targets ::
+_ssh_list_targets ::
 	@echo 'SSH::RemoteUser ($(_SSH_REMOTEUSER_MK_VERSION)) targets:'
 	@echo '    _ssh_connect_remoteuser              - Ssh to a remote-user'
 	@echo '    _ssh_exec_remoteuser                 - Execute a command as a remote-user'

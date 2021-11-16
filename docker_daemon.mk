@@ -5,28 +5,26 @@ _DOCKER_DAEMON_MK_VERSION= $(_DOCKER_MK_VERSION)
 # Derived parameters
 DKR_DAEMON_GROUP_NAME?= $(DKR_GROUP_NAME)
 
-# Option parameters
+# Options
 
-# UI parameters
+# Customizations
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_dkr_view_framework_macros ::
-	@echo 'Docker::Daemon ($(_DOCKER_DAEMON_MK_VERSION)) macros:'
-	@echo
+_dkr_list_macros ::
+	@#echo 'Docker::Daemon ($(_DOCKER_DAEMON_MK_VERSION)) macros:'
+	@#echo
 
-_dkr_view_framework_parameters ::
+_dkr_list_parameters ::
 	@echo 'Docker::Daemon ($(_DOCKER_DAEMON_MK_VERSION)) parameters:'
 	@echo '    DKR_DAEMON_GROUP_NAME=$(DKR_DAEMON_GROUP_NAME)'
 	@echo
 
-_dkr_view_framework_targets ::
+_dkr_list_targets ::
 	@echo 'Docker::Daemon ($(_DOCKER_DAEMON_MK_VERSION)) targets:'
 	@echo '    _dkr_check_daemon              - Check everything related to daemon'
 	@echo '    _dkr_check_daemon_group        - Check group of daemon'
@@ -64,7 +62,8 @@ _dkr_restart_daemon:
 	@$(INFO) '$(DKR_UI_LABEL)Restarting the engine on localhost ...'; $(NORMAL)
 	sudo service docker restart
 
-_dkr_show_daemon: _dkr_show_daemon_info _dkr_show_daemon_status _dkr_show_daemon_version
+_DKR_SHOW_DAEMON_TARGETS?= _dkr_show_daemon_info _dkr_show_daemon_status _dkr_show_daemon_version
+_dkr_show_daemon: $(_DKR_SHOW_DAEMON_TARGETS)
 
 _dkr_show_daemon_info:
 	@$(INFO) '$(DKR_UI_LABEL)Showing docker system wide information ...'; $(NORMAL)

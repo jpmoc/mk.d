@@ -52,11 +52,11 @@ __ELB2_TARGET_TYPE= $(if $(ELB2_TARGETGROUP_TARGET_TYPE),--target-type $(ELB2_TA
 __ELB2_UNHEALTHY_THRESHOLD_COUNT= $(if $(ELB2_TARGETGROUP_UNHEALTHYTHRESHOLD_COUNT),--unhealthy-threshold-count $(ELB2_TARGETGROUP_UNHEALTHYTHRESHOLD_COUNT))
 __ELB2_VPC_ID__TARGETGROUP= $(if $(ELB2_TARGETGROUP_VPC_ID),--vpc-id $(ELB2_TARGETGROUP_VPC_ID))
 
-# UI parameters
-ELB2_UI_SHOW_TARGETGROUP_HEALTH_FIELDS?=
-ELB2_UI_VIEW_TARGETGROUPS_FIELDS?= .{TargetGroupName:TargetGroupName,protocol:Protocol,port:Port,targetType:TargetType,vpcId:VpcId,protocolVersion:ProtocolVersion,TargetGroupArn:TargetGroupArn}
-ELB2_UI_VIEW_TARGETGROUPS_SET_FIELDS?= $(ELB2_UI_VIEW_TARGETGROUPS_FIELDS)
-ELB2_UI_VIEW_TARGETGROUPS_SET_QUERYFILTER?=
+# Customizations
+_ELB2_LIST_TARGETGROUPS_FIELDS?= .{TargetGroupName:TargetGroupName,protocol:Protocol,port:Port,targetType:TargetType,vpcId:VpcId,protocolVersion:ProtocolVersion,TargetGroupArn:TargetGroupArn}
+_ELB2_LIST_TARGETGROUPS_SET_FIELDS?= $(_ELB2_LIST_TARGETGROUPS_FIELDS)
+_ELB2_LIST_TARGETGROUPS_SET_QUERYFILTER?=
+_ELB2_SHOW_TARGETGROUP_HEALTH_FIELDS?=
 
 #--- MACROS
 
@@ -67,12 +67,12 @@ _elb2_get_targetgroup_arn_N= $(shell $(AWS) elbv2 describe-target-groups --names
 # USAGE
 #
 
-_elb2_view_framework_macros ::
+_elb2_list_macros ::
 	@echo 'AWS::ElasticLoadBalancerV2::TargetGroup ($(_AWS_ELBV2_TARGETGROUP_MK_VERSION)) macros:'
 	@echo '    _elb2_get_targetgroup_arn_{|N}                     - Get the ARN of a targetgroup (Name)'
 	@echo
 
-_elb2_view_framework_parameters ::
+_elb2_list_parameters ::
 	@echo 'AWS::ElasticLoadBalancerV2::TargetGroup ($(_AWS_ELBV2_TARGETGROUP_MK_VERSION)) parameters:'
 	@echo '    ELB2_TARGETGROUP_ARN=$(ELB2_TARGETGROUP_ARN)'
 	@echo '    ELB2_TARGETGROUP_HEALTHCHECK_FLAG=$(ELB2_TARGETGROUP_HEALTHCHECK_FLAG)'
@@ -98,16 +98,16 @@ _elb2_view_framework_parameters ::
 	@echo '    ELB2_TARGETGROUPS_SET_NAME=$(ELB2_TARGETGROUPS_SET_NAME)'
 	@echo
 
-_elb2_view_framework_targets ::
+_elb2_list_targets ::
 	@echo 'AWS::ElasticLoadBalancerV2::TargetGroup ($(_AWS_ELBV2_TARGETGROUP_MK_VERSION)) targets:'
 	@echo '    _elb2_create_targetgroup                           - Create a target-group'
 	@echo '    _elb2_delete_targetgroup                           - Delete an existing target-group'
+	@echo '    _elb2_list_targetgroups                            - List all target-groups'
+	@echo '    _elb2_list_targetgroups_set                        - List a set of target-groups'
 	@echo '    _elb2_show_targetgroup                             - Show everything related to a target-group'
 	@echo '    _elb2_show_targetgroup_attributes                  - Show attributes of a target-group'
 	@echo '    _elb2_show_targetgroup_description                 - Show description of a target-group'
 	@echo '    _elb2_show_targetgroup_health                      - Show the health of a target-group'
-	@echo '    _elb2_view_targetgroups                            - View all target-groups'
-	@echo '    _elb2_view_targetgroups_set                        - View a set of target-groups'
 	@echo '    _elb2_watch_targetgroups                           - Watch all target-groups'
 	@echo '    _elb2_watch_targetgroups_set                       - Watch a set of target-groups'
 	@echo 
@@ -128,7 +128,17 @@ _elb2_delete_targetgroup:
 	@$(INFO) '$(ELB2_UI_LABEL)Deleting target-group "$(ELB2_TARGETGROUP_NAME)" ...'; $(NORMAL)
 	$(AWS) elbv2 delete-target-group $(__ELB2_TARGET_GROUP_ARN)
 
-_elb2_show_targetgroup: _elb2_show_targetgroup_attributes _elb2_show_targetgroup_health _elb2_show_targetgroup_description
+_elb2_list_targetgroups:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing ALL target-groups ...'; $(NORMAL)
+	$(AWS) elbv2 describe-target-groups $(_X__ELB2_LOAD_BALANCER_ARNS) $(_X__ELB2_NAMES__TARGETGROUPS) --query "TargetGroups[]$(_ELB2_LIST_TARGETGROUPS_FIELDS)"
+
+_elb2_list_targetgroups_set:
+	@$(INFO) '$(ELB2_UI_LABEL)Listing target-groups-set "$(ELB2_TARGETGROUPS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Target-groups are grouped based on the provided load-balancer ARN, target-group ARNs/names, and query-filter'; $(NORMAL)
+	$(AWS) elbv2 describe-target-groups $(__ELB2_LOAD_BALANCER_ARN__TARGETGROUPS) $(__ELB2_NAMES__TARGETGROUPS) $(__ELB2_TARGETGROUP_ARNS) --query "TargetGroups[$(_ELB2_LIST_TARGETGROUPS_SET_QUERYFILTER)]$(_ELB2_LIST_TARGETGROUPS_SET_FIELDS)"
+
+_ELB2_SHOW_TARGETGROUP_TARGETS?= _elb2_show_targetgroup_attributes _elb2_show_targetgroup_health _elb2_show_targetgroup_description
+_elb2_show_targetgroup: $(_ELB2_SHOW_TARGETGROUP_TARGETS)
 
 _elb2_show_targetgroup_attributes:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing attributes of target-group "$(ELB2_TARGETGROUP_NAME)" ...'; $(NORMAL)
@@ -144,16 +154,7 @@ _elb2_show_targetgroup_health:
 	@$(INFO) '$(ELB2_UI_LABEL)Showing health of target-group "$(ELB2_TARGETGROUP_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if the target-group does not exist'; $(NORMAL)
 	@$(WARN) 'This operation MUST return at least one healthy target'; $(NORMAL)
-	-$(AWS) elbv2 describe-target-health $(__ELB2_TARGET_GROUP_ARN) $(__ELB2_TARGETS) --query "TargetHealthDescriptions[]$(ELB2_UI_SHOW_TARGETGROUP_HEALTH_FIELDS)"
-
-_elb2_view_targetgroups:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing ALL target-groups ...'; $(NORMAL)
-	$(AWS) elbv2 describe-target-groups $(_X__ELB2_LOAD_BALANCER_ARNS) $(_X__ELB2_NAMES__TARGETGROUPS) --query "TargetGroups[]$(ELB2_UI_VIEW_TARGETGROUPS_FIELDS)"
-
-_elb2_view_targetgroups_set:
-	@$(INFO) '$(ELB2_UI_LABEL)Viewing target-groups-set "$(ELB2_TARGETGROUPS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Target-groups are grouped based on the provided load-balancer ARN, target-group ARNs/names, and query-filter'; $(NORMAL)
-	$(AWS) elbv2 describe-target-groups $(__ELB2_LOAD_BALANCER_ARN__TARGETGROUPS) $(__ELB2_NAMES__TARGETGROUPS) $(__ELB2_TARGETGROUP_ARNS) --query "TargetGroups[$(ELB2_UI_VIEW_TARGETGROUPS_SET_QUERYFILTER)]$(ELB2_UI_VIEW_TARGETGROUPS_SET_FIELDS)"
+	-$(AWS) elbv2 describe-target-health $(__ELB2_TARGET_GROUP_ARN) $(__ELB2_TARGETS) --query "TargetHealthDescriptions[]$(_ELB2_SHOW_TARGETGROUP_HEALTH_FIELDS)"
 
 _elb2_watch_targetgroups:
 	@$(INFO) '$(ELB2_UI_LABEL)Watching ALL target-groups ...'; $(NORMAL)

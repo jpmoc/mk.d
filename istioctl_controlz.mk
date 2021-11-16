@@ -14,14 +14,11 @@ ICL_CONTROLZ_NAME?= controlz$(if $(ICL_CONTROLZ_POD_NAME),-$(ICL_CONTROLZ_POD_NA
 ICL_CONTROLZ_NAMESPACE_NAME?= $(ICL_APPMANIFEST_NAMESPACE_NAME)
 ICL_CONTROLZ_URL?= http://$(ICL_CONTROLZ_IP_OR_HOST):$(ICL_CONTROLZ_PORT)
 
-# Option parameters
+# Options
 __ICL_NAMESPACE__CONTROLZ= $(if $(ICL_CONTROLZ_NAMESPACE_NAME),--namespace $(ICL_CONTROLZ_NAMESPACE_NAME))
 __ICL_SELECTOR__CONTROLZ= $(if $(ICL_CONTROLZ_PODS_SELECTOR),--selector $(ICL_CONTROLZ_PODS_SELECTOR))
 
-# UI parameters
-
-#--- Utilities
-
+# Customizations
 
 #--- Macros
 _icl_get_controlz_pods_names= $(call _icl_get_controlz_pods_names_S, $(ICL_CONTROLZ_PODS_SELECTOR))

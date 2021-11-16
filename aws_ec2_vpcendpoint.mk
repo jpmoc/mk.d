@@ -42,11 +42,11 @@ __EC2_VPC_ENDPOINT_IDS__VPCENDPOINTS= $(if $(EC2_VPCENDPOINTS_IDS),--vpc-endpoin
 __EC2_VPC_ENDPOINT_TYPE= $(if $(EC2_VPCENDPOINT_TYPE),--vpc-endpoint-type $(EC2_VPCENDPOINT_TYPE))
 __EC2_VPC_ID__VPCENDPOINT= $(if $(EC2_VPCENDPOINT_VPC_ID),--vpc-id $(EC2_VPCENDPOINT_VPC_ID))
 
-# UI parameters
-# EC2_UI_SHOW_VPCENDPOINTSERVICE_QUERYFILTER?= ?ServiceName=='$(strip $(EC2_VPCENDPOINTSERVICE_NAME))'
-EC2_UI_VIEW_VPCENDPOINTSERVICES_FIELDS?=
-EC2_UI_VIEW_VPCENDPOINTSERVICES_SET_FIELDS?=
-EC2_UI_VIEW_VPCENDPOINTSERVICES_SET_QUERYFILTER?=
+# Customizations
+_EC2_LIST_VPCENDPOINTSERVICES_FIELDS?=
+_EC2_LIST_VPCENDPOINTSERVICES_SET_FIELDS?=
+_EC2_LIST_VPCENDPOINTSERVICES_SET_QUERYFILTER?=
+# _EC2_SHOW_VPCENDPOINTSERVICE_QUERYFILTER?= ?ServiceName=='$(strip $(EC2_VPCENDPOINTSERVICE_NAME))'
 
 #--- MACROS
 # _ec2_get_vpcendpoint_id= $(call _ec2_get_vpcendpointservice_id_N, $(EC2_VPCENDPOINTSERVICE_NAME))
@@ -56,14 +56,12 @@ EC2_UI_VIEW_VPCENDPOINTSERVICES_SET_QUERYFILTER?=
 # USAGE
 #
 
-_ec2_view_framework_macros ::
-	@echo 'AWS::EC2::VpcEndpoint ($(_AWS_EC2_VPCENDPOINT_MK_VERSION)) macros:'
-	@#echo '    _ec2_get_vpcendpointservice_id_{|N}                 - Get the id of a VPC-endpoint-service (Name)'
-	@#echo '    _ec2_get_vpcendpointservice_name_{|S|SR}            - Get the name of a VPC-endpoint-service (ShortName,Region)'
-	@#echo '    _ec2_get_vpcendpointservice_showname_{|N}           - Get the short-name of a VPC-endpoint-service (Name)'
-	@echo
+_ec2_list_macros ::
+	@#echo 'AWS::EC2::VpcEndpoint ($(_AWS_EC2_VPCENDPOINT_MK_VERSION)) macros:'
+	@#echo '    _ec2_get_vpcendpoint_id_{|N}                 - Get the id of a VPC-endpoint (Name)'
+	@#echo
 
-_ec2_view_framework_parameters ::
+_ec2_list_parameters ::
 	@echo 'AWS::EC2::VpcEndpoint ($(_AWS_EC2_VPCENDPOINT_MK_VERSION)) parameters:'
 	@echo '    EC2_VPCENDPOINT_FILTER=$(EC2_VPCENDPOINT_FILTER)'
 	@echo '    EC2_VPCENDPOINT_ID=$(EC2_VPCENDPOINT_ID)'
@@ -85,14 +83,14 @@ _ec2_view_framework_parameters ::
 	@echo '    EC2_VPCENDPOINTS_SET_NAME=$(EC2_VPCENDPOINTS_SET_NAME)'
 	@echo
 
-_ec2_view_framework_targets ::
+_ec2_list_targets ::
 	@echo 'AWS::EC2::VpcEndpoint ($(_AWS_EC2_VPCENDPOINT_MK_VERSION)) targets:'
 	@echo '    _ec2_create_vpcendpoint                     - Create a VPC-endpoint'
 	@echo '    _ec2_delete_vpcendpoint                     - Delete an existing VPC-endpoint'
+	@echo '    _ec2_list_vpcendpoints                      - List all VPC-endpoints'
+	@echo '    _ec2_list_vpcendpoints_set                  - List a set of VPC-endpoints'
 	@echo '    _ec2_show_vpcendpoint                       - Show everything related to a VPC-endpoint'
 	@echo '    _ec2_show_vpcendpoint_description           - Show description of a VPC-endpoint'
-	@echo '    _ec2_view_vpcendpoints                      - View VPC-endpoints'
-	@echo '    _ec2_view_vpcendpoints_set                  - View set of VPC-endpoints'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -112,17 +110,18 @@ _ec2_delete_vpcendpoint:
 	@$(INFO) '$(EC2_UI_LABEL)Deleting vpc-endpoint "$(EC2_VPCENDPOINT_NAME)" ...'; $(NORMAL)
 	$(AWS) ec2 delete-vpc-endpoint $(__EC2_DRY_RUN__VPCENDPOINT) $(__EC2_VPC_ENDPOINT_IDS__VPCENDPOINT)
 
-_ec2_show_vpcendpoint: _ec2_show_vpcendpoint_description
+_ec2_list_vpcendpoints:
+	@$(INFO) '$(EC2_UI_LABEL)Listing ALL vpc-endpoints ...'; $(NORMAL)
+	$(AWS) ec2 describe-vpc-endpoints $(_X__EC2_FILTER__VPCENDPOINTS) $(_X__EC2_VPC_ENDPOINT_IDS__VPCENDPOINTS)# --query "ServiceNames[]$((_EC2_LIST_VPCENDPOINTSERVICES_FIELDS)"
+
+_ec2_list_vpcendpoints_set:
+	@$(INFO) '$(EC2_UI_LABEL)Listing vpc-endpoints-set "$(EC2_VPCENDPOINTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'VPC-endpoints are grouped based on filter, ids, and query-filter'; $(NORMAL)
+	$(AWS) ec2 describe-vpc-endpoints $(__EC2_FILTER__VPCENDPOINTS) $(__EC2_VPC_ENDPOINT_IDS__VPCENDPOINTS)# --query "ServiceNames[$(__EC2_LIST_VPCENDPOINTSERVICES_SET_QUERYFILTER)]$(_EC2_LIST_VPCENDPOINTSERVICES_SET_FIELDS)"
+
+_EC2_SHOW_VPCENDPOINT_TARGETS?= _ec2_show_vpcendpoint_description
+_ec2_show_vpcendpoint: $(_EC2_SHOW_VPCENDPOINT_TARGETS)
 
 _ec2_show_vpcendpoint_description:
 	@$(INFO) '$(EC2_UI_LABEL)Showing description of vpc-endpoint "$(EC2_VPCENDPOINT_NAME)" ...'; $(NORMAL)
-	$(AWS) ec2 describe-vpc-endpoints $(__EC2_FILTER__VPCENDPOINTS) $(__EC2_VPC_ENDPOINT_IDS__VPCENDPOINT) # --query "ServiceDetails[$(EC2_UI_SHOW_VPCENDPOINTSERVICE_QUERYFILTER)]"
-
-_ec2_view_vpcendpoints:
-	@$(INFO) '$(EC2_UI_LABEL)View vpc-endpoints ...'; $(NORMAL)
-	$(AWS) ec2 describe-vpc-endpoints $(_X__EC2_FILTER__VPCENDPOINTS) $(_X__EC2_VPC_ENDPOINT_IDS__VPCENDPOINTS)# --query "ServiceNames[]$((EC2_UI_VIEW_VPCENDPOINTSERVICES_FIELDS)"
-
-_ec2_view_vpcendpoints_set:
-	@$(INFO) '$(EC2_UI_LABEL)View vpc-endpoints-set "$(EC2_VPCENDPOINTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'VPC-endpoints are grouped based on filter, ids, and query-filter'; $(NORMAL)
-	$(AWS) ec2 describe-vpc-endpoints $(__EC2_FILTER__VPCENDPOINTS) $(__EC2_VPC_ENDPOINT_IDS__VPCENDPOINTS)# --query "ServiceNames[$(_EC2_UI_VIEW_VPCENDPOINTSERVICES_SET_QUERYFILTER)]$(EC2_UI_VIEW_VPCENDPOINTSERVICES_SET_FIELDS)"
+	$(AWS) ec2 describe-vpc-endpoints $(__EC2_FILTER__VPCENDPOINTS) $(__EC2_VPC_ENDPOINT_IDS__VPCENDPOINT) # --query "ServiceDetails[$(_EC2_SHOW_VPCENDPOINTSERVICE_QUERYFILTER)]"
