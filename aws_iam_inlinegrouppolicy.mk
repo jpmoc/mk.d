@@ -25,7 +25,7 @@ __IAM_POLICY_DOCUMENT__INLINEGROUPPOLICY= $(if $(IAM_INLINEGROUPPOLICY_DOCUMENT)
 __IAM_POLICY_NAME__INLINEGROUPPOLICY= $(if $(IAM_INLINEGROUPPOLICY_NAME),--policy-name $(IAM_INLINEGROUPPOLICY_NAME))
 
 # Customizations
-_IAM_GET_INLINEGROUPPOLICIES_NAMES_QUERYFILTER?=
+_IAM_GET_INLINEGROUPPOLICIES_NAMES_QUERYFILTER?= $(_IAM_LIST_INLINEGROUPPOLICIES_SET_QUERYFILTER)
 _IAM_LIST_INLINEGROUPPOLICIES_FIELDS?=
 _IAM_LIST_INLINEGROUPPOLICIES_SET_FIELDS?= $(_IAM_LIST_INLINEGROUPPOLICIES_FIELDS)
 _IAM_LIST_INLINEGROUPPOLICIES_SET_QUERYFILTER?=
@@ -33,7 +33,7 @@ _IAM_LIST_INLINEGROUPPOLICIES_SET_QUERYFILTER?=
 # Macros
 _iam_get_inlinegrouppolicies_names= $(call _iam_get_inlinegrouppolicies_names_G, $(IAM_INLINEGROUPPOLICIES_GROUP_NAME))
 _iam_get_inlinegrouppolicies_names_G= $(call _iam_get_inlinegrouppolicies_names_GF, $(1), $(_IAM_GET_INLINEGROUPPOLICIES_NAMES_QUERYFILTER))
-_iam_get_inlinegrouppolicies_names_GF= $(shell $(AWS) ... )
+_iam_get_inlinegrouppolicies_names_GF= $(shell $(AWS) iam list-group-policies --group-name $(1) --query 'PolicyNames[$(2)]' --output text)
 
 #----------------------------------------------------------------------
 # USAGE

@@ -33,7 +33,7 @@ _IAM_LIST_INLINEROLEPOLICIES_SET_QUERYFILTER?=
 # Macros
 _iam_get_inlinerolepolicies_names= $(call _iam_get_inlinerolepolicies_names_R, $(IAM_INLINEROLEPOLICIES_ROLE_NAME))
 _iam_get_inlinerolepolicies_names_R= $(call _iam_get_inlinerolepolicies_names_RF, $(1), $(_IAM_GET_INLINEROLEPOLICIES_NAMES))
-_iam_get_inlinerolepolicies_names_RF= $(shell $(AWS) iam list-role-policies --role-name $(1) --query 'PolicyNames[$(_IAM_GET_INLINEROLEPOLICIES_NAMES_QUERYFILTER)].Name')
+_iam_get_inlinerolepolicies_names_RF= $(shell $(AWS) iam list-role-policies --role-name $(1) --query 'PolicyNames[$(2)]' --output text)
 
 #----------------------------------------------------------------------
 # USAGE

@@ -33,7 +33,7 @@ _IAM_LIST_INLINEUSERPOLICIES_SET_QUERYFILTER?=
 # Macros
 _iam_get_inlineuserpolicies_names= $(call _iam_get_inlineuserpolicies_names_U, $(IAM_INLINEUSERPOLICIES_USER_NAME))
 _iam_get_inlineuserpolicies_names_U= $(call _iam_get_inlineuserpolicies_names_UF, $(1), $(_IAM_GET_INLINEUSERPOLICIES_NAMES))
-_iam_get_inlineuserpolicies_names_UF= $(shell $(AWS) ... )
+_iam_get_inlineuserpolicies_names_UF= $(shell $(AWS) iam list-user-policies --user-name $(1) --query 'PolicyNames[$(2)]' --output text)
 
 #----------------------------------------------------------------------
 # USAGE
