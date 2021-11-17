@@ -59,7 +59,7 @@ _KCL_UNAPPLY_MANIFESTS_|?= $(_KCL_UNAPPLY_MANIFESTS_|)
 |_KCL_DOWNLOAD_MANIFEST?= | tee $(KCL_MANIFEST_DOWNLOAD_FILEPATH)
 |_KCL_LIST_MANIFESTS_SET?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

@@ -36,7 +36,7 @@ _KCL_LIST_KUSTOMIZATIONS_SET_|?= $(_KCL_LIST_KUSTOMIZATIONS_|)
 |_KCL_DOWNLOAD_KUSTOMIZATION?= | tee $(KCL_KUSTOMIZATION_DOWNLOAD_FILEPATH)
 |_KCL_LIST_KUSTOMIZATIONS_SET?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

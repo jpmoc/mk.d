@@ -55,8 +55,7 @@ _KCL_UNAPPLY_INGRESSES_|?= $(_KCL_APPLY_INGRESSES_|)
 |_KCL_CURL_INGRESS?= #
 |_KCL_DIG_INGRESS?= #
 
-#--- MACROS
-
+# Macros
 _kcl_get_ingress_ip_or_dnsname= $(call _kcl_get_ingress_ip_or_dnsname_N, $(KCL_INGRESS_NAME))
 _kcl_get_ingress_ip_or_dnsname_N= $(call _kcl_get_ingress_ip_or_dnsname_NN, $(1), $(KCL_INGRESS_NAMESPACE_NAME))
 _kcl_get_ingress_ip_or_dnsname_NN= $(shell $(KUBECTL) get ingress --namespace $(2) $(1) --output jsonpath='{.status.loadBalancer.ingress[*].hostname}')

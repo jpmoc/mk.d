@@ -38,7 +38,7 @@ _KCL_APPLY_HORIZONTALPODAUTOSCALERS_|?= #
 _KCL_DIFF_HORIZONTALPODAUTOSCALERS_|?= $(_KCL_APPLY_HORIZONTALPODAUTOSCALERS_|)
 _KCL_UNAPPLY_HORIZONTALPODAUTOSCALERS_|?= $(_KCL_APPLY_HORIZONTALPODAUTOSCALERS_|)
 
-#--- MACROS
+# Macros
 _kcl_get_horizontalpodautoscaler_replicasets_names= $(call _kcl_get_horizontalpodautoscaler_replicasets_names_S, $(KCL_HORIZONTALPODAUTOSCALER_REPLICASETS_SELECTOR))
 _kcl_get_horizontalpodautoscaler_replicasets_names_S= $(call _kcl_get_horizontalpodautoscaler_replicasets_names_SN, $(1), $(KCL_HORIZONTALPODAUTOSCALER_NAMESPACE_NAME))
 _kcl_get_horizontalpodautoscaler_replicasets_names_SN= $(shell $(KUBECTL) get replicaset --namespace $(2) --selector $(1) --output jsonpath="{.items[*].metadata.name}")

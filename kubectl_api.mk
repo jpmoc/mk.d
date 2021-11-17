@@ -14,9 +14,7 @@ __KCL_VERBS= $(if $(KCL_API_RESOURCES_VERBS),--verbs $(subst $(SPACE),$(COMMA),$
 
 # Customizations
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -48,7 +46,8 @@ _kcl_list_targets ::
 # PUBLIC TARGETS
 #
 
-_kcl_show_api: _kcl_show_api_resources _kcl_show_api_versions
+_KCL_SHOW_API_TARGETS?= _kcl_show_api_resources _kcl_show_api_versions
+_kcl_show_api: $(_KCL_SHOW_API_TARGETS)
 
 _kcl_show_api_resources:
 	@$(INFO) '$(KCL_UI_LABEL)Showing supported resources on this cluster ...'; $(NORMAL)

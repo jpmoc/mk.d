@@ -40,7 +40,7 @@ __KCL_SCHEDULE= $(if $(KCL_CRONJOB_SCHEDULE),--schedule=$(KCL_CRONJOB_SCHEDULE))
 
 # Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_cronjob_lastjob_name= $(call _kcl_get_cronjob_lastjob_name_S, run=$(KCL_CRONJOB_NAME))
 _kcl_get_cronjob_lastjob_name_S= $(call _kcl_get_cronjob_lastjob_name_SN, $(1), $(KCL_CRONJOB_NAMESPACE_NAME))
 _kcl_get_cronjob_lastjob_name_SN= $(shell $(KUBECTL) get job --all-namespaces=false  --namespace $(2) --selector $(1)  --sort-by=metadata.name --output jsonpath="{.items[-1:].metadata.name}{'\n'}")

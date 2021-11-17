@@ -13,14 +13,13 @@ KCL_CLUSTER_DUMP_DIRPATH?= $(KCL_OUTPUTS_DIRPATH)
 KCL_CLUSTER_DUMP_FILENAME?= $(KCL_CLUSTER_NAME).$(KCL_DATE_YYYYMMDD_HHMMSS).dump
 KCL_CLUSTER_DUMP_FILEPATH?= $(KCL_CLUSTER_DUMP_DIRPATH)$(KCL_CLUSTER_DUMP_FILENAME)
 
-# Option parameters
+# Options
 
-# Pipe parameters
+# Customizations
 _KCL_TAIL_CLUSTER_|?=
 |_KCL_TAIL_CLUSTER?= # | tee cluster.log
 
-#--- MACROS
-
+# Macros
 _kcl_get_cluster_bearertoken= $(call _kcl_get_cluster_bearertoken_S, $(KCL_CLUSTER_SERCRET_NAME))
 _kcl_get_cluster_bearertoken_S= $(shell $(KUBECTL) get secrets --namespace default $(1) --output jsonpath='{.data.token}' | base64 --decode)
 

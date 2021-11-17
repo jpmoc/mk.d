@@ -42,7 +42,7 @@ _IAM_LIST_USERS_SET_FIELDS?= $(_IAM_LIST_USERS_FIELDS)
 _IAM_LIST_USERS_SET_QUERYFILTER?=
 _IAM_SHOW_USER_ACCESSKEYS_FIELDS?= 
 
-#--- MACROS
+# Macros
 _iam_get_user_arn= $(call _iam_get_user_arn_N, $(IAM_USER_NAME))
 _iam_get_user_arn_N= $(shell $(AWS) iam get-user --user-name $(1) --query "User.Arn" --output text)
 

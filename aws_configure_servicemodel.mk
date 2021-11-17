@@ -7,15 +7,13 @@ _AWS_CONFIGURE_SERVICEMODEL_MK_VERSION= $(_AWS_CONFIGURE_MK_VERSION)
 # Derived parameters
 CFE_SERVICEMODEL_CONTENT?= $(if $(CFE_SERVICEMODEL_CONTENT_FILEPATH),file://$(CFE_SERVICEMODEL_CONTENT_FILEPATH))
 
-# Option parameters
+# Options
 __CFE_SERVICE_MODEL?= $(if $(CFE_SERVICEMODEL_CONTENT), --service-model $(CFE_SERVICEMODEL_CONTENT))
 __CFE_SERVICE_NAME?= $(if $(CFE_SERVICEMODEL_SERVICE_NAME), --service-name $(CFE_SERVICEMODEL_SERVICE_NAME))
 
-# UI parameters
+# Customizations
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

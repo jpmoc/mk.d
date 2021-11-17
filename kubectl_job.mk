@@ -57,7 +57,7 @@ __KCL_SORT_BY__JOBS= $(if $(KCL_JOBS_SORTBY_JSONPATH),--sort-by=$(KCL_JOBS_SORTB
 
 # Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_job_pods_names= $(call _kcl_get_job_pods_names_S, $(KCL_JOB_PODS_SELECTOR))
 _kcl_get_job_pods_names_S= $(call _kcl_get_job_pods_names_SN, $(1), $(KCL_JOB_NAMESPACE_NAME))
 _kcl_get_job_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --selector=$(strip $(1)) --output=jsonpath="{.items..metadata.name}")

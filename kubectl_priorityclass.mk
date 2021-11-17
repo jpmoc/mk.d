@@ -19,7 +19,7 @@ __KCL_FILENAME__PRIORITYCLASS= $(if $(KCL_PRIORITYCLASS_MANIFEST_FILEPATH),--fil
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

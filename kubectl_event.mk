@@ -31,7 +31,7 @@ __KCL_WATCH_ONLY__EVENTS= $(if $(KCL_EVENTS_WATCH_ONLY),--watch-only=$(KCL_EVENT
 |_KCL_WATCH_EVENTS?=
 |_KCL_WATCH_EVENTS_SET?= 
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

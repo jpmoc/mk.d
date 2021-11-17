@@ -6,20 +6,20 @@ _AWS_IAM_PASSWORD_MK_VERSION= $(_AWS_IAM_MK_VERSION)
 # IAM_PASSWORD_STRING_NEW?= my-password
 # IAM_PASSWORD_STRING_OLD?= my-password
 
-# Derived variables
+# Derived parameters
 IAM_PASSWORD_USER_NAME?= $(IAM_USER_NAME)
 IAM_PASSWORD_STRING_NEW?= $(IAM_PASSWORD_STRING)
 IAM_PASSWORD_STRING_OLD?= $(IAM_PASSWORD_STRING)
 
-# Option variables
+# Options
 __IAM_NEW_PASSWORD= $(if $(IAM_PASSWORD_STRING_NEW),--new-password $(IAM_PASSWORD_STRING_NEW))
 __IAM_OLD_PASSWORD= $(if $(IAM_PASSWORD_STRING_OLD),--old-password $(IAM_PASSWORD_STRING_OLD))
 __IAM_PASSWORD= $(if $(IAM_PASSWORD_STRING),--password $(IAM_PASSWORD_STRING))
 __IAM_PASSWORD_RESET_REQUIRED?= $(if $(filter false, $(IAM_PASSWORD_RESETREQUIRED_FLAG)),--no-password-reset-required,--password-reset-required)
 
-# UI variables
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

@@ -37,7 +37,7 @@ __KCL_SELECTOR__ENDPOINTS?= $(if $(KCL_ENDPOINTS_SELECTOR),--selector $(KCL_ENDP
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

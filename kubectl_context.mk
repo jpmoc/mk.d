@@ -22,7 +22,7 @@ __KCL_USER__CONTEXT= $(if $(KCL_CONTEXT_USER),--user $(KCL_CONTEXT_USER))
 
 # Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_current_context= $(shell kubectl config current-context)
 
 #----------------------------------------------------------------------

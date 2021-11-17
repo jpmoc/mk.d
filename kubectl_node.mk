@@ -39,7 +39,7 @@ __KCL_WATCH_ONLY__NODES= $(if $(KCL_NODES_WATCHONLY_FLAG),--watch-only=$(KCL_NOD
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

@@ -35,7 +35,7 @@ _KCL_APPLY_CLUSTERROLEBINDINGS_|?= #
 _KCL_DIFF_CLUSTERROLEBINDINGS_|?= $(_KCL_APPLY_CLUSTERROLEBINDINGS_|)
 _KCL_UNAPPLY_CLUSTERROLEBINDINGS_|?= $(_KCL_APPLY_CLUSTERROLEBINDINGS_|)
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

@@ -64,7 +64,7 @@ _KCL_UNAPPLY_CONFIGMAPS_|?= $(_KCL_APPLY_CONFIGMAPS_|)
 |_KCL_KUSTOMIZE_CONFIGMAP?=
 |_KCL_PATCH_CONFIGMAP?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

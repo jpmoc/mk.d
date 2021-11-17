@@ -7,10 +7,10 @@ _AWS_IAM_ACCESSKEY_MK_VERSION= $(_AWS_IAM_MK_VERSION)
 IAM_ACCESSKEY_NAME?= $(IAM_USER_NAME)
 IAM_ACCESSKEY_USER_NAME?= $(IAM_USER_NAME)
 
-# Option parameters
+# Options
 __IAM_USER_NAME__ACCESSKEY= $(if $(IAM_ACCESSKEY_USER_NAME),--user-name $(IAM_ACCESSKEY_USER_NAME))
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

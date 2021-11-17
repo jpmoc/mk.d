@@ -3,17 +3,18 @@ _KREW_MK_VERSION= 0.99.0
 # KRW_PLUGIN_NAME?= my-plugin
 KRW_PLUGINS_SET_NAME?= my-plugins-set
 KRW_PLUGINS_REGEX?= *
+KRW_UI_LABEL?= [krew] #
 
 # Derived parameters
 
-# Option parameters
+# Options
 
-# UI parameters
-KRW_UI_LABEL?= [krew] #
+# Customizations
 |_KRW_LIST_PLUGINS_SET?= | grep $(KRW_PLUGINS_REGEX)
 
-#--- MACROS
+# Macros
 
+# Utilities
 KREW_BIN?= kubectl krew
 KREW?= $(strip $(__KREW_ENVIRONMENT) $(KREW_ENVIRONMENT) $(KREW_BRIN) $(__KREW_OPTIONS) $(KREW_OPTIONS) )
 

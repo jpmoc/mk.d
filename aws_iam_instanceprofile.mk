@@ -24,7 +24,7 @@ _IAM_LIST_INSTANCEPROFILES_SET_FIELDS?= $(_IAM_LIST_INSTANCEPROFILES_FIELDS)
 _IAM_SHOW_INSTANCEPROFILE_DESCRIPTION_FIELDS?=
 _IAM_SHOW_INSTANCEPROFILE_ROLES_FIELDS?= .{RoleId:RoleId,RoleName:RoleName,createDate:CreateDate,path:Path}
 
-#--- MACROS
+# Macros
 _iam_get_instanceprofile_arn= $(call _iam_get_instanceprofile_arn_N, $(IAM_INSTANCEPROFILE_NAME))
 _iam_get_instanceprofile_arn_N= $(call _iam_get_instanceprofile_arn_NP, $(1), $(IAM_INSTANCEPROFILE_PATH))
 _iam_get_instanceprofile_arn_NP= $(shell echo arn:aws:iam::$(AWS_ACCOUNT_ID):instance-profile$(strip $(2))$(strip $(1)))

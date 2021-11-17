@@ -30,7 +30,7 @@ __KCL_WATCH_ONLY__PODSECURITYPOLICIES= $(if $(KCL_PODSECURITYPOLICIES_WATCH_ONLY
 
 # Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_podsecuritypolicies_names= $(call _kcl_get_podsecuritypolicies_names_S, $(KCL_PODSECURITYPOLICIES_SELECTOR))
 _kcl_get_podsecuritypolicies_names_S= $(shell $(KUBECTL) get podsecuritypolicies --selector $(1) --output jsonpath="{.items[*].metadata.name}")
 

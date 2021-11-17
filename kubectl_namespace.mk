@@ -47,7 +47,7 @@ _KCL_UNAPPLY_NAMESPACES_|?= $(_KCL_APPLY_NAMESPACES_|)
 |_KCL_CREATE_NAMESPACE?= # | tee > namespace.yaml
 |_KCL_SHOW_NAMESPACE_EVENTS?= # | tail -10
 
-#--- MACROS
+# Macros
 
 _kcl_get_namespace_pod_names= $(call _kcl_get_namespace_pod_names_N, $(KCL_NAMESPACE_NAME))
 _kcl_get_namespace_pod_names_N= $(shell $(KUBECTL) get pods --namespace $(1) --output jsonpath="{.items[*].metadata.name}")

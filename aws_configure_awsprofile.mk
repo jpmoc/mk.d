@@ -25,18 +25,14 @@ CFE_AWSPROFILE_PARAMETER_AWSSESSIONTOKEN?= $(AWS_SESSION_TOKEN)
 CFE_AWSPROFILES_CREDENTIALS_FILEPATH?= $(CFE_CREDENTIALS_FILEPATH)
 CFE_AWSPROFILES_SET_NAME?= aws-profiles@$(CFE_AWSPROFILES_REGEX)
 
-# Option parameters
+# Options
 __CFE_PROFILE?= $(if $(CFE_AWSPROFILE_NAME),--profile $(CFE_AWSPROFILE_NAME))
 
-# Pipe
+# Customizations
 |_CFE_LIST_AWSPROFILES_SET?= | grep $(CFE_AWSPROFILES_REGEX)
 |_CFE_SHOW_AWSPROFILE_CREDENTIALS?= | head -1
 
-# UI parameters
-
-#--- Utilities
-
-#--- MACROS
+# Macros
 _cfe_get_awsprofile_parameter_awsaccesskeyid= $(call _cfe_get_awsprofile_parameter_awsaccesskeyid_P, $(CFE_AWSPROFILE_NAME))
 _cfe_get_awsprofile_parameter_awsaccesskeyid_P= $(shell $(AWS) configure get aws_access_key_id --profile $(1) --output text)
 

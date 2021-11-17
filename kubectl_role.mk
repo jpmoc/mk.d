@@ -23,7 +23,7 @@ __KCL_VERB__ROLE= $(if $(KCL_ROLE_RESOURCE_VERBS),--verb $(subst $(SPACE),$(COMM
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

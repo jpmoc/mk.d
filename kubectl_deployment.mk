@@ -124,7 +124,7 @@ _KCL_UNAPPLY_DEPLOYMENTS_|?= $(_KCL_APPLY_DEPLOYMENTS_|)
 |_KCL_PORTFORWARD_DEPLOYMENT?= || sleep 10; date; done
 |_KCL_TAIL_DEPLOYMENT?= # | tee deployment.log
 
-#--- MACROS
+# Macros
 _kcl_get_deployment_pods_names= $(call _kcl_get_deployment_pods_names_S, $(KCL_DEPLOYMENT_PODS_SELECTOR))
 _kcl_get_deployment_pods_names_S= $(call _kcl_get_deployment_pods_names_SN, $(1), $(KCL_DEPLOYMENT_NAMESPACE_NAME))
 _kcl_get_deployment_pods_names_SN= $(shell $(KUBECTL) get pods --namespace $(2) --selector=$(strip $(1)) --output=jsonpath="{.items..metadata.name}")

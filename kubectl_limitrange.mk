@@ -26,7 +26,7 @@ __KCL_SELECTOR__LIMITRANGES= $(if $(KCL_LIMITRANGES_SELECTOR),--selector $(KCL_L
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

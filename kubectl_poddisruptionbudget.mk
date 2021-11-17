@@ -37,7 +37,7 @@ __KCL_WATCH_ONLY__PODDISRUPTIONBUDGETS= $(if $(KCL_PODDISRUPTIONBUDGETS_WATCH_ON
 
 # Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_poddisruptionbudgets_names= $(call _kcl_get_poddisruptionbudgets_names_S, $(KCL_PODDISRUPTIONBUDGETS_SELECTOR))
 _kcl_get_poddisruptionbudgets_names_S= $(call _kcl_get_poddisruptionbudgets_names_SN, $(1), $(KCL_PODDISRUPTIONBUDGETS_NAMESPACE_NAME))
 _kcl_get_poddisruptionbudgets_names_SN= $(shell $(KUBECTL) get poddisruptionbudget --namespace $(2) --selector $(1) --output jsonpath="{.items[*].metadata.name}")

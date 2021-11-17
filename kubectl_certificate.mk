@@ -22,7 +22,7 @@ KCL_CERTIFICATESIGNINGREQUESTS_SET_NAME?= certificates@$(KCL_CERTIFICATES_DIRPAT
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

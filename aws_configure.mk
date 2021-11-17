@@ -1,18 +1,17 @@
 _AWS_CONFIGURE_MK_VERSION= 0.99.6
 
 # CFE_CREDENTIALS_FILEPATH?= .aws/credentials
+# CFE_UI_LABEL?= [configure] #
 
 # Derived parameters
 CFE_CREDENTIALS_FILEPATH?= $(AWS_CREDENTIALS_FILEPATH)
-
-# Option parameters
-
-# UI parameters
 CFE_UI_LABEL?= $(AWS_UI_LABEL)
 
-#--- Utilities
+# Options
 
-#--- MACROS
+# Customizations
+
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

@@ -40,7 +40,7 @@ _KCL_UNAPPLY_CLUSTERROLES_|?= $(_KCL_APPLY_CLUSTERROLES_|)
 |_KCL_APPLY_CLUSTERROLES?=
 |_KCL_LIST_CLUSTERROLES_SET?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

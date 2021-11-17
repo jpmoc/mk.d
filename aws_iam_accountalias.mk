@@ -6,11 +6,12 @@ _AWS_IAM_ACCOUNTALIAS_MK_VERSION= $(_AWS_IAM_MK_VERSION)
 # Derived parameters
 IAM_ACCOUNTALIAS_AWSACOUNT_ID?= $(IAM_AWSACCOUNT_ID)
 
-# Option parameters
+# Options
 __IAM_ACCOUNT_ALIAS= $(if $(IAM_ACCOUNTALIAS_NAME),--account-alias $(AWS_ACCOUNTALIAS_NAME))
 
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

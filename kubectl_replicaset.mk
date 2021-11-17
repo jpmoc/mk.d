@@ -34,7 +34,7 @@ _KCL_APPLY_REPLICASETS_|?= #
 _KCL_DIFF_REPLICASETS_|?= $(_KCL_APPLY_DEPLICASETS_|)
 _KCL_UNAPPLY_REPLICASETS_|?= $(_KCL_APPLY_DEPLICASETS_|)
 
-#--- MACROS
+# Macros
 _kcl_get_replicaset_pod_names= $(_kcl_get_replicaset_pod_names_S, $(KCL_REPLICASET_POD_SELECTOR))
 _kcl_get_replicaset_pod_name_S= $(call _kcl_get_replicaset_pod_names_SN, $(1), $(KCL_REPLICASET_NAMESPACE_NAME))
 _kcl_get_replicaset_pod_name_SN= $(shell $(KUBECTL) get pods --namespace $(2) --selector=$(strip $(1)))

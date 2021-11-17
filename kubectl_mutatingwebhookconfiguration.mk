@@ -55,7 +55,7 @@ __KCL_SELECTOR__MUTATINGWEBHOOKCONFIGS= $(if $(KCL_MUTATINGWEBHOOKCONFIGS_SELECT
 
 # Customizations
 
-#--- MACROS
+# Macros
 _kcl_get_mutatingwebhookconfig_deployments_names= $(call _kcl_get_mutatingwebhookconfig_deployments_names_S, $(KCL_MUTATINGWEBHOOKCONFIG_DEPLOYMENTS_SELECTOR))
 _kcl_get_mutatingwebhookconfig_dpeloyments_names_S= $(call _kcl_get_mutatingwebhookconfig_deployments_names_SN, $(1), $(KCL_MUTATINGWEBHOOKCONFIG_NAMESPACE_NAME))
 _kcl_get_mutatingwebhookconfig_deployments_names_SN= $(shell $(KUBECTL) get deployments --namespace $(2) --selector=$(strip $(1)) --output=jsonpath="{.items..metadata.name}")

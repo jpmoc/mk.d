@@ -25,7 +25,7 @@ KCL_KUBECONFIGS_DIRPATH?= $(KCL_KUBECONFIG_DIRPATH)
 _KCL_LIST_KUBECONFIGS_|= cd $(KCL_KUBECONFIGS_DIRPATH) && #
 _KCL_LIST_KUBECONFIGS_SET_|= $(_KCL_LIST_KUBECONFIGS_|)
 
-#--- MACROS
+# Macros
 
 _kcl_get_kubeconfig_context= $(shell $(KUBECTL) config current-context)
 

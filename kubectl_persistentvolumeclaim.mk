@@ -31,7 +31,7 @@ __KCL_SELECTOR__PERSISTENTVOLUMECLAIMS= $(if $(KCL_PERSISTENTVOLUMECLAIMS_SELECT
 
 # Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

@@ -15,6 +15,7 @@ _AWS_STS_MK_VERSION= 0.99.7
 # STS_ROLE_ARN?=
 # STS_ROLE_NAME?=
 STS_ROLESESSION_DURATION_SECONDS?= 3600
+STS_UI_LABEL?= $(AWS_UI_LABEL)
 
 # Derived parameters
 STS_ASSUMECREDENTIALS_DIRPATH?= $(STS_OUTPUTS_DIRPATH)
@@ -28,7 +29,7 @@ STS_ROLE_NAME?= $(IAM_ROLE_NAME)
 STS_ROLESESSION_NAME?= $(STS_ROLE_NAME)-session
 STS_USER_NAME?= $(IAM_USER_NAME)
 
-# Options parameters
+# Options
 __STS_DURATION_SECONDS= $(if $(STS_ROLESESSION_DURATION_SECONDS),--duration-seconds $(STS_ROLESESSION_DURATION_SECONDS))
 __STS_DURATION_TOKEN=
 __STS_ENCODED_MESSAGE=
@@ -43,17 +44,12 @@ __STS_SERIAL_NUMBER= $(if $(STS_USER_MFADEVICE_ARN),--serial-number $(STS_USER_M
 __STS_TOKEN_CODE= $(if $(STS_USER_MFADEVICE_TOKENCODE),--token-code $(STS_USER_MFADEVICE_TOKENCODE))
 __STS_WEB_IDENTITY_TOKEN=
 
-# Pipe parameters
+# Customizations
 |_STS_ASSUME_ROLE?= $(if $(STS_ASSUMECREDENTIALS_FILEPATH),| tee $(STS_ASSUMECREDENTIALS_FILEPATH))
 |_STS_ASSUME_ROLE_WITH_SAML?= $(if $(STS_ASSUMECREDENTIALS_FILEPATH),| tee $(STS_ASSUMECREDENTIALS_FILEPATH))
 |_STS_ASSUME_ROLE_WITH_WEBIDENTITY?= $(if $(STS_ASSUMECREDENTIALS_FILEPATH),| tee $(STS_ASSUMECREDENTIALS_FILEPATH))
 
-# UI parameters
-STS_UI_LABEL?= $(AWS_UI_LABEL)
-
-#--- Utilities
-
-#--- MACROS
+# Macros
 _sts_get_calleridentity_account_id= $(shell $(AWS) sts get-caller-identity --query Account --output text)
 _sts_get_calleridentity_user_arn= $(shell $(AWS) sts get-caller-identity --query Arn --output text)
 _sts_get_calleridentity_user_id= $(shell $(AWS) sts get-caller-identity --query UserId --output text)
@@ -92,6 +88,7 @@ _sts_list_parameters ::
 	@echo '    STS_ROLE_NAME=$(STS_ROLE_NAME)'
 	@echo '    STS_ROLESESSION_DURATION_SECONDS=$(STS_ROLESESSION_DURATION_SECONDS)'
 	@echo '    STS_ROLESESSION_NAME=$(STS_ROLESESSION_NAME)'
+	@echo '    STS_UI_LABEL=$(STS_UI_LABEL)'
 	@echo
 
 _aws_list_targets :: _sts_list_targets
