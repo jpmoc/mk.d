@@ -13,7 +13,7 @@ IAM_MFADEVICE_PATH?= /
 # IAM_MFADEVICE_USER_NAME?= emayssat
 IAM_MFADEVICES_ASSIGNMENT_STATUS?= Any
 
-# Derived variables
+# Derived parameters
 IAM_MFADEVICE_ARN?= arn:aws:iam:$(AWS_ACCOUNT_ID):mfa/$(IAM_MFADEVICE_NAME)
 IAM_MFADEVICE_NAME?= $(IAM_USER_NAME)
 IAM_MFADEVICE_QRCODE_DIRPATH?= $(IAM_OUTPUTS_DIRPATH)
@@ -22,7 +22,7 @@ IAM_MFADEVICE_TOKENCODE1?= $(IAM_MFADEVICE_TOKENCODE)
 IAM_MFADEVICE_TOKENCODE2?= $(IAM_MFADEVICE_TOKENCODE)
 IAM_MFADEVICE_USER_NAME?= $(IAM_USER_NAME)
 
-# Option variables
+# Options
 __IAM_ASSIGNMENT_STATUS= $(if $(IAM_MFADEVICES_ASSIGNMENT_STATUS),--assignment-status $(IAM_MFADEVICES_ASSIGNMENT_STATUS))
 __IAM_AUTHENTICATION_CODE_1= $(if $(IAM_MFADEVICE_TOKENCODE1),--authentication-code-1 $(IAM_MFADEVICE_TOKENCODE1))
 __IAM_AUTHENTICATION_CODE_2= $(if $(IAM_MFADEVICE_TOKENCODE2),--authentication-code-2 $(IAM_MFADEVICE_TOKENCODE2))
@@ -33,11 +33,12 @@ __IAM_SERIAL_NUMBER= $(if $(IAM_USER_MFADEVICE_ARN),--serial-number $(IAM_USER_M
 __IAM_USER_NAME_MFADEVICE= $(if $(IAM_MFADEVICE_USER_NAME),--user-name $(IAM_MFADEVICE_USER_NAME))
 __IAM_VIRTUAL_MFA_DEVICE_NAME= $(if $(IAM_MFADEVICE_NAME),--virtual-mfa-device-name $(IAM_MFADEVICE_NAME))
 
-# UI variables
-IAM_UI_LIST_MFADEVICES_FIELDS?= .{SerialNumber:SerialNumber,EnableDate:EnableDate}
-IAM_UI_LIST_MFADEVICES_SET_FIELDS?= $(IAM_UI_LIST_MFADEVICES_FIELDS)
+# Customizations
+_IAM_LIST_MFADEVICES_FIELDS?= .{SerialNumber:SerialNumber,EnableDate:EnableDate}
+_IAM_LIST_MFADEVICES_SET_FIELDS?= $(_IAM_LIST_MFADEVICES_FIELDS)
+_IAM_LIST_MFADEVICES_SET_QUERYFILTER?=
 
-#--- MACROS
+# Macros
 _iam_get_mfadevice_arn= $(call _iam_get_user_mfadevice_arn_U, $(IAM_MFADEVICE_NAME))
 _iam_get_mfadevice_arn_U= $(shell echo arn:aws:iam::$(AWS_ACCOUNT_ID):mfa/$(strip $(1)))
 
@@ -105,9 +106,9 @@ _iam_resync_mfadevice:
 
 _iam_list_mfadevices:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL MFA-devices ...'; $(NORMAL)
-	$(AWS) iam list-virtual-mfa-devices $(_X__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(IAM_UI_LIST_MFADEVICES_FIELDS)"
+	$(AWS) iam list-virtual-mfa-devices $(_X__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(_IAM_LIST_MFADEVICES_FIELDS)"
 
 _iam_list_mfadevices_set:
 	@$(INFO) '$(IAM_UI_LABEL)List all MFA-devices ...'; $(NORMAL)
 	@$(WARN) 'MFA devices are split in 2+ sets: Assigned, Unassigned, and Any'; $(NORMAL)
-	$(AWS) iam list-virtual-mfa-devices $(__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[]$(IAM_UI_LIST_MFADEVICES_SET_FIELDS)"
+	$(AWS) iam list-virtual-mfa-devices $(__IAM_ASSIGNMENT_STATUS) --query "VirtualMFADevices[$(_IAM_LIST_MFADEVICES_SET_QUERYFILTER)]$(_IAM_LIST_MFADEVICES_SET_FIELDS)"

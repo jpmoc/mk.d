@@ -25,7 +25,7 @@ IAM_ROLE_INSTANCEPROFILE_NAME?= $(IAM_INSTANCEPROFILE_NAME)
 IAM_ROLES_PATH_PREFIX?= $(IAM_ROLE_PATH)
 IAM_ROLES_SET_NAME?= $(subst /,,$(IAM_ROLES_PATH_PREFIX))
 
-# Options parameters
+# Options
 __IAM_ASSUME_ROLE_POLICY_DOCUMENT= $(if $(IAM_ROLE_ASSUMEPOLICYDOCUMENT),--assume-role-policy-document $(IAM_ROLE_ASSUMEPOLICYDOCUMENT))
 __IAM_DESCRIPTION__ROLE= $(if $(IAM_ROLE_DESCRIPTION),--description $(IAM_ROLE_DESCRIPTION))
 __IAM_INSTANCE_PROFILE_NAME__ROLE= $(if $(IAM_ROLE_INSTANCEPROFILE_NAME),--instance-profile-name $(IAM_ROLE_INSTANCEPROFILE_NAME))
@@ -35,13 +35,14 @@ __IAM_ROLE_NAME= $(if $(IAM_ROLE_NAME),--role-name $(IAM_ROLE_NAME))
 __IAM_TAGS__ROLE= $(if $(IAM_ROLE_TAGS_KEYVALUES),--tags $(IAM_ROLE_TAGS_KEYVALUES))
 __IAM_TAG_KEYS__ROLE?= $(if $(IAM_ROLE_TAGS_KEYS),--tag-keys $(IAM_ROLE_TAGS_KEYS))
 
-# UI parameters
-IAM_UI_SHOW_ROLE_FIELDS?=
-IAM_UI_LIST_ROLES_FIELDS?= .{createDate:CreateDate,RoleId:RoleId,RoleName:RoleName,path:Path}
-IAM_UI_LIST_ROLES_SET_FIELDS?= $(IAM_UI_LIST_ROLES_FIELDS)
-IAM_UI_LIST_ROLES_SET_QUERYFILTER?=
+# Customizations
+_IAM_LIST_ROLES_FIELDS?= .{createDate:CreateDate,RoleId:RoleId,RoleName:RoleName,path:Path}
+_IAM_LIST_ROLES_SET_FIELDS?= $(_IAM_LIST_ROLES_FIELDS)
+_IAM_LIST_ROLES_SET_QUERYFILTER?=
+_IAM_SHOW_ROLE_FIELDS?=
+_IAM_SHOW_ROLE_DESCRIPTION_FIELDS?= $(_IAM_SHOW_ROLE_FIELDS)
 
-#--- MACROS
+# Macros
 _iam_get_role_arn= $(call _iam_get_role_arn_N, $(IAM_ROLE_NAME))
 _iam_get_role_arn_N= $(shell $(AWS) iam list-roles --query "Roles[?RoleName=='$(strip $(1))'].Arn" --output text)
 
@@ -121,12 +122,12 @@ _iam_detach_role:
 
 _iam_list_roles:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL roles ...'; $(NORMAL)
-	$(AWS) iam list-roles $(_X__IAM_PATH_PREFIX__ROLES) --query "Roles[]$(IAM_UI_LIST_ROLES_FIELDS)"
+	$(AWS) iam list-roles $(_X__IAM_PATH_PREFIX__ROLES) --query "Roles[]$(_IAM_LIST_ROLES_FIELDS)"
 
 _iam_list_roles_set:
 	@$(INFO) '$(IAM_UI_LABEL)Showing roles-set "$(IAM_ROLES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Roles are grouped based on the proviced path-prefix and query-filter'; $(NORMAL)
-	$(AWS) iam list-roles $(__IAM_PATH_PREFIX__ROLES) --query "Roles[$(IAM_UI_LIST_ROLES_SET_QUERYFILTER)]$(IAM_UI_LIST_ROLES_SET_FIELDS)"
+	$(AWS) iam list-roles $(__IAM_PATH_PREFIX__ROLES) --query "Roles[$(_IAM_LIST_ROLES_SET_QUERYFILTER)]$(_IAM_LIST_ROLES_SET_FIELDS)"
 
 _IAM_SHOW_ROLE_TARGETS?= _iam_show_role_assumepolicydocument _iam_show_role_policies _iam_show_role_description
 _iam_show_role: $(_IAM_SHOW_ROLE_TARGETS)
@@ -137,7 +138,7 @@ _iam_show_role_assumepolicydocument:
 
 _iam_show_role_description:
 	@$(INFO) '$(IAM_UI_LABEL)Showing description of role "$(IAM_ROLE_NAME)" ...'; $(NORMAL)
-	$(AWS) iam list-roles --query "Roles[?RoleName=='$(IAM_ROLE_NAME)']$(IAM_UI_SHOW_ROLE_FIELDS)"
+	$(AWS) iam list-roles --query "Roles[?RoleName=='$(IAM_ROLE_NAME)']$(_IAM_SHOW_ROLE_DESCRIPTION_FIELDS)"
 
 _iam_show_role_inlinepolicies:
 	@$(INFO) '$(IAM_UI_LABEL)Showing inline-policies of role "$(IAM_ROLE_NAME)" ...'; $(NORMAL)

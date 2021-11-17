@@ -11,18 +11,18 @@ IAM_GROUP_PATH?= /
 IAM_GROUP_ARN?= $(if $(IAM_GROUP_NAME),arn:aws:iam::$(IAM_GROUP_ACCOUNT_ID):group$(IAM_GROUP_PATH)$(IAM_GROUP_NAME))
 IAM_GROUP_AWSACCOUNT_ID?= $(IAM_AWSACCOUNT_ID)
 
-# Option parameters
+# Options
 __IAM_GROUP_NAME= $(if $(IAM_GROUP_NAME),--group-name $(IAM_GROUP_NAME))
 __IAM_PATH__GROUPS= $(if $(IAM_GROUP_PATH),--path $(IAM_GROUP_PATH))
 __IAM_PATH_PREFIX__GROUPS= $(if $(IAM_GROUPS_PATH_PREFIX),--path-prefix $(IAM_GROUPS_PATH_PREFIX))
 
-# UI parameters 
-IAM_UI_SHOW_GROUP_USERS_FIELDS?= .{UserId:UserId,UserName:UserName,arn:Arn,createDate:CreateDate,path:Path}
-IAM_UI_LIST_GROUPS_FIELDS?= .{GroupId:GroupId,GroupName:GroupName,path:Path,createDate:CreateDate}
-IAM_UI_LIST_GROUPS_SET_FIELDS?= $(IAM_UI_LIST_GROUPS_FIELDS)
-IAM_UI_LIST_GROUPS_SET_QUERYFILTER?=
+# Customizations
+_IAM_LIST_GROUPS_FIELDS?= .{GroupId:GroupId,GroupName:GroupName,path:Path,createDate:CreateDate}
+_IAM_LIST_GROUPS_SET_FIELDS?= $(_IAM_LIST_GROUPS_FIELDS)
+_IAM_LIST_GROUPS_SET_QUERYFILTER?=
+_IAM_SHOW_GROUP_USERS_FIELDS?= .{UserId:UserId,UserName:UserName,arn:Arn,createDate:CreateDate,path:Path}
 
-#--- MACROS
+# Macros
 _iam_get_group_arn= $(call _iam_get_group_arn_N, $(IAM_GROUP_NAME))
 _iam_get_group_arn_N= $(shell $(AWS) iam get-group --group-name $(1) --query "Group.Arn" --output text)
 
@@ -76,12 +76,12 @@ _iam_delete_group:
 
 _iam_list_groups:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL groups ...'; $(NORMAL)
-	$(AWS) iam list-groups $(_X__IAM_PATH_PREFIX__GROUPS) --query "Groups[]$(IAM_UI_LIST_GROUPS_FIELDS)"
+	$(AWS) iam list-groups $(_X__IAM_PATH_PREFIX__GROUPS) --query "Groups[]$(_IAM_LIST_GROUPS_FIELDS)"
 
 _iam_list_groups_set:
 	@$(INFO) '$(IAM_UI_LABEL)Listing groups-set "$(IAM_GROUPS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Groups are grouped based on the provided path-prefix, query-filter'; $(NORMAL)
-	$(AWS) iam list-groups $(__IAM_PATH_PREFIX__GROUPS) --query "Groups[$(IAM_UI_LIST_GROUPS_SET_QUERYFILTER)]$(IAM_UI_LIST_GROUPS_SET_FIELDS)"
+	$(AWS) iam list-groups $(__IAM_PATH_PREFIX__GROUPS) --query "Groups[$(_IAM_LIST_GROUPS_SET_QUERYFILTER)]$(_IAM_LIST_GROUPS_SET_FIELDS)"
 
 _IAM_SHOW_GROUP_TARGETS?= _iam_show_group_policies _iam_show_group_users _iam_show_group_description
 _iam_show_group: $(_IAM_SHOW_GROUP_TARGETS)
@@ -102,4 +102,4 @@ _iam_show_group_policies: _iam_show_group_inlinepolicies _iam_show_group_managed
 
 _iam_show_group_users:
 	@$(INFO) '$(IAM_UI_LABEL)Showing users in group "$(IAM_GROUP_NAME)" ...'; $(NORMAL)
-	$(AWS) iam get-group $(__IAM_GROUP_NAME) --query "Users[]$(IAM_UI_SHOW_GROUP_USERS_FIELDS)"
+	$(AWS) iam get-group $(__IAM_GROUP_NAME) --query "Users[]$(_IAM_SHOW_GROUP_USERS_FIELDS)"

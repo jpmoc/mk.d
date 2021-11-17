@@ -13,16 +13,16 @@ IAM_INSTANCEPROFILE_ROLE_NAME?= $(IAM_ROLE_NAME)
 IAM_INSTANCEPROFILES_SET_PATHPREFIX?= $(IAM_INSTANCEPATH_PATH)
 IAM_INSTANCEPROFILES_SET_NAME?= $(IAM_INSTANCEPROFILES_SET_PATHPREFIX)
 
-# Options parameters
+# Options
 __IAM_INSTANCE_PROFILE_NAME?= $(if $(IAM_INSTANCEPROFILE_NAME), --instance-profile-name $(IAM_INSTANCEPROFILE_NAME))
 __IAM_PATH__INSTANCEPROFILE?= $(if $(IAM_INSTANCEPROFILES_PATH), --path $(IAM_INSTANCEPROFILES_PATH))
 __IAM_PATH_PREFIX__INSTANCEPROFILE?= $(if $(IAM_INSTANCEPROFILES_SET_PATHPREFIX), --path-prefix $(IAM_INSTANCEPROFILES_SET_PATHPREFIX))
 
-# UI parameters
-IAM_UI_LIST_INSTANCEPROFILES_FIELDS?= .{InstanceProfileId:InstanceProfileId,InstanceProfileName:InstanceProfileName,path:Path,roleCount:length(Roles)}
-IAM_UI_LIST_INSTANCEPROFILES_SET_FIELDS?= $(IAM_UI_LIST_INSTANCEPROFILES_FIELDS)
-IAM_UI_SHOW_INSTANCEPROFILE_DESCRIPTION_FIELDS?=
-IAM_UI_SHOW_INSTANCEPROFILE_ROLES_FIELDS?= .{RoleId:RoleId,RoleName:RoleName,createDate:CreateDate,path:Path}
+# Customizations
+_IAM_LIST_INSTANCEPROFILES_FIELDS?= .{InstanceProfileId:InstanceProfileId,InstanceProfileName:InstanceProfileName,path:Path,roleCount:length(Roles)}
+_IAM_LIST_INSTANCEPROFILES_SET_FIELDS?= $(_IAM_LIST_INSTANCEPROFILES_FIELDS)
+_IAM_SHOW_INSTANCEPROFILE_DESCRIPTION_FIELDS?=
+_IAM_SHOW_INSTANCEPROFILE_ROLES_FIELDS?= .{RoleId:RoleId,RoleName:RoleName,createDate:CreateDate,path:Path}
 
 #--- MACROS
 _iam_get_instanceprofile_arn= $(call _iam_get_instanceprofile_arn_N, $(IAM_INSTANCEPROFILE_NAME))
@@ -84,20 +84,20 @@ _iam_delete_instanceprofile:
 
 _iam_list_instanceprofiles:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL instance-profiles ...'; $(NORMAL)
-	$(AWS) iam list-instance-profiles $(_X__IAM_PATH_PREFIX__INSTANCEPROFILE) --query "InstanceProfiles[]$(IAM_UI_LIST_INSTANCEPROFILES_FIELDS)"
+	$(AWS) iam list-instance-profiles $(_X__IAM_PATH_PREFIX__INSTANCEPROFILE) --query "InstanceProfiles[]$(_IAM_LIST_INSTANCEPROFILES_FIELDS)"
 
 _iam_list_instanceprofiles_set:
 	@$(INFO) '$(IAM_UI_LABEL)Listing instance-profiles-set "$(IAM_INSTANCEPROFILES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Instance-profiles are grouped based on their paths'; $(NORMAL)
-	$(AWS) iam list-instance-profiles $(__IAM_PATH_PREFIX__INSTANCEPROFILE) --query "InstanceProfiles[]$(IAM_UI_LIST_INSTANCEPROFILES_SET_FIELDS)"
+	$(AWS) iam list-instance-profiles $(__IAM_PATH_PREFIX__INSTANCEPROFILE) --query "InstanceProfiles[]$(_IAM_LIST_INSTANCEPROFILES_SET_FIELDS)"
 
 _IAM_SHOW_INSTANCEPROFILE_TARGETS?= _iam_show_instanceprofile_roles _iam_show_instanceprofile_description
 _iam_show_instanceprofile: $(_IAM_SHOW_INSTANCEPROFILE_TARGETS)
 
 _iam_show_instanceprofile_description:
 	@$(INFO) '$(IAM_UI_LABEL)Showing description of instance-profile "$(IAM_INSTANCEPROFILE_NAME)" ...'; $(NORMAL)
-	$(AWS) iam get-instance-profile $(__IAM_INSTANCE_PROFILE_NAME) --query "InstanceProfile$(IAM_UI_SHOW_INSTANCEPROFILE_DESCRIPTION_FIELDS)"
+	$(AWS) iam get-instance-profile $(__IAM_INSTANCE_PROFILE_NAME) --query "InstanceProfile$(_IAM_SHOW_INSTANCEPROFILE_DESCRIPTION_FIELDS)"
 
 _iam_show_instanceprofile_roles:
 	@$(INFO) '$(IAM_UI_LABEL)Showing roles of instance-profile "$(IAM_INSTANCEPROFILE_NAME)" ...'; $(NORMAL)
-	$(AWS) iam get-instance-profile  $(__IAM_INSTANCE_PROFILE_NAME) --query "InstanceProfile.Roles[]$(IAM_UI_SHOW_INSTANCEPROFILE_ROLES_FIELDS)"
+	$(AWS) iam get-instance-profile  $(__IAM_INSTANCE_PROFILE_NAME) --query "InstanceProfile.Roles[]$(_IAM_SHOW_INSTANCEPROFILE_ROLES_FIELDS)"

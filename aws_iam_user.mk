@@ -24,7 +24,7 @@ IAM_USER_INLINEPOLICYDOCUMENT_DIRPATH?= $(IAM_INPUTS_DIRPATH)
 IAM_USER_INLINEPOLICYDOCUMENT_FILEPATH?= $(IAM_USER_INLINEPOLICYDOCUMENT_DIRPATH)$(IAM_USER_INLINEPOLICYDOCUMENT_FILENAME)
 IAM_USERS_NAMES?= $(IAM_USER_NAME)
 
-# Option variables
+# Options
 __IAM_GROUP_NAME__USER= $(if $(IAM_USER_GROUP_NAME),--group-name $(IAM_USER_GROUP_NAME))
 __IAM_NEW_USER_NAME= $(if $(IAM_USER_USERNAME),--new-user-name $(IAM_USER_USERNAME))
 __IAM_PATH_USER= $(if $(IAM_USER_PATH), --path $(IAM_USER_PATH))
@@ -36,11 +36,11 @@ __IAM_TAGS__USER= $(if $(IAM_USER_TAGS_KEYVALUES),--tags $(IAM_USER_TAGS_KEYVALU
 __IAM_TAG_KEYS__USER= $(if $(IAM_USER_TAGS_KEYS),--tag-keys $(IAM_USER_TAGS_KEYS))
 __IAM_USER_NAME= $(if $(IAM_USER_NAME),--user-name $(IAM_USER_NAME))
 
-# UI variables
-IAM_UI_LIST_USERS_FIELDS?= .{path:Path,UserId:UserId,UserName:UserName,createDate:CreateDate,passwordLastUsed:PasswordLastUsed}
-IAM_UI_LIST_USERS_SET_FIELDS?= $(IAM_UI_LISt_USERS_FIELDS)
-IAM_UI_LIST_USERS_SET_QUERYFILTER?=
-IAM_UI_SHOW_USER_ACCESSKEYS_FIELDS?= 
+# Customizations
+_IAM_LIST_USERS_FIELDS?= .{path:Path,UserId:UserId,UserName:UserName,createDate:CreateDate,passwordLastUsed:PasswordLastUsed}
+_IAM_LIST_USERS_SET_FIELDS?= $(_IAM_LIST_USERS_FIELDS)
+_IAM_LIST_USERS_SET_QUERYFILTER?=
+_IAM_SHOW_USER_ACCESSKEYS_FIELDS?= 
 
 #--- MACROS
 _iam_get_user_arn= $(call _iam_get_user_arn_N, $(IAM_USER_NAME))
@@ -125,19 +125,19 @@ _iam_groupdel_user:
 
 _iam_list_users:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL IAM users ...'; $(NORMAL)
-	$(AWS) iam list-users --query "Users[]$(IAM_UI_LIST_USERS_FIELDS)"
+	$(AWS) iam list-users --query "Users[]$(_IAM_LIST_USERS_FIELDS)"
 
 _iam_list_users_set:
 	@$(INFO) '$(IAM_UI_LABEL)Listing IAM users-set "$(IAM_USERS_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Users are grouped based on provided query-filter'; $(NORMAL)
-	$(AWS) iam list-users --query "Users[$(IAM_UI_LIST_USERS_QUERYFILTER)]$(IAM_UI_LIST_USERS_SET_FIELDS)"
+	$(AWS) iam list-users --query "Users[$(_IAM_LIST_USERS_QUERYFILTER)]$(_IAM_LIST_USERS_SET_FIELDS)"
 
 _IAM_SHOW_USER_TARGETS?= _iam_show_user_accesskeys _iam_show_user_contextkeys _iam_show_user_groups _iam_show_user_inlinepolicies _iam_show_user_managedpolicies _iam_show_user_mfadevices  _iam_show_user_sshpublickeys _iam_show_user_description
 _iam_show_user: $(_IAM_SHOW_USER_TARGETS)
 
 _iam_show_user_accesskeys:
 	@$(INFO) '$(IAM_UI_LABEL)Showing access-keys of user "$(IAM_USER_NAME)" ...'; $(NORMAL)
-	$(AWS) iam list-access-keys $(__IAM_USER_NAME) --query "AccessKeyMetadata[]$(IAM_UI_SHOW_USER_ACCESSKEYS_FIELDS)"
+	$(AWS) iam list-access-keys $(__IAM_USER_NAME) --query "AccessKeyMetadata[]$(_IAM_SHOW_USER_ACCESSKEYS_FIELDS)"
 
 _iam_show_user_contextkeys:
 	@$(INFO) '$(IAM_UI_LABEL)Showing context-key for user "$(IAM_USER_NAME)" ...'; $(NORMAL)

@@ -39,7 +39,7 @@ IAM_MANAGEDPOLICY_REGION_ID?= $(IAM_REGION_ID)
 IAM_MANAGEDPOLICY_ROLE_NAME?= $(IAM_ROLE_NAME)
 IAM_MANAGEDPOLICY_USER_NAME?= $(IAM_USER_NAME)
 
-# Options parameters
+# Options
 __IAM_DESCRIPTION__MANAGEDPOLICY= $(if $(IAM_MANAGEDPOLICY_DESCRIPTION),--description $(IAM_MANAGEDPOLICY_DESCRIPTION))
 __IAM_GROUP_NAME__MANAGEDPOLICY?= $(if $(IAM_MANAGEDPOLICY_GROUP_NAME),--group-name $(IAM_MANAGEDPOLICY_GROUP_NAME))
 __IAM_ONLY_ATTACHED= $(if $(filter true, $(IAM_MANAGEDPOLICIES_ONLY_ATTACHED)),--only-attached, --no-only-attached)
@@ -55,18 +55,16 @@ __IAM_SCOPE?= $(if $(IAM_MANAGEDPOLICIES_SCOPE),--scope $(IAM_MANAGEDPOLICIES_SC
 __IAM_USER_NAME__MANAGEDPOLICY?= $(if $(IAM_MANAGEDPOLICY_USER_NAME),--user-name $(IAM_MANAGEDPOLICY_USER_NAME))
 __IAM_VERSION_ID?= $(if $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION),--version-id $(IAM_MANAGEDPOLICY_DOCUMENT_VERSION))
 
-# UI parameters
-IAM_UI_LIST_MANAGEDPOLICIES_AWS_FIELDS?= $(IAM_UI_LIST_MANAGEDPOLICIES_FIELDS)
-IAM_UI_LIST_MANAGEDPOLICIES_AWS_QUERY_FILTER?=
-IAM_UI_LIST_MANAGEDPOLICIES_FIELDS?= .{PolicyId:PolicyId,PolicyName:PolicyName,versionId:DefaultVersionId,path:Path}
-IAM_UI_LIST_MANAGEDPOLICIES_SET_FIELDS?= $(IAM_UI_LIST_MANAGEDPOLICIES_FIELDS)
-IAM_UI_LIST_MANAGEDPOLICIES_SET_QUERYFILTER?=
+# Customizations
+_IAM_LIST_MANAGEDPOLICIES_FIELDS?= .{PolicyId:PolicyId,PolicyName:PolicyName,versionId:DefaultVersionId,path:Path}
+_IAM_LIST_MANAGEDPOLICIES_SET_FIELDS?= $(_IAM_LIST_MANAGEDPOLICIES_FIELDS)
+_IAM_LIST_MANAGEDPOLICIES_SET_QUERYFILTER?=
 
 _IAM_SHOW_MANAGEDPOLICY_DESCRIPTION_|?= #
 _IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT_|?= #
 |_IAM_SHOW_MANAGEDPOLICY_VERSIONEDDOCUMENT?= # | tee policy-document.json
 
-#--- MACROS
+# Macros
 _iam_get_managedpolicy_arn= $(call _iam_get_managedpolicy_arn_N, $(IAM_MANAGEDPOLICY_NAME))
 # _iam_get_managedpolicy_arn_N= $(shell $(AWS) iam list-policies --query "Policies[?PolicyName=='$(strip $(1))'].Arn" --output text)
 _iam_get_managedpolicy_arn_N= $(call _iam_get_managedpolicy_arn_NP, $(1), $(IAM_MANAGEDPOLICY_PATH))
@@ -214,12 +212,12 @@ _iam_update_managedpolicy:
 
 _iam_list_managedpolicies:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL managed-policies ...'; $(NORMAL)
-	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(_X__IAM_PATH_PREFIX__MANAGEDPOLICY) $(_X_IAM_SCOPE) --scope All --query "Policies[$(IAM_UI_LIST_AWS_MANAGEDPOLICIES_QUERY_FILTER)]$(IAM_UI_LIST_MANAGEDPOLICIES_FIELDS)"
+	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(_X__IAM_PATH_PREFIX__MANAGEDPOLICY) $(_X_IAM_SCOPE) --scope All --query "Policies[]$(_IAM_LIST_MANAGEDPOLICIES_FIELDS)"
 
 _iam_list_managedpolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Showing managed-policies-set "$(IAM_MANAGEDPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Policies are grouped based on their path-prefix, scope, and query-filter'; $(NORMAL)
-	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(__IAM_PATH_PREFIX__MANAGEDPOLICIES) $(__IAM_SCOPE) --query "Policies[$(IAM_UI_LIST_MANAGEDPOLICIES_SET_QUERYFILTER)]$(IAM_UI_LIST_MANAGEDPOLICIES_SET_FIELDS)"
+	$(AWS) iam list-policies $(__IAM_ONLY_ATTACHED) $(__IAM_PATH_PREFIX__MANAGEDPOLICIES) $(__IAM_SCOPE) --query "Policies[$(_IAM_LIST_MANAGEDPOLICIES_SET_QUERYFILTER)]$(_IAM_LIST_MANAGEDPOLICIES_SET_FIELDS)"
 
 _iam_watch_managedpolicies:
 
