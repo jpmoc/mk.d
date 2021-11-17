@@ -9,7 +9,7 @@ DKR_CONTAINER_DELETE_FORCE?= false
 # DKR_CONTAINER_EXEC_COMMAND?= /bin/ls
 # DKR_CONTAINER_HOSTNAME?= my-hostname
 # DKR_CONTAINER_ID?=
-# DKR_CONTAINER_IMAGE_CNAME?= weaveworksdemos/load-test
+# DKR_CONTAINER_IMAGE_NAME?= weaveworksdemos/load-test:v1
 # DKR_CONTAINER_KILL_SIGNAL?= SIGHUP
 # DKR_CONTAINER_NAME?= docker-nginx
 # DKR_CONTAINER_RENAME_NAME?= docker-new-nginx
@@ -47,7 +47,7 @@ DKR_CONTAINERS_VIEW_COUNT?= -1
 DKR_CONTAINERS_VIEW_QUIET?= false
 
 # Derived variables
-DKR_CONTAINER_IMAGE_CNAME?= $(DKR_IMAGE_CNAME)
+DKR_CONTAINER_IMAGE_NAME?= $(DKR_IMAGE_NAME)
 
 # Options
 __DKR_ALL= $(if $(DKR_CONTAINERS_VIEW_ALL),--all=$(DKR_CONTAINERS_VIEW_ALL))
@@ -112,7 +112,7 @@ _dkr_list_parameters ::
 	@echo '    DKR_CONTAINER_EXEC_COMMAND=$(DKR_CONTAINER_EXEC_COMMAND)'
 	@echo '    DKR_CONTAINER_HOSTNAME=$(DKR_CONTAINER_HOSTNAME)'
 	@echo '    DKR_CONTAINER_ID=$(DKR_CONTAINER_ID)'
-	@echo '    DKR_CONTAINER_IMAGE_CNAME=$(DKR_CONTAINER_IMAGE_CNAME)'
+	@echo '    DKR_CONTAINER_IMAGE_NAME=$(DKR_CONTAINER_IMAGE_NAME)'
 	@echo '    DKR_CONTAINER_KILL_SIGNAL=$(DKR_CONTAINER_KILL_SIGNAL)'
 	@echo '    DKR_CONTAINER_NAME=$(DKR_CONTAINER_NAME)'
 	@echo '    DKR_CONTAINER_NETWORK=$(DKR_CONTAINER_NETWORK)'
@@ -276,7 +276,7 @@ _dkr_run_container:
 	@$(WARN) 'This operation assigns a unique name to the container unless one is provided'; $(NORMAL)
 	@$(WARN) 'This operation fails if the provided container-name is used by a running, stopped, or exited container'; $(NORMAL)
 	@$(WARN) 'This operation must publish the docker exposed ports to map them to the host ports'; $(NORMAL)
-	$(DOCKER) run $(strip $(__DKR_BLKIO_WEIGHT) $(__DKR_CPU_SHARES) $(__DKR_DETACH) $(__DKR_ENV) $(__DKR_HOSTNAME) $(__DKR_INTERACTIVE) $(__DKR_MEMORY) $(__DKR_NAME) $(__DKR_PUBLISH) $(__DKR_PUBLISH_ALL) $(__DKR_RESTART) $(__DKR_RM) $(__DKR_STORAGE_OPT) $(__DKR_TTY) $(__DKR_VOLUME) $(DKR_CONTAINER_IMAGE_CNAME) $(DKR_CONTAINER_RUN_COMMAND) $(DKR_CONTAINER_RUN_ARGS) )
+	$(DOCKER) run $(strip $(__DKR_BLKIO_WEIGHT) $(__DKR_CPU_SHARES) $(__DKR_DETACH) $(__DKR_ENV) $(__DKR_HOSTNAME) $(__DKR_INTERACTIVE) $(__DKR_MEMORY) $(__DKR_NAME) $(__DKR_PUBLISH) $(__DKR_PUBLISH_ALL) $(__DKR_RESTART) $(__DKR_RM) $(__DKR_STORAGE_OPT) $(__DKR_TTY) $(__DKR_VOLUME) $(DKR_CONTAINER_IMAGE_NAME) $(DKR_CONTAINER_RUN_COMMAND) $(DKR_CONTAINER_RUN_ARGS) )
 
 _DKR_SHOW_CONTAINER_TARGETS?= _dkr_show_container_env _dkr_show_container_logs _dkr_show_container_object _dkr_show_container_ports _dkr_show_container_stats _dkr_show_container_description
 _dkr_show_container: $(_DKR_SHOW_CONTAINER_TARGETS)

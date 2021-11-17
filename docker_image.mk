@@ -43,7 +43,7 @@ __DKR_OUTPUT= $(if $(DKR_IMAGE_TAR_FILEPATH),--output $(DKR_IMAGE_TAR_FILEPATH))
 __DKR_PRUNE=
 __DKR_SINCE=
 __DKR_SIZE=
-__DKR_TAG= $(if $(DKR_IMAGE_TAG),--tag=$(DKR_IMAGE_TAG))
+__DKR_TAG= $(if $(DKR_IMAGE_NAME),--tag=$(DKR_IMAGE_NAME))# The tag is in the image name!
 
 # Customizations
 _DKR_RESTORE_IMAGE_|?=
@@ -116,8 +116,8 @@ _dkr_clean_images:
 	-$(DOCKER) images --filter dangling=true --quiet | xargs $(DOCKER) image rm
 
 _dkr_delete_image:
-	@$(INFO) '$(DKR_UI_LABEL)Deleting image "$(DKR_IMAGE_ID_OR_CNAME)" ...'; $(NORMAL)
-	$(DOCKER) image rm $(__DKR_FORCE__IMAGE) $(__DKR_PRUNE) $(DKR_IMAGE_ID_OR_CNAME)
+	@$(INFO) '$(DKR_UI_LABEL)Deleting image "$(DKR_IMAGE_ID_OR_NAME)" ...'; $(NORMAL)
+	$(DOCKER) image rm $(__DKR_FORCE__IMAGE) $(__DKR_PRUNE) $(DKR_IMAGE_ID_OR_NAME)
 
 _dkr_list_images:
 	@$(INFO) '$(DKR_UI_LABEL)Listing ALL images ...'; $(NORMAL)
