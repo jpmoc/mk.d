@@ -9,13 +9,15 @@ _AWS_S3API_UPLOAD_MK_VERSION=$(_AWS_S3API_MK_VERSION)
 S3I_UPLOAD_STORAGECLASS_TYPE?= STANDARD
 # S3I_UPLOADS_BUCKET_NAME?= mybucket
 # S3I_UPLOADS_DELETE_FILEPATH?= mybucket
+# S3I_UPLOADS_SET_NAME?= uploads@mybucket
 
 # Derived parameters
 S3I_UPLOAD_NAME?= $(S3I_UPLOAD_KEY)
 S3I_UPLOAD_BUCKET_NAME?= $(S3I_BUCKET_NAME)
 S3I_UPLOADS_BUCKET_NAME?= $(S3I_UPLOAD_BUCKET_NAME)
+S3I_UPLOADS_SET_NAME?= uploads@$(S3I_UPLOADS_BUCKET_NAME)
 
-# Options parameters
+# Options
 __S3I_ACL__UPLOAD=
 __S3I_BUCKET__UPLOAD= $(if $(S3I_UPLOAD_BUCKET_NAME),--bucket $(S3I_UPLOAD_BUCKET_NAME))
 __S3I_BUCKET__UPLOADS= $(if $(S3I_UPLOADS_BUCKET_NAME),--bucket $(S3I_UPLOADS_BUCKET_NAME))
@@ -29,9 +31,9 @@ __S3I_PREFIX__UPLOADS=
 __S3I_STORAGE_CLASS= $(if $(S3I_UPLOAD_STORAGECLASS_TYPE),--storage-class $(S3I_UPLOAD_STORAGECLASS_TYPE))
 
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 _s3i_get_upload_id= $(call _s3i_get_upload_id_K, $(S3I_UPLOAD_KEY))
 _s3i_get_upload_id_K= $(call _s3i_get_upload_id_KB, $(1), $(S3I_UPLOAD_BUCKET_NAME))
 _s3i_get_upload_id_KB= $(shell $(AWS) s3api list-multipart-uploads --bucket $(2) --query "Uploads[?Key=='$(strip $(1))'].UploadId" --output text)
@@ -40,12 +42,12 @@ _s3i_get_upload_id_KB= $(shell $(AWS) s3api list-multipart-uploads --bucket $(2)
 # USAGE
 #
 
-_s3i_view_framework_macros ::
+_s3i_list_macros ::
 	@echo 'AWS::S3API::Upload ($(_AWS_S3API_UPLOAD_MK_VERSION)) macros:'
 	@echo '    _s3i_get_upload_id_{|K|KB}                   - Get the ID of an upload (Key,Bucket)'
 	@echo
 
-_s3i_view_framework_parameters ::
+_s3i_list_parameters ::
 	@echo 'AWS::S3API::Upload ($(_AWS_S3API_UPLOAD_MK_VERSION)) parameters:'
 	@echo '    S3I_UPLOAD_BUCKET_NAME=$(S3I_UPLOAD_BUCKET_NAME)'
 	@echo '    S3I_UPLOAD_GRANT_READ=$(S3I_UPLOAD_GRANT_READ)'
@@ -55,15 +57,17 @@ _s3i_view_framework_parameters ::
 	@echo '    S3I_UPLOAD_NAME=$(S3I_UPLOAD_NAME)'
 	@echo '    S3I_UPLOAD_STORAGECLASS_TYPE=$(S3I_UPLOAD_STORAGECLASS_TYPE)'
 	@echo '    S3I_UPLOADS_BUCKET_NAME=$(S3I_UPLOADS_BUCKET_NAME)'
+	@echo '    S3I_UPLOADS_SET_NAME=$(S3I_UPLOADS_SET_NAME)'
 	@echo
 
-_s3i_view_framework_targets ::
+_s3i_list_targets ::
 	@echo 'AWS::S3API::Upload ($(_AWS_S3API_UPLOAD_MK_VERSION)) targets:'
 	@echo '    _s3i_create_upload                          - Create a upload'
 	@echo '    _s3i_delete_upload                          - Delete an upload'
+	@echo '    _s3i_list_uploads                           - List all uploads'
+	@echo '    _s3i_list_uploads_set                       - List a set of uploads'
 	@echo '    _s3i_show_upload                            - Show everything related to an upload'
 	@echo '    _s3i_show_upload_description                - Show description of an upload'
-	@echo '    _s3i_view_uploads                           - View uploads in uploads'
 	@echo
 
 #----------------------------------------------------------------------
@@ -85,11 +89,15 @@ _s3i_delete_upload:
 	@$(INFO) '$(AWS_UI_LABEL)Deleting upload "$(S3I_UPLOAD_NAME)" ...'; $(NORMAL)
 	# $(AWS) s3api delete-upload $(__S3I_BUCKET__UPLOAD) $(__S3I_BYPASS_GOVERNANCE_RETENTION__UPLOAD) $(__S3I_KEY) $(__S3I_MFA__UPLOAD) $(__S3I_REQUEST_PAYER__UPLOAD)
 
-_s3i_show_upload: _s3i_show_upload_description
+_s3i_list_uploads:
+	@$(INFO) '$(AWS_UI_LABEL)Listing ALL uploads ...'; $(NORMAL)
+	$(AWS) s3api list-multipart-uploads $(__S3I_BUCKET__UPLOADS) $(__S3I_DELIMITER__UPLOADS) $(__S3I_ENCODING_TYPE__UPLOADS) $(__S3I_PREFIX__UPLOADS)
+
+_s3i_list_uploads_set:
+	@$(INFO) '$(AWS_UI_LABEL)Listing uploads-set "$(S3I_UPLOADS_SET_NAME)" ...'; $(NORMAL)
+
+_S3I_SHOW_UPLOAD_TARGETS?= _s3i_show_upload_description
+_s3i_show_upload: $(_S3I_SHOW_UPLOAD_TARGETS)
 
 _s3i_show_upload_description:
 	@$(INFO) '$(AWS_UI_LABEL)Showing description of upload "$(S3I_UPLOAD_NAME)" ...'; $(NORMAL)
-
-_s3i_view_uploads:
-	@$(INFO) '$(AWS_UI_LABEL)Viewing uploads ...'; $(NORMAL)
-	$(AWS) s3api list-multipart-uploads $(__S3I_BUCKET__UPLOADS) $(__S3I_DELIMITER__UPLOADS) $(__S3I_ENCODING_TYPE__UPLOADS) $(__S3I_PREFIX__UPLOADS)

@@ -39,17 +39,17 @@ S3_OBJECTS_FOLDER_KEY?= $(S3_OBJECT_FOLDER_KEY)
 __S3_EXPIRES_IN= $(if $(S3_OBJECT_PRESIGNEDURL_EXPIRATION),--expiratinos-in $(S3_OBJECT_PRESIGNEDURL_EXPIRATION))
 __S3_GRANTS__OBJECT= $(if $(S3_OBJECT_GRANTS),--grants $(S3_OBJECT_GRANTS))
 
-# UI parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
 _s3_list_macros ::
-	@echo 'AWS::S3::Object ($(_AWS_S3_OBJECT_MK_VERSION)) macros:'
-	@echo
+	@#echo 'AWS::S3::Object ($(_AWS_S3_OBJECT_MK_VERSION)) macros:'
+	@#echo
 
 _s3_list_parameters ::
 	@echo 'AWS::S3::Object ($(_AWS_S3_OBJECT_MK_VERSION)) parameters:'
@@ -119,7 +119,8 @@ _s3_list_objects_set:
 	@$(WARN) 'Objects are grouped based on the provided folder'; $(NORMAL)
 	# pstree
 
-_s3_show_object: _s3_show_object_description
+_S3_SHOW_OBJECT_TARGETS?= _s3_show_object_description
+_s3_show_object: $(_S3_SHOW_OBJECT_TARGETS)
 
 _s3_show_object_description:
 	@$(INFO) '$(S3_UI_LABEL)Showing description of object "$(S3_OBJECT_NAME)" ...'; $(NORMAL)

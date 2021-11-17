@@ -29,7 +29,7 @@ YQ_CONTEXTS_SET_NAME?= contexts@$(YQ_CONTEXTS_FILEPATH)
 _YQ_QUERY_CONTEXT_|?=
 _YQ_SHOW_CONTEXT_|?=
 
-#--- MACROS
+# Macros
 _yq_get_context_name= $(call _yq_get_context_name_F, $(YQ_CONTEXT_FILEPATH))
 _yq_get_context_name_F= $(shell $(YQ_BIN) eval '.default._context_name // ""' $(1))
 

@@ -10,11 +10,11 @@ YQ_UI_LABEL?= [yq] #
 
 # Customizations
 
-#--- Utilities
+# Utilities
 YQ_BIN?= yq
 YQ?= $(strip $(__YQ_ENVIRONMENT) $(YQ_ENVIRONMENT) $(YQ_BIN) $(__YQ_OPTIONS) $(YQ_OPTIONS))
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

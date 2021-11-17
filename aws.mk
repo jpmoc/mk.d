@@ -57,7 +57,7 @@ AWS?= $(strip $(__AWS_ENVIRONMENT) $(AWS_ENVIRONMENT) aws $(__AWS_OPTIONS) $(AWS
 # CRUDINI_BIN?= crudini
 # CRUDINI?= $(strip $(__CRUDINI_ENVIRONMENT) $(CRUDINI_ENVIRONMENT) $(CRUDINI_BIN) $(__CRUDINI_OPTIONS) $(CRUDINI_OPTIONS))
 
-#--- MACROS
+# Macros
 _aws_get_account_id= $(call get_aws_account_id_P, $(AWS_PROFILE_NAME))
 # _aws_get_account_id_P= $(shell $(AWS) --profile $(1) ec2 describe-security-groups --query 'SecurityGroups[0].OwnerId' --output text)
 _aws_get_account_id_P= $(shell $(AWS) sts get-caller-identity --query 'Account' --output text)

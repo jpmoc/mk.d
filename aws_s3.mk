@@ -9,9 +9,7 @@ S3_UI_LABEL?= $(AWS_UI_LABEL)
 
 # Customizations
 
-# Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE

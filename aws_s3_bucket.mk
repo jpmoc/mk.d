@@ -9,6 +9,7 @@ S3_BUCKET_LOCATION_ID?= us-east-1
 # S3_BUCKET_WEBSITE_ERROR?= error.html
 # S3_BUCKET_WEBSITE_INDEX?= index.html
 # S3_BUCKET_WEBSITE_URL?= http://my-bucket.s3-website-us-west-2.amazonaws.com.
+S3_BUCKETS_REGEX?= .* 
 # S3_BUCKETS_SET_NAME?= my-buckets-set
 
 # Derived parameters 
@@ -22,11 +23,10 @@ __S3_FORCE_BUCKET?= $(if $(filter true, $(S3_BUCKET_DELETE_FORCE)),--force)
 __S3_INDEX_DOCUMENT?= $(if $(S3_BUCKET_WEBSITE_INDEX),--index-document $(S3_BUCKET_WEBSITE_INDEX))
 __S3_REGION?= $(if $(S3_BUCKET_LOCATION_ID),--region $(S3_BUCKET_LOCATION_ID))
 
-# UI parameters
+# Customizations
+|_S3_LIST_BUCKETS_SET?= | grep -E '$(S3_BUCETS_REGEX)'
 
-# Commands
-
-#--- MACROS
+# Macros
 
 _s3_get_bucket_count= $(shell $(AWS) s3 ls --recursive | wc -l )
 
@@ -55,6 +55,7 @@ _s3_list_parameters ::
 	@echo '    S3_BUCKET_WEBSITE_ERROR=$(S3_BUCKET_WEBSITE_ERROR)'
 	@echo '    S3_BUCKET_WEBSITE_INDEX=$(S3_BUCKET_WEBSITE_INDEX)'
 	@echo '    S3_BUCKET_WEBSITE_URL=$(S3_BUCKET_WEBSITE_URL)'
+	@echo '    S3_BUCKETS_REGEX=$(S3_BUCKETS_REGEX)'
 	@echo '    S3_BUCKETS_SET_NAME=$(S3_BUCKETS_SET_NAME)'
 	@echo
 
@@ -62,11 +63,11 @@ _s3_list_targets ::
 	@echo 'AWS::S3::Bucket ($(_AWS_S3_BUCKET_MK_VERSION)) targets:'
 	@echo '     _s3_create_bucket                   - Create a S3 bucket'
 	@echo '     _s3_delete_bucket                   - Delete a S3 bucket'
+	@echo '     _s3_list_buckets                    - List all S3 buckets'
+	@echo '     _s3_list_buckets_set                - List a set of S3 buckets'
 	@echo '     _s3_show_bucket                     - Show everything related to a S3 bucket'
 	@echo '     _s3_show_bucket_description         - Show description of a S3 bucket'
 	@echo '     _s3_show_bucket_objects             - Show objects of a S3 bucket'
-	@echo '     _s3_list_buckets                    - List all S3 buckets'
-	@echo '     _s3_list_buckets_set                - List a set of S3 buckets'
 	@echo '     _s3_webify_bucket                   - Webify a buckets'
 	@echo
 
@@ -95,8 +96,11 @@ _s3_list_buckets:
 
 _s3_list_buckets_set:
 	@$(INFO) '$(S3_UI_LABEL)Listing buckets-set "$(S3_BUCKETS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Buckets are grouped based on the provided regex'; $(NORMAL)
+	$(AWS) s3 ls $(|_S3_LIST_BUCKETS_SET)
 
-_s3_show_bucket:: _s3_show_bucket_objects _s3_show_bucket_description
+_S3_SHOW_BUCKET_TARGETS?= _s3_show_bucket_objects _s3_show_bucket_description
+_s3_show_bucket: $(_S3_SHOW_BUCKET_TARGETS)
 
 _s3_show_bucket_description:
 	@$(INFO) '$(S3_UI_LABEL)Showing description of bucket "$(S3_BUCKET_NAME)" ...'; $(NORMAL)

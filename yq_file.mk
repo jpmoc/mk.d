@@ -12,15 +12,13 @@ YQ_FILE_NAME?= $(notdir $(YQ_FILE_FILEPATH))
 YQ_FILE_OUTPUT_TOML?= $(YQ_OUTPUT_TOML)
 YQ_FILE_OUTPUT_YAML?= $(YQ_OUTPUT_YAML)
 
-# Option paramters
+# Options
 __YQ_TOML_OUTPUT__FILE= $(if $(filter true,$(YQ_FILE_OUTPUT_TOML)),--toml-output)
 __YQ_YAML_OUTPUT__FILE= $(if $(filter true,$(YQ_FILE_OUTPUT_YAML)),--yaml-output)
 
-# UI parameters
+# Customizations
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 _yq_get_file_rawvalue= $(call _yq_get_file_rawvalue_Q, $(YQ_FILE_QUERY))
 _yq_get_file_rawvalue_Q= $(call _yq_get_file_rawvalue_QF, $(1), $(YQ_FILE_FILEPATH))
 _yq_get_file_rawvalue_QF= $(shell $(YQ_BIN) -a -r $(1) $(2))

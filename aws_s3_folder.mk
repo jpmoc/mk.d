@@ -20,7 +20,7 @@ S3_FOLDER_GRANTS?= $(strip $(S3_FOLDER_GRANTS_FULL) $(S3_FOLDER_GRANTS_READ) $(S
 S3_FOLDER_KEY?= $(if $(S3_FOLDER_NAME),/$(S3_FOLDER_NAME))
 S3_FOLDER_URI?= $(if $(S3_BUCKET_URI),$(S3_BUCKET_URI)$(S3_FOLDER_KEY))
 
-# Options parameters
+# Options
 __S3_ACL=
 __S3_CACHE_CONTROL= $(if $(S3_FOLDER_CACHE_CONTROL),--cache-control $(S3_FOLDER_CACHE_CONTROL))
 __S3_CONTENT_DISPOSITION=
@@ -49,11 +49,9 @@ __S3_SSE_KMS_KEY_ID=
 __S3_STORAGE_CLASS= $(if $(S3_FOLDER_STORAGE_CLASS),--storage-class $(S3_FOLDER_STORAGE_CLASS))
 __S3_WEBSITE_REDIRECT=
 
-# UI parameters
+# Customizations
 
-# Commands
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -123,7 +121,8 @@ _s3_push_folder:
 	@$(WARN) 'This operation pushes the content found in directory "$(S3_FOLDER_DIRPATH)"'; $(NORMAL)
 	$(AWS) s3 sync $(strip $(__S3_ACL__FOLDER) $(__S3_CACHE_CONTROL) $(__S3_CONTENT_DISPOSITION) $(__S3_CONTENT_ENCODING) $(__S3_CONTENT_LANGUAGE) $(__S3_CONTENT_TYPE) $(__S3_DELETE) $(__S3_EXACT_TIMESTAMPS) $(__S3_EXCLUDE) $(__S3_EXPIRES) $(__S3_FOLLOW_SYMLINKS) $(__S3_FORCE_GLACIER_TRANSFER) $(__S3_INCLUDE) $(__S3_IGNORE_GLACIER_WARNINGS) $(__S3_GRANTS__FOLDER) $(__S3_METADATA) $(__S3_METADATA_DIRECTIVE) $(__S3_NO_GUESS_MIME_TYPE) $(__S3_NO_PROGRESS) $(__S3_ONLY_SHOW_ERRORS) $(__S3_PAGE_SIZE) $(__S3_REQUEST_PAYER) $(__S3_SIZE_ONLY) $(__S3_SOURCE_REGION) $(__S3_SSE) $(__S3_SSE_C) $(__S3_SSE_C_KEY) $(__S3_SSE_C_COPY_SOURCE) $(__S3_SSE_C_COPY_SOURCE_KEY) $(__S3_SSE_KMS_KEY_ID) $(__S3_STORAGE_CLASS) $(__S3_WEBSITE_REDIRECT)) $(S3_FOLDER_DIRPATH) $(S3_FOLDER_URI)
 
-_s3_show_folder:: _s3_show_folder_description
+_S3_SHOW_FOLDER_TARGETS: _s3_show_folder_description
+_s3_show_folder: $(_S3_SHOW_FOLDER_TARGETS)
 
 _s3_show_folder_description:
 	@$(INFO) '$(S3_UI_LABEL)Showing descriptoin of folder "$(S3_FOLDER_NAME)" ...'; $(NORMAL)
