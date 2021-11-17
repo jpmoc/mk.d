@@ -94,12 +94,10 @@ _dkr_login_registry:
 	@$(WARN) 'This operation logs you in at the given URI (ex: https://index.docker.io/v1/)'; $(NORMAL)
 	@$(WARN) 'Make sure the same URI (API version, etc) is being used by the other operations'; $(NORMAL)
 	$(DOCKER) login $(__DKR_PASSWORD) $(__DKR_PASSWORD_STDIN) $(__DKR_USERNAME) $(DKR_REGISTRY_API_URI)
-	[ ! -f $(DKR_REGISTRY_REGISTRYCONFIG_FILEPATH) ] || cat $(DKR_REGISTRY_REGISTRYCONFIG_FILEPATH)
 
 _dkr_logout_registry:
 	@$(INFO) '$(DKR_UI_LABEL)Logging out of registry "$(DKR_REGISTRY_NAME)" ...'; $(NORMAL)
 	$(DOCKER) logout $(DKR_REGISTRY_API_URI)
-	[ ! -f $(DKR_REGISTRY_REGISTRYCONFIG_FILEPATH) ] || cat $(DKR_REGISTRY_REGISTRYCONFIG_FILEPATH)
 
 _dkr_run_registry: 
 	@$(INFO) '$(DKR_UI_LABEL)Starting a local registry "$(DKR_REGISTRY_NAME)" ...'; $(NORMAL)
