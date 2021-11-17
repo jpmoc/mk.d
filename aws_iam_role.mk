@@ -134,6 +134,7 @@ _iam_show_role: $(_IAM_SHOW_ROLE_TARGETS)
 
 _iam_show_role_assumepolicydocument:
 	@$(INFO) '$(IAM_UI_LABEL)Showing assume-policy document for role "$(IAM_ROLE_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation returns who/what can assume this role'; $(NORMAL)
 	$(AWS) iam get-role $(__IAM_ROLE_NAME) --query "Role.AssumeRolePolicyDocument" --output json
 
 _iam_show_role_description:

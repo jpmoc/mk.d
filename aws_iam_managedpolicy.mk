@@ -167,19 +167,23 @@ _iam_detach_managedpolicy:
 _IAM_SHOW_MANAGEDPOLICY_TARGETS?= _iam_show_managedpolicy_consumers _iam_show_managedpolicy_contextkeys _iam_show_managedpolicy_localfiledocument _iam_show_managedpolicy_versioneddocument _iam_show_managedpolicy_description
 _iam_show_managedpolicy: $(_IAM_SHOW_MANAGEDPOLICY_TARGETS)
 
-_iam_show_managedpolicy_consumers: _iam_showmanagepolicy_groups _iam_show_managedpolicy_roles _iam_show_managedpolicy_users
+_iam_show_managedpolicy_consumers: _iam_show_managedpolicy_groups _iam_show_managedpolicy_roles _iam_show_managedpolicy_users
 
 _iam_show_managedpolicy_contextkeys:
 	@$(INFO) '$(IAM_UI_LABEL)Showing context-keys of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	#$(if $(IAM_MANAGEDPOLICY_DOCUMENT),$(AWS) iam get-context-keys-for-custom-policy $(__IAM_POLICY_INPUT_LIST))
+	$(if $(IAM_MANAGEDPOLICY_DOCUMENT), \
+		$(AWS) iam get-context-keys-for-custom-policy $(__IAM_POLICY_INPUT_LIST) \
+	, \
+		@echo 'IAM_MANAGEDPOLICY_DOCUMENT not set' \
+	)
 
 _iam_show_managedpolicy_description:
 	@$(INFO) '$(IAM_UI_LABEL)Showing description of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	$(_IAM_SHOW_MANAGEDPOLICY_DESRIPTION_|)$(AWS) iam get-policy $(__IAM_POLICY_ARN) --query "Policy"
+	$(_IAM_SHOW_MANAGEDPOLICY_DESCRIPTION_|)$(AWS) iam get-policy $(__IAM_POLICY_ARN) --query "Policy"
 
 _iam_show_managedpolicy_groups:
 	@$(INFO) '$(IAM_UI_LABEL)Showing groups to which is attached the managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	# Not yet implemented
+	# Not implemented yet!
 
 _iam_show_managedpolicy_localfiledocument:
 	@$(INFO) '$(IAM_UI_LABEL)Showing local-file representing document of managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
@@ -191,11 +195,11 @@ _iam_show_managedpolicy_localfiledocument:
 
 _iam_show_managedpolicy_roles:
 	@$(INFO) '$(IAM_UI_LABEL)Showing roles to which is attached the managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	# Not yet implemented
+	# Not implemented yet!
 
 _iam_show_managedpolicy_users:
 	@$(INFO) '$(IAM_UI_LABEL)Showing user to which is attached the managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)
-	# Not yet implemented
+	# Not implemented yet!
 
 _iam_show_managedpolicy_versioneddocument:
 	@$(INFO) '$(IAM_UI_LABEL)Showing the version "$(IAM_MANAGEDPOLICY_DOCUMENT_VERSION)" of document attached to managed-policy "$(IAM_MANAGEDPOLICY_NAME)" ...'; $(NORMAL)

@@ -149,6 +149,7 @@ _KCL_UNAPPLY_PODS_|?= $(_KCL_APPLY_PODS_|)
 |_KCL_CREATE_POD?= # | tee pod.yaml
 |_KCL_EXEC_POD?=
 |_KCL_PORTFORWARD_POD?= || sleep 10; date; done
+|_KCL_RUN_POD?= $(|_KCL_CREATE_POD)
 |_KCL_SHOW_POD_CURRENTLOGS?= | tail -20
 |_KCL_SHOW_POD_PREVIOUSLOGS?= $(|_KCL_SHOW_POD_CURRENTLOGS)
 |_KCL_SNIFF_POD?= | wireshark -k -i -
@@ -255,7 +256,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_attach_pod                       - Attach to a pod'
 	@echo '    _kcl_copyfrom_pod                     - Copy a file from a new pod'
 	@echo '    _kcl_copyto_pod                       - Copy a file to a pod'
-	@echo '    _kcl_create_pod                       - Create a new pod'
+	@echo '    _kcl_create_pod                       - Create a pod'
 	@echo '    _kcl_delete_pod                       - Delete an existing pod'
 	@echo '    _kcl_diff_pod                         - Diff a manifest for one-or-more pods'
 	@echo '    _kcl_edit_pod                         - Edit a pod'
@@ -273,6 +274,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_reset_pod_image                  - Reset the image used by a pod'
 	@echo '    _kcl_reset_pod_resources              - Reset the resources used by a pod'
 	@echo '    _kcl_reset_pod_serviceaccount         - Reset the service-account used by a pod'
+	@echo '    _kcl_run_pod                          - Run a pod'
 	@echo '    _kcl_show_pod                         - Show everything related to a pod'
 	@echo '    _kcl_show_pod_allocatedresources      - Show allocated-resource for a pod'
 	@echo '    _kcl_show_pod_description             - Show the description of a pod'
@@ -320,9 +322,7 @@ _kcl_copyto_pod:
 	@$(INFO) '$(KCL_UI_LABEL)Copying-to pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) cp $(__KCL_CONTAINER__POD) $(__KCL_NAMESPACE__POD) $(__KCL_NO_PRESERVE) $(KCL_POD_LOCALFILE_FILEPATH) $(KCL_POD_NAME):$(KCL_POD_REMOTEFILE_FILEPATH)
 
-_kcl_create_pod:
-	@$(INFO) '$(KCL_UI_LABEL)Creating pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
-	$(KUBECTL) run $(strip $(__KCL_COMMAND__POD) $(__KLC_DRY_RUN__POD) $(__KCL_GENERATOR__POD) $(__KCL_IMAGE__POD) $(__KCL_LABELS__POD) $(__KCL_NAMESPACE__POD) $(__KCL_OUTPUT__POD) $(__KCL_PORT__POD) $(__KCL_RESTART__POD) $(__KCL_RM__POD) $(__KCL_SERVICEACCOUNT__POD) $(__KCL_STDIN__POD) $(__KCL_TTY__POD) )  $(KCL_POD_NAME) $(KCL_POD_COMMAND_ARGS) $(|_KCL_CREATE_POD})
+_kcl_create_pod: _kcl_run_pod
 
 _kcl_delete_pod:
 	@$(INFO) '$(KCL_UI_LABEL)Deleting pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
@@ -408,7 +408,12 @@ _kcl_reset_pod_selector:
 _kcl_reset_pod_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Resetting service-account used by pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) set serviceaccount pod $(__KCL_NAMESPACE__POD) $(KCL_POD_NAME) ...
-	#
+
+_kcl_run_pod:
+	@$(INFO) '$(KCL_UI_LABEL)Running pod "$(KCL_POD_NAME)" ...'; $(NORMAL)
+	$(KUBECTL) run $(strip $(__KCL_COMMAND__POD) $(__KLC_DRY_RUN__POD) $(__KCL_GENERATOR__POD) $(__KCL_IMAGE__POD) $(__KCL_LABELS__POD) $(__KCL_NAMESPACE__POD) $(__KCL_OUTPUT__POD) $(__KCL_PORT__POD) $(__KCL_RESTART__POD) $(__KCL_RM__POD) $(__KCL_SERVICEACCOUNT__POD) $(__KCL_STDIN__POD) $(__KCL_TTY__POD) ) $(KCL_POD_NAME) $(KCL_POD_COMMAND_ARGS) $(|_KCL_RUN_POD})
+
+
 _KCL_SHOW_POD_TARGETS?= _kcl_show_pod_allocatedresources _kcl_show_pod_logs _kcl_show_pod_object _kcl_show_pod_state _kcl_show_pod_description
 _kcl_show_pod :: $(_KCL_SHOW_POD_TARGETS)
 
