@@ -74,20 +74,20 @@ _iam_list_targets ::
 
 _iam_create_inlinegrouppolicy:
 	@$(INFO) '$(IAM_UI_LABEL)Creating inline-group-policy "$(IAM_INLINEGROUPPOLICY_NAME)" ...'; $(NORMAL)
-	$(if $(IAM_INLINEGROUPPOLICY_GROUP_NAME), $(AWS) iam put-group-policy $(__IAM_GROUP_NAME__INLINEGROUPPOLICY) $(__IAM_POLICY_DOCUMENT__INLINEGROUPPOLICY) $(__IAM_POLICY_NAME__INLINEGROUPPOLICY))
+	 $(AWS) iam put-group-policy $(__IAM_GROUP_NAME__INLINEGROUPPOLICY) $(__IAM_POLICY_DOCUMENT__INLINEGROUPPOLICY) $(__IAM_POLICY_NAME__INLINEGROUPPOLICY)
 
 _iam_delete_inlinegrouppolicy:
 	@$(INFO) '$(IAM_UI_LABEL)Deleting inline-group-policy "$(IAM_INLINEGROUPPOLICY_NAME)" ...'; $(NORMAL)
-	-$(if $(IAM_INLINEGROUPPOLICY_GROUP_NAME),$(AWS) iam delete-group-policy $(__IAM_GROUP_NAME__INLINEGROUPPOLICY) $(__IAM_POLICY_NAME__INLINEGROUPPOLICY))
+	$(AWS) iam delete-group-policy $(__IAM_GROUP_NAME__INLINEGROUPPOLICY) $(__IAM_POLICY_NAME__INLINEGROUPPOLICY)
 
 _iam_list_inlinegrouppolicies:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL inline-group-policies ...'; $(NORMAL)
-	$(if $(IAM_INLINEGROUPPOLICIES_GROUP_NAME),$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEGROUPPOLICIES) --query 'PolicyNames[]')
+	$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEGROUPPOLICIES) --query "PolicyNames[]"
 
 _iam_list_inlinegrouppolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Listing inline-group-policies-set "$(IAM_INLINEGROUPPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Inline-group-policies are grouped based on the provided query-filter'; $(NORMAL)
-	$(if $(IAM_INLINEGROUPPOLICIES_GROUP_NAME),$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEGROUPPOLICIES) --query 'PolicyNames[$(_IAM_LIST_INLINEGROUPPOLICIES_SET_QUERYFILTER)]')
+	$(AWS) iam list-group-policies $(__IAM_GROUP_NAME__INLINEGROUPPOLICIES) --query "PolicyNames[$(_IAM_LIST_INLINEGROUPPOLICIES_SET_QUERYFILTER)]"
 
 _IAM_SHOW_INLINEGROUPPOLICY_TARGETS?= _iam_show_inlinegrouppolicy_document _iam_show_inlinegrouppolicy_description
 _iam_show_inlinegrouppolicy: $(_IAM_SHOW_INLINEGROUPPOLICY_TARGETS)
@@ -96,4 +96,4 @@ _iam_show_inlinegrouppolicy_description:
 
 _iam_show_inlinegrouppolicy_document:
 	@$(INFO) '$(IAM_UI_LABEL)Showing document of inline-group-policy "$(IAM_INLINEGROUPPOLICY_NAME)" ...'; $(NORMAL)
-	$(if $(IAM_INLINEGROUPPOLICY_GROUP_NAME),$(AWS) iam get-group-policy $(__IAM_GROUP_NAME__INLINEGROUPPOLICY) $(__IAM_POLICY_NAME__INLINEGROUPPOLICY) --output json)
+	$(AWS) iam get-group-policy $(__IAM_GROUP_NAME__INLINEGROUPPOLICY) $(__IAM_POLICY_NAME__INLINEGROUPPOLICY) --output json

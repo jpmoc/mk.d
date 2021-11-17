@@ -82,12 +82,12 @@ _iam_delete_inlineuserpolicy:
 
 _iam_list_inlineuserpolicies:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL inline-user-policies ...'; $(NORMAL)
-	$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEUSERPOLICIES) --query 'PolicyNames[]'
+	$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEUSERPOLICIES) --query "PolicyNames[]"
 
 _iam_list_inlineuserpolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Listing inline-user-policies-set "$(IAM_INLINEUSERPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Inline-user-policies are grouped based on the provided query-filter'; $(NORMAL)
-	$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEUSERPOLICIES) --query 'PolicyNames[$(_IAM_LIST_INLINEUSERPOLICIES_SET_QUERYFILTER)]'
+	$(AWS) iam list-user-policies $(__IAM_USER_NAME__INLINEUSERPOLICIES) --query "PolicyNames[$(_IAM_LIST_INLINEUSERPOLICIES_SET_QUERYFILTER)]"
 
 _IAM_SHOW_INLINEUSERPOLICY_TARGETS?= _iam_show_inlineuserpolicy_document _iam_show_inlineuserpolicy_description
 _iam_show_inlineuserpolicy: $(_IAM_SHOW_INLINEUSERPOLICY_TARGETS)

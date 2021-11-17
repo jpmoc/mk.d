@@ -82,12 +82,12 @@ _iam_delete_inlinerolepolicy:
 
 _iam_list_inlinerolepolicies:
 	@$(INFO) '$(IAM_UI_LABEL)Listing ALL inline-role-policies ...'; $(NORMAL)
-	$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEROLEPOLICIES) --query 'PolicyNames[]'
+	$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEROLEPOLICIES) --query "PolicyNames[]"
 
 _iam_list_inlinerolepolicies_set:
 	@$(INFO) '$(IAM_UI_LABEL)Listing inline-role-policies-set "$(IAM_INLINEROLEPOLICIES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Inline-role-policies are grouped based on the provided query-filter'; $(NORMAL)
-	$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEROLEPOLICIES) --query 'PolicyNames[$(_IAM_LIST_INLINEROLEPOLICIES_SET_QUERYFILTER)]'
+	$(AWS) iam list-role-policies $(__IAM_ROLE_NAME__INLINEROLEPOLICIES) --query "PolicyNames[$(_IAM_LIST_INLINEROLEPOLICIES_SET_QUERYFILTER)]"
 
 _IAM_SHOW_INLINEROLEPOLICY_TARGETS?= _iam_show_inlinerolepolicy_document _iam_show_inlinerolepolicy_description
 _iam_show_inlinerolepolicy: $(_IAM_SHOW_INLINEROLEPOLICY_TARGETS)
