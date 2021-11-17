@@ -156,7 +156,7 @@ _dkr_list_targets ::
 	@echo '    _dkr_copyto_container                    - Copy single file/folder to a container'
 	@echo '    _dkr_copyNfrom_container                 - Copy multiple files/folders from a container'
 	@echo '    _dkr_copyNto_container                   - Copy multiple files/folders to a container'
-	@echo '    _dkr_create_container                    - Run/Instanciate a new container'
+	@echo '    _dkr_create_container                    - Create a container'
 	@echo '    _dkr_delete_container                    - Delete a container'
 	@echo '    _dkr_exec_container                      - Exec a command in a container'
 	@echo '    _dkr_list_containers                     - List all containers'
@@ -164,6 +164,7 @@ _dkr_list_targets ::
 	@echo '    _dkr_purge_containers                    - Purge all containers'
 	@echo '    _dkr_remove_container                    - Remove a containers'
 	@echo '    _dkr_restart_container                   - Restart/reboot a container'
+	@echo '    _dkr_run_container                       - Run a container'
 	@echo '    _dkr_show_container                      - Show everything related to a container'
 	@echo '    _dkr_show_container_description          - Show description of a container'
 	@echo '    _dkr_show_container_env                  - Show the environment of a container'
@@ -222,16 +223,7 @@ _dkr_copyNto_container:
 			$(DKR_CONTAINER_NAME):$(word 2, $(subst :, , $M)); \
 	)
 
-_dkr_create_container:
-	@$(INFO) '$(DKR_UI_LABEL)Creating a container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'This operation pulls the image if not already cached locally'; $(NORMAL)
-	@$(WARN) 'This operation creates and starts a container, executes a command until its completes'; $(NORMAL)
-	@$(WARN) 'This operation returns the same exit code at the executed command'; $(NORMAL)
-	@$(WARN) 'This operation runs the command in detached, attached, or interactive-tty mode'; $(NORMAL)
-	@$(WARN) 'This operation assigns a unique name to the container unless one is provided'; $(NORMAL)
-	@$(WARN) 'This operation fails if the provided container-name is used by a running, stopped, or exited container'; $(NORMAL)
-	@$(WARN) 'This operation must publish the docker exposed ports to map them to the host ports'; $(NORMAL)
-	$(DOCKER) run $(strip $(__DKR_BLKIO_WEIGHT) $(__DKR_CPU_SHARES) $(__DKR_DETACH) $(__DKR_ENV) $(__DKR_HOSTNAME) $(__DKR_INTERACTIVE) $(__DKR_MEMORY) $(__DKR_NAME) $(__DKR_PUBLISH) $(__DKR_PUBLISH_ALL) $(__DKR_RESTART) $(__DKR_RM) $(__DKR_STORAGE_OPT) $(__DKR_TTY) $(__DKR_VOLUME) $(DKR_CONTAINER_IMAGE_CNAME) $(DKR_CONTAINER_RUN_COMMAND) $(DKR_CONTAINER_RUN_ARGS) )
+_dkr_create_container: _dkr_run_container
 
 _dkr_delete_container:
 	@$(INFO) '$(DKR_UI_LABEL)Removing container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
@@ -274,6 +266,17 @@ _dkr_rename_container:
 _dkr_restart_container:
 	@$(INFO) '$(DKR_UI_LABEL)Restarting container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
 	$(DOCKER) restart $(__DKR_TIME) $(DKR_CONTAINER_NAME)
+
+_dkr_run_container:
+	@$(INFO) '$(DKR_UI_LABEL)Creating/Running a container "$(DKR_CONTAINER_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation pulls the image if not already cached locally'; $(NORMAL)
+	@$(WARN) 'This operation creates and starts a container, executes a command until its completes'; $(NORMAL)
+	@$(WARN) 'This operation returns the same exit code at the executed command'; $(NORMAL)
+	@$(WARN) 'This operation runs the command in detached, attached, or interactive-tty mode'; $(NORMAL)
+	@$(WARN) 'This operation assigns a unique name to the container unless one is provided'; $(NORMAL)
+	@$(WARN) 'This operation fails if the provided container-name is used by a running, stopped, or exited container'; $(NORMAL)
+	@$(WARN) 'This operation must publish the docker exposed ports to map them to the host ports'; $(NORMAL)
+	$(DOCKER) run $(strip $(__DKR_BLKIO_WEIGHT) $(__DKR_CPU_SHARES) $(__DKR_DETACH) $(__DKR_ENV) $(__DKR_HOSTNAME) $(__DKR_INTERACTIVE) $(__DKR_MEMORY) $(__DKR_NAME) $(__DKR_PUBLISH) $(__DKR_PUBLISH_ALL) $(__DKR_RESTART) $(__DKR_RM) $(__DKR_STORAGE_OPT) $(__DKR_TTY) $(__DKR_VOLUME) $(DKR_CONTAINER_IMAGE_CNAME) $(DKR_CONTAINER_RUN_COMMAND) $(DKR_CONTAINER_RUN_ARGS) )
 
 _DKR_SHOW_CONTAINER_TARGETS?= _dkr_show_container_env _dkr_show_container_logs _dkr_show_container_object _dkr_show_container_ports _dkr_show_container_stats _dkr_show_container_description
 _dkr_show_container: $(_DKR_SHOW_CONTAINER_TARGETS)
