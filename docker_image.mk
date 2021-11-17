@@ -21,12 +21,12 @@ DKR_IMAGE_DOCKERFILE_FILENAME?= Dockerfile
 # DKR_IMAGES_SET_NAME?= my-images-set
 
 # Derived parameters
-DKR_IMAGE_NAME?= $(DKR_IMAGE_FAMILY_NAME)$(if $(DKR_IMAGE_TAG),:$(DKR_IMAGE_TAG))$(if $(DKR_IMAGE_DIGEST),@$(DKR_IMAGE_DIGEST))
+DKR_IMAGE_NAME?= $(DKR_IMAGE_FAMILY_NAME)$(if $(DKR_IMAGE_TAG),:$(DKR_IMAGE_TAG))$(if $(DKR_IMAGE_DIGEST),@$(DKR_IMAGE_DIGEST))#
 DKR_IMAGE_DIGEST?= sha256:$(DKR_IMAGE_SHA256)
 DKR_IMAGE_DOCKERFILE_DIRPATH?= $(DKR_INPUTS_DIRPATH)
 DKR_IMAGE_DOCKERFILE_FILEPATH?= $(DKR_IMAGE_DOCKERFILE_DIRPATH)$(DKR_IMAGE_DOCKERFILE_FILENAME)
 DKR_IMAGE_ID?= $(DKR_IMAGE_SHA256)#
-DKR_IMAGE_ID_OR_NAME?= $(if $(DKR_IMAGE_ID),$(DKR_IMAGE_ID),$(DKR_IMAGE_NAME))
+DKR_IMAGE_ID_OR_NAME?= $(if $(DKR_IMAGE_ID),$(DKR_IMAGE_ID),$(DKR_IMAGE_NAME))#
 DKR_IMAGE_FAMILY_NAME?= $(DKR_IMAGE_REPOSITORY_CNAME)
 DKR_IMAGE_REPOSITORY_CNAME?= $(DKR_REPOSITORY_CNAME)
 DKR_IMAGE_REPOSITORY_NAME?= $(DKR_REPOSITORY_NAME)
@@ -34,6 +34,7 @@ DKR_IMAGE_REPOSITORY_NAME?= $(DKR_REPOSITORY_NAME)
 # Options
 __DKR_BEFORE=
 __DKR_BUILD_ARG= $(foreach V,$(DKR_IMAGE_BUILD_ENVVARS),--build-arg $(V) )
+__DKR_DIGESTS= $(if $(filter true, $(DKR_IMAGE_LISTDIGESTS_FLAG)),--digests)
 __DKR_FILE= $(if $(DKR_IMAGE_DOCKERFILE_FILEPATH),--file $(DKR_IMAGE_DOCKERFILE_FILEPATH))
 __DKR_FILTER__IMAGES= $(if $(DKR_IMAGES_FILTER),--filter $(DKR_IMAGES_FILTER))
 __DKR_FORCE__IMAGE= $(if $(filter true, $(DKR_IMAGE_DELETE_FORCE)),--force)
@@ -121,17 +122,18 @@ _dkr_delete_image:
 
 _dkr_list_images:
 	@$(INFO) '$(DKR_UI_LABEL)Listing ALL images ...'; $(NORMAL)
-	$(DOCKER) images $(_X__DKR_FILTER__IMAGES)
+	$(DOCKER) images $(__DKR_DIGESTS) $(_X__DKR_FILTER__IMAGES)
 
 _dkr_list_images_set:
 	@$(INFO) '$(DKR_UI_LABEL)Listing images-set "$(DKR_IMAGES_SET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'Images are grouped based on provided filter'; $(NORMAL)
-	$(DOCKER) images $(__DKR_FILTER__IMAGES)
+	$(DOCKER) images $(__DKR_DIGESTS) $(__DKR_FILTER__IMAGES)
 
 _dkr_pull_image:
 	@$(INFO) '$(DKR_UI_LABEL)Pulling image "$(DKR_IMAGE_CNAME)" from registry ...'; $(NORMAL)
-	@$(WARN) 'Official image-cname ubuntu:16.04 ~= registry.hub.docker.com/library/ubuntu:16.04'; $(NORMAL)
-	@$(WARN) 'Pulling from an EMPTY but existing repository will fail!'; $(NORMAL)
+	@$(WARN) 'Official image-name ubuntu:16.04 ~= registry.hub.docker.com/library/ubuntu:16.04'; $(NORMAL)
+	@$(WARN) 'This operation fails if you are pulling from an existing but EMPTY repository!'; $(NORMAL)
+	@$(WARN) 'This operation fails if you are required, but not yet logged in the repository!'; $(NORMAL)
 	$(DOCKER) image pull $(__DKR_ALL_TAGS) $(__DKR_DISABLE_CONTENT_TRUST) $(DKR_IMAGE_CNAME)
 
 _dkr_purge_images:
