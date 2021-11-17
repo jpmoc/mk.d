@@ -1,7 +1,6 @@
 _DOCKER_IMAGE_MK_VERSION= $(_DOCKER_MK_VERSION)
 
 # DKR_IMAGE_BUILD_ENVVARS?= HTTP_PROXY FTP_PROXY=http://40.50.60.5:4567 ...
-# DKR_IMAGE_CNAME?= localhost:5000/test/busybox@sha256:cbbf2f9a99b47fc460d422812b6a5adff7dfee951d8fa2e4a98caa0382cfbdbf
 # DKR_IMAGE_DELETE_FORCE?= false
 # DKR_IMAGE_DIGEST?= sha256:cbbf2f9a99b47fc460d422812b6a5adff7dfee951d8fa2e4a98caa0382cfbdbf
 # DKR_IMAGE_DOCKERFILE_DIRPATH?= ./in/
@@ -11,19 +10,23 @@ DKR_IMAGE_DOCKERFILE_FILENAME?= Dockerfile
 # DKR_IMAGE_DOCKERFILE_URL?=
 # DKR_IMAGE_FAMILY_NAME?= localhost:5000/test/busybox
 # DKR_IMAGE_ID?= fbb64f80360b
-# DKR_IMAGE_ID_OR_CNAME?=
+# DKR_IMAGE_ID_OR_NAME?=
+# DKR_IMAGE_NAME?= localhost:5000/test/busybox@sha256:cbbf2f9a99b47fc460d422812b6a5adff7dfee951d8fa2e4a98caa0382cfbdbf
 # DKR_IMAGE_REPOSITORY_CNAME?= myregistryhost:5000/emayssatware/pilot
 # DKR_IMAGE_REPOSITORY_NAME?= emayssatware/pilot
+# DKR_IMAGE_SHA256?= cbbf2f9a99b47fc460d422812b6a5adff7dfee951d8fa2e4a98caa0382cfbdbf
 # DKR_IMAGE_TAG?= 14.04
 # DKR_IMAGE_TAR_FILEPATH?= ./myimage.tar
 # DKR_IMAGES_FILTER?=
 # DKR_IMAGES_SET_NAME?= my-images-set
 
 # Derived parameters
-DKR_IMAGE_CNAME?= $(DKR_IMAGE_FAMILY_NAME)$(if $(DKR_IMAGE_TAG),:$(DKR_IMAGE_TAG))$(if $(DKR_IMAGE_DIGEST),@$(DKR_IMAGE_DIGEST))
+DKR_IMAGE_NAME?= $(DKR_IMAGE_FAMILY_NAME)$(if $(DKR_IMAGE_TAG),:$(DKR_IMAGE_TAG))$(if $(DKR_IMAGE_DIGEST),@$(DKR_IMAGE_DIGEST))
+DKR_IMAGE_DIGEST?= sha256:$(DKR_IMAGE_SHA256)
 DKR_IMAGE_DOCKERFILE_DIRPATH?= $(DKR_INPUTS_DIRPATH)
 DKR_IMAGE_DOCKERFILE_FILEPATH?= $(DKR_IMAGE_DOCKERFILE_DIRPATH)$(DKR_IMAGE_DOCKERFILE_FILENAME)
-DKR_IMAGE_ID_OR_CNAME?= $(if $(DKR_IMAGE_ID),$(DKR_IMAGE_ID),$(DKR_IMAGE_CNAME))
+DKR_IMAGE_ID?= $(DKR_IMAGE_SHA256)#
+DKR_IMAGE_ID_OR_NAME?= $(if $(DKR_IMAGE_ID),$(DKR_IMAGE_ID),$(DKR_IMAGE_NAME))
 DKR_IMAGE_FAMILY_NAME?= $(DKR_IMAGE_REPOSITORY_CNAME)
 DKR_IMAGE_REPOSITORY_CNAME?= $(DKR_REPOSITORY_CNAME)
 DKR_IMAGE_REPOSITORY_NAME?= $(DKR_REPOSITORY_NAME)
@@ -40,7 +43,7 @@ __DKR_OUTPUT= $(if $(DKR_IMAGE_TAR_FILEPATH),--output $(DKR_IMAGE_TAR_FILEPATH))
 __DKR_PRUNE=
 __DKR_SINCE=
 __DKR_SIZE=
-__DKR_TAG= $(if $(DKR_IMAGE_CNAME), --tag=$(DKR_IMAGE_CNAME))
+__DKR_TAG= $(if $(DKR_IMAGE_TAG),--tag=$(DKR_IMAGE_TAG))
 
 # Customizations
 _DKR_RESTORE_IMAGE_|?=
@@ -48,7 +51,7 @@ _DKR_RESTORE_IMAGE_|?=
 |_DKR_SAVE_IMAGE?= # | gzip > myimage_latest.tar.gz
 
 # Macros
-_dkr_get_image_id= $(call _dkr_get_image_N, $(DKR_IMAGE_CNAME))
+_dkr_get_image_id= $(call _dkr_get_image_N, $(DKR_IMAGE_NAME))
 _dkr_get_image_id_N= $(shell $(DOCKER) images --filter reference=$(1) --quiet )
 
 #----------------------------------------------------------------------
@@ -63,7 +66,6 @@ _dkr_list_macros ::
 _dkr_list_parameters ::
 	@echo 'DocKeR::Image ($(_DOCKER_IMAGE_MK_VERSION)) parameters:'
 	@echo '    DKR_IMAGE_BUILD_ENVVARS=$(DKR_IMAGE_BUILD_ENVVARS)'
-	@echo '    DKR_IMAGE_CNAME=$(DKR_IMAGE_CNAME)'
 	@echo '    DKR_IMAGE_DELETE_FORCE=$(DKR_IMAGE_DELETE_FORCE)'
 	@echo '    DKR_IMAGE_DOCKERFILE_DIRPATH=$(DKR_IMAGE_DOCKERFILE_DIRPATH)'
 	@echo '    DKR_IMAGE_DOCKERFILE_FILENAME=$(DKR_IMAGE_DOCKERFILE_FILENAME)'
@@ -72,9 +74,11 @@ _dkr_list_parameters ::
 	@echo '    DKR_IMAGE_DOCKERFILE_URL=$(DKR_IMAGE_DOCKERFILE_URL)'
 	@echo '    DKR_IMAGE_FAMILY_NAME=$(DKR_IMAGE_FAMILY_NAME)'
 	@echo '    DKR_IMAGE_ID=$(DKR_IMAGE_ID)'
-	@echo '    DKR_IMAGE_ID_OR_CNAME=$(DKR_IMAGE_ID_OR_CNAME)'
+	@echo '    DKR_IMAGE_ID_OR_NAME=$(DKR_IMAGE_ID_OR_NAME)'
+	@echo '    DKR_IMAGE_NAME=$(DKR_IMAGE_NAME)'
 	@echo '    DKR_IMAGE_REPOSITORY_CNAME=$(DKR_IMAGE_REPOSITORY_CNAME)'
 	@echo '    DKR_IMAGE_REPOSITORY_NAME=$(DKR_IMAGE_REPOSITORY_NAME)'
+	@echo '    DKR_IMAGE_SHA256=$(DKR_IMAGE_SHA256)'
 	@echo '    DKR_IMAGE_TAG=$(DKR_IMAGE_TAG)'
 	@echo '    DKR_IMAGE_TAR_FILEPATH=$(DKR_IMAGE_TAR_FILEPATH)'
 	@echo '    DKR_IMAGES_FILTER=$(DKR_IMAGES_FILTER)'
@@ -109,11 +113,11 @@ _dkr_clean_images:
 	@$(INFO) '$(DKR_UI_LABEL)Cleaning images ...'; $(NORMAL)
 	@$(WARN) 'This operation removes dangling/untagged images if any, fails otherwise!'; $(NORMAL)
 	$(DOCKER) images --filter dangling=true
-	-$(DOCKER) images --filter dangling=true --quiet | xargs $(DOCKER) rmi
+	-$(DOCKER) images --filter dangling=true --quiet | xargs $(DOCKER) image rm
 
 _dkr_delete_image:
 	@$(INFO) '$(DKR_UI_LABEL)Deleting image "$(DKR_IMAGE_ID_OR_CNAME)" ...'; $(NORMAL)
-	$(DOCKER) rmi $(__DKR_FORCE__IMAGE) $(__DKR_PRUNE) $(DKR_IMAGE_ID_OR_CNAME)
+	$(DOCKER) image rm $(__DKR_FORCE__IMAGE) $(__DKR_PRUNE) $(DKR_IMAGE_ID_OR_CNAME)
 
 _dkr_list_images:
 	@$(INFO) '$(DKR_UI_LABEL)Listing ALL images ...'; $(NORMAL)
@@ -136,33 +140,33 @@ _dkr_purge_images:
 	docker rmi $$(docker images -q)
 
 _dkr_push_image:
-	@$(INFO) '$(DKR_UI_LABEL)Pushing images to repository "$(DKR_IMAGE_REPOSITORY_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(DKR_UI_LABEL)Pushing image "$(DKR_IMAGE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation fails if you are not already logged in the registry where the repo is located'; $(NORMAL)
 	@$(WARN) 'This operation creates a repository if it does not already exist, but image push will? fail'; $(NORMAL)
-	$(DOCKER) image push $(__DKR_ALL_TAGS) $(__DKR_DISABLE_CONTENT_TRUST) $(DKR_IMAGE_CNAME)
+	$(DOCKER) image push $(__DKR_ALL_TAGS) $(__DKR_DISABLE_CONTENT_TRUST) $(DKR_IMAGE_NAME)
 
 _dkr_restore_image:
-	@$(INFO) '$(DKR_UI_LABEL)Restoring image "$(DKR_IMAGE_CNAME)" ...'; $(NORMAL)
+	@$(INFO) '$(DKR_UI_LABEL)Restoring image "$(DKR_IMAGE_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation will restore the image content, but not its tags'; $(NORMAL)
 	$(_DKR_RESTORE_IMAGE_|) $(DOCKER) load $(__DKR_INPUT) $(|_DKR_RESTORE_IMAGE)
 
 _dkr_save_image:
-	@$(INFO) '$(DKR_UI_LABEL)Saving image "$(DKR_IMAGE_CNAME)" ...'; $(NORMAL)
-	$(DOCKER) save $(__DKR_OUTPUT) $(DKR_IMAGE_CNAME) $(|_DKR_SAVE_IMAGE)
+	@$(INFO) '$(DKR_UI_LABEL)Saving image "$(DKR_IMAGE_NAME)" ...'; $(NORMAL)
+	$(DOCKER) save $(__DKR_OUTPUT) $(DKR_IMAGE_NAME) $(|_DKR_SAVE_IMAGE)
 
 _DKR_SHOW_IMAGE_TARGETS?= _dkr_show_image_object _dkr_show_image_tags _dkr_show_image_description
 _dkr_show_image: $(_DKR_SHOW_IMAGE_TARGETS)
 
 _dkr_show_image_description:
-	@$(INFO) '$(DKR_UI_LABEL)Showing description of image "$(DKR_IMAGE_ID_OR_CNAME)" ...'; $(NORMAL)
+	@$(INFO) '$(DKR_UI_LABEL)Showing description of image "$(DKR_IMAGE_ID_OR_NAME)" ...'; $(NORMAL)
 	$(DOCKER) image list | head -1
-	$(DOCKER) image list | grep $(DKR_IMAGE_ID_OR_CNAME)
+	$(DOCKER) image list | grep $(DKR_IMAGE_ID_OR_NAME)
 
 _dkr_show_image_object:
-	@$(INFO) '$(DKR_UI_LABEL)Showing object of image "$(DKR_IMAGE_ID_OR_CNAME)" ...'; $(NORMAL)
-	$(DOCKER) image inspect $(DKR_IMAGE_ID_OR_CNAME)
+	@$(INFO) '$(DKR_UI_LABEL)Showing object of image "$(DKR_IMAGE_ID_OR_NAME)" ...'; $(NORMAL)
+	$(DOCKER) image inspect $(DKR_IMAGE_ID_OR_NAME)
 
 _dkr_show_image_tags:
-	@$(INFO) '$(DKR_UI_LABEL)Showing tags of image "$(DKR_IMAGE_ID_OR_CNAME)" ...'; $(NORMAL)
+	@$(INFO) '$(DKR_UI_LABEL)Showing tags of image "$(DKR_IMAGE_ID_OR_NAME)" ...'; $(NORMAL)
 	@#$(WARN) 'This operation fails if the image id is not set'; $(NORMAL)
 	-#$(DOCKER) image list | grep $(DKR_IMAGE_ID)
