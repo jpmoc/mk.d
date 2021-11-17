@@ -53,7 +53,9 @@ _iam_list_targets ::
 -include $(MK_DIR)/aws_iam_accountalias.mk
 -include $(MK_DIR)/aws_iam_accesskey.mk
 -include $(MK_DIR)/aws_iam_certificate.mk
--include $(MK_DIR)/aws_iam_inlinepolicy.mk
+-include $(MK_DIR)/aws_iam_inlinegrouppolicy.mk
+-include $(MK_DIR)/aws_iam_inlinerolepolicy.mk
+-include $(MK_DIR)/aws_iam_inlineuserpolicy.mk
 -include $(MK_DIR)/aws_iam_instanceprofile.mk
 -include $(MK_DIR)/aws_iam_group.mk
 -include $(MK_DIR)/aws_iam_managedpolicy.mk
