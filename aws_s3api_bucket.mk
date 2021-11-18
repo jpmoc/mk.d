@@ -26,6 +26,7 @@ _AWS_S3API_BUCKET_MK_VERSION=$(_AWS_S3API_MK_VERSION)
 # S3I_BUCKET_WEBSITE_FILENAME?= website-configuration.json
 # S3I_BUCKET_WEBSITE_FILEPATH?= ./in/website-configuration.json
 # S3I_BUCKET_WEBSITE_URL?= http://123456789012-coursera-serverless.s3-website-us-east-1.amazonaws.com
+# S3I_BUCKETS_NAMES?= bucket1 ...
 # S3I_BUCKETS_SET_NAME?= my-buckets-set
 
 # Derived parameters
@@ -64,6 +65,7 @@ __S3I_VERSIONING_CONFIGURATION=
 __S3I_WEBSITE_CONFIGURATION?= $(if $(S3I_BUCKET_WEBSITE),--website-configuration $(S3I_BUCKET_WEBSITE))
 
 # Customizations
+_S3I_GET_BUCKETS_NAMES_QUERYFILTER?= $(_S3I_LIST_BUCKETS_SET_QUERYFILTER)
 _S3I_LIST_BUCKETS_FIELDS?=
 _S3I_LIST_BUCKETS_SET_FIELDS?= $(_S3I_LIST_BUCKETS_FIELDS)
 _S3I_LIST_BUCKETS_SET_QUERYFILTER?=
@@ -73,16 +75,18 @@ _S3I_UPDATE_BUCKET_LOGGING_|?= [ -z $(S3I_BUCKET_LOGGING_FILEPATH) ] ||
 _S3I_UPDATE_BUCKET_POLICY_|?= [ -z $(S3I_BUCKET_POLICY_FILEPATH) ] ||
 _S3I_UPDATE_BUCKET_WEBSITE_|?= [ -z $(S3I_BUCKET_WEBSITE_FILEPATH) ] ||
 
-
 # Macros
+_s3i_get_buckets_names= $(call _s3i_get_buckets_names_F, $(_S3I_GET_BUCKETS_NAMES_QUERYFILTER))
+_s3i_get_buckets_names_F= $(shell $(AWS) s3api list-buckets --query "Buckets[$(1)].Name" --output text)
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
 _s3i_list_macros ::
-	@#echo 'AWS::S3API::Bucket ($(_AWS_S3API_BUCKET_MK_VERSION)) macros:'
-	@#echo
+	@echo 'AWS::S3API::Bucket ($(_AWS_S3API_BUCKET_MK_VERSION)) macros:'
+	@echo '    _s3i_get_buckets_names_{|F}   - Get the names of buckets (Filter)'
+	@echo
 
 _s3i_list_parameters ::
 	@echo 'AWS::S3API::Bucket ($(_AWS_S3API_BUCKET_MK_VERSION)) parameters:'
@@ -110,6 +114,7 @@ _s3i_list_parameters ::
 	@echo '    S3I_BUCKET_WEBSITE_FILENAME=$(S3I_BUCKET_WEBSITE_FILENAME)'
 	@echo '    S3I_BUCKET_WEBSITE_FILEPATH=$(S3I_BUCKET_WEBSITE_FILEPATH)'
 	@echo '    S3I_BUCKET_WEBSITE_URL=$(S3I_BUCKET_WEBSITE_URL)'
+	@echo '    S3I_BUCKETS_NAMES=$(S3I_BUCKETS_NAMES)'
 	@echo '    S3I_BUCKETS_SET_NAME=$(S3I_BUCKETS_SET_NAME)'
 	@echo
 
