@@ -1,5 +1,6 @@
 _MAVEN_MK_VERSION= 0.9.0
 
+MVN_M2_DIRPATH?= $(HOME)/.m2/
 MVN_UI_LABEL?= [maven] #
 # MVN_UNZIP?= unzip
 
@@ -30,6 +31,7 @@ _list_parameters :: _mvn_list_parameters
 _mvn_list_parameters ::
 	@echo 'MaVeN:: ($(_MAVEN_MK_VERSION)) parameters:'
 	@echo '    MVN=$(MVN)'
+	@echo '    MVN_M2_DIRPATH=$(MVN_M2_DIRPATH)'
 	@echo '    MVN_UI_LABEL=$(MVN_UI_LABEL)'
 	@echo
 
@@ -46,8 +48,10 @@ _mvn_list_targets ::
 
 MK_DIRPATH?= ./
 -include $(MK_DIRPATH)maven_artifact.mk
+-include $(MK_DIRPATH)maven_localrepository.mk
 -include $(MK_DIRPATH)maven_plugin.mk
 -include $(MK_DIRPATH)maven_project.mk
+-include $(MK_DIRPATH)maven_settings.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
