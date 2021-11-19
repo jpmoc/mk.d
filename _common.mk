@@ -1,33 +1,35 @@
 _COMMON_MK_VERSION= 0.99.1
 
-# __DATE_ENVIRONMENT?= TZ='America/Los_Angeles'
-DATE_BIN?= date
-DATE?= $(strip $(__DATE_ENVIRONMENT) $(DATE_ENVIRONMENT) $(DATE_BIN) $(__DATE_OPTIONS) $(DATE_OPTIONS) )
-
-CMN_DATE:=$(shell $(DATE))
-CMN_DATE_HHMMSS:=$(shell $(DATE) +%H%M%S)
-CMN_DATE_YYYYMMDD:=$(shell $(DATE) +%Y%m%d)
-CMN_DATE_YYYYMMDD_HHMMSS:=$(CMN_DATE_YYYYMMDD)_$(CMN_DATE_HHMMSS)
-# CMN_INPUTS_DIRPATH?= ./in/
-CMN_MODE_DEBUG?= false
-CMN_MODE_INTERACTIVE?= false
-CMN_MODE_NOWAIT?= false
-CMN_MODE_SILENT?= $(if $(filter s, $(MAKEFLAGS)),true,false)
-CMN_MODE_YES?= false
-# CMN_OUTPUTS_DIRPATH?= ./out/
-CMN_TMP_DIR:= /tmp/$(CMN_DATE_YYYYMMDD)
-CMN_VERBOSITY_LEVEL?= 0
 CMN_UI_LABEL?= [common] #
+
 COMMA= ,#
 # MAKE_ENVIRONMENT?=FOO=1
 # MAKE_OPTIONS?= -e -n -p --silent FOO=1
+DEBUG_FLAG?= false
+# INPUTS_DIRPATH?= ./in/
+MK_DIRPATH?= ./mk.d/
+# OUTPUTS_DIRPATH?= ./out/
+SILENT_FLAG?= $(if $(filter s, $(MAKEFLAGS)),true,false)
+INTERACTIVE_FLAG?= false
+NOWAIT_FLAG?= false
+TMP_DIRPATH?= /tmp/$(CMN_DATE_YYYYMMDD)
+VERBOSITY_LEVEL?= 0
+YES_FLAG?= false
 
+# Utilities
 CURL?= curl
+# __DATE_ENVIRONMENT?= TZ='America/Los_Angeles'
+DATE_BIN?= date
+DATE?= $(strip $(__DATE_ENVIRONMENT) $(DATE_ENVIRONMENT) $(DATE_BIN) $(__DATE_OPTIONS) $(DATE_OPTIONS) )
 DIG?= dig
 ECHO?= /bin/echo
 WRITER?= vim
 MD5SUM?= openssl md5
+UNTAR?= tar -x
+UNZIP?= unzip
 WEBBROWSER?= chrome
+TAR?= tar
+ZIP?= zip
 
 HOST?= $(shell hostname -s)
 HOSTNAME?= $(shell hostname)
@@ -93,31 +95,31 @@ _cmn_list_macros ::
 _list_parameters :: _cmn_list_parameters
 _cmn_list_parameters ::
 	@echo 'CoMmoN ($(_COMMON_MK_VERSION)) parameters:'
-	@echo '    CMN_DATE=$(CMN_DATE)'
-	@echo '    CMN_DATE_HHMMSS=$(CMN_DATE_HHMMSS)'
-	@echo '    CMN_DATE_YYYYMMDD=$(CMN_DATE_YYYYMMDD)'
-	@echo '    CMN_DATE_YYYYMMDD_HHMMSS=$(CMN_DATE_YYYYMMDD_HHMMSS)'
-	@echo '    CMN_INPUTS_DIRPATH=$(CMN_INPUTS_DIRPATH)'
-	@echo '    CMN_MODE_DEBUG=$(CMN_MODE_DEBUG)'
-	@echo '    CMN_MODE_INTERACTIVE=$(CMN_MODE_INTERACTIVE)'
-	@echo '    CMN_MODE_NOWAIT=$(CMN_MODE_NOWAIT)'
-	@echo '    CMN_MODE_SILENT=$(CMN_MODE_SILENT)'
-	@echo '    CMN_MODE_YES=$(CMN_MODE_YES)'
-	@echo '    CMN_OUTPUTS_DIRPATH=$(CMN_OUTPUTS_DIRPATH)'
-	@echo '    CMN_TMP_DIR=$(CMN_TMP_DIR)'
-	@echo '    CMN_VERBOSITY_LEVEL=$(CMN_VERBOSITY_LEVEL)'
 	@echo '    CMN_UI_LABEL=$(CMN_UI_LABEL)'
 	@echo '    DATE=$(DATE)'
-	@echo '    WRITER=$(WRITER)'
+	@echo '    DEBUG_FLAG=$(DEBUG_FLAG)'
 	@echo '    HOST=$(HOST)'
 	@echo '    HOSTNAME=$(HOSTNAME)'
+	@echo '    INTERACTIVE_FLAG=$(INTERACTIVE_FLAG)'
+	@echo '    INPUTS_DIRPATH=$(INPUTS_DIRPATH)'
 	@echo '    MAKE=$(MAKE)'
 	@echo '    MD5SUM=$(MD5SUM)'
-	@echo '    MK_DIR=$(MK_DIR)'
+	@echo '    MK_DIRPATH=$(MK_DIRPATH)'
+	@echo '    NOWAIT_FLAG=$(NOWAIT_FLAG)'
+	@echo '    OUTPUTS_DIRPATH=$(OUTPUTS_DIRPATH)'
 	@echo '    SHELL=$(SHELL)'
+	@echo '    SILENT_FLAG=$(SILENT_FLAG)'
+	@echo '    TAR=$(TAR)'
 	@echo '    TERM=$(TERM)'
+	@echo '    TMP_DIRPATH=$(TMP_DIRPATH)'
+	@echo '    UNTAR=$(UNTAR)'
+	@echo '    UNZIP=$(UNZIP)'
 	@echo '    USER=$(USER)'
+	@echo '    VERBOSITY_LEVEL=$(VERBOSITY_LEVEL)'
 	@echo '    WEBBROWSER=$(WEBBROWSER)'
+	@echo '    WRITER=$(WRITER)'
+	@echo '    YES_FLAG=$(YES_FLAG)'
+	@echo '    ZIP=$(ZIP)'
 	@echo
 
 _list_targets :: _cmn_list_targets

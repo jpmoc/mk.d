@@ -43,9 +43,9 @@ _yq_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/yq_context.mk
--include $(MK_DIR)/yq_file.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)yq_context.mk
+-include $(MK_DIRPATH)yq_file.mk
 
 #-----------------------------------------------------------------------
 # PUBLIC TARGETS

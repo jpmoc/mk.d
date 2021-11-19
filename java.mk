@@ -40,8 +40,8 @@ _jva_view_framework_targets ::
 # PRIVATE TARGETS
 #
 
-# MK_DIR?= .
-# -include $(MK_DIR)/git_branch.mk
+# MK_DIRPATH?= ./
+# -include $(MK_DIRPATH)jva_archive.mk
 
 #-----------------------------------------------------------------------
 # PUBLIC TARGETS
@@ -61,6 +61,6 @@ _jva_install_dependencies:
 	java --version
 
 _view_versions :: _jva_show_version
-_jva_show_version:
-	@$(INFO) '$(JVA_UI_LABEL)Showing version of dependencies ...'; $(NORMAL)
+_jva_view_versions:
+	@$(INFO) '$(JVA_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
 	java --version
