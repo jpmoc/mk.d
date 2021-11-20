@@ -55,7 +55,7 @@ _sfd_list_parameters ::
 
 _sfd_list_targets ::
 	@echo 'SkaFfolD::Artifact ($(_SKAFFOLD_ARTIFACT_MK_VERSION)) targets:'
-	@echo '    _sfd_create_artifacts               - Create one-or-more artifacts'
+	@echo '    _sfd_build_artifacts                - Build one-or-more artifacts'
 	@echo '    _sfd_delete_artifacts               - Delete one-or-more artifacts'
 	@echo '    _sfd_list_artifacts                 - List artifacts'
 	@echo '    _sfd_list_artifacts_set             - List set of artifacts'
@@ -72,8 +72,8 @@ _sfd_list_targets ::
 # PUBLIC TARGETS
 #
 
-_sfd_create_artifact: _sfd_create_artifacts
-_sfd_create_artifacts:
+_sfd_build_artifact: _sfd_build_artifacts
+_sfd_build_artifacts:
 	@$(INFO) '$(SFD_UI_LABEL)Creating one-or-more artifacts ...'; $(NORMAL)
 	@$(WARN) 'This operation normally pushes the images to a docker registry'; $(NORMAL)
 	@$(WARN) 'If using local-docker ascertain you are already logged in'; $(NORMAL)
