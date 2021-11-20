@@ -6,6 +6,7 @@ SFD_CONFIG_DIRPATH?= ./
 SFD_CONFIG_FILENAME?= skaffold.yaml
 # SFD_CONFIG_FILEPATH?= ./skaffold.yml
 # SFD_CONFIG_NAME?= my-name
+SFD_CONFIG_SKIPBUILD_FLAG?= false
 # SFD_CONFIGS_APPLICATIONS_DIRPATH?= ./apps/
 # SFD_CONFIGS_SET_NAME?= my-set
 
@@ -19,9 +20,10 @@ SFD_CONFIGS_SET_NAME?= configs@$(SFD_APPLICATIONS_DIRPATH)
 
 # Options
 __SFD_FILENAME__CONFIG= $(if $(SFD_CONFIG_FILEPATH),--filename $(SFD_CONFIG_FILEPATH))
+__SFD_SKIP_BUILD__CONFIG= $(if $(filter true,$(SFD_CONFIG_SKIPBUILD_FLAG)),--skip-build)
 
 # Customizations
-_SFD_CREATE_CONFIG_|?= $(_SFD_SHOW_CONFIG_|)
+_SFD_CREATE_CONFIG_|?= $(if $(SFD_CONFIG_DIRPATH),mkdir -p $(SFD_CONFIG_DIRPATH) && )
 _SFD_DELETE_CONFIG_|?= $(_SFD_CREATE_CONFIG_|)
 _SFD_LIST_CONFIGS_|?= $(if $(SFD_CONFIGS_APPLICATIONS_DIRPATH),cd $(SFD_CONFIGS_APPLICATIONS_DIRPATH) && )#
 _SFD_LIST_CONFIGS_SET_|?= $(_SFD_LIST_CONFIGS_|)
@@ -51,6 +53,8 @@ _sfd_list_parameters ::
 	@echo '    SFD_CONFIG_FILENAME=$(SFD_CONFIG_FILENAME)'
 	@echo '    SFD_CONFIG_FILEPATH=$(SFD_CONFIG_FILEPATH)'
 	@echo '    SFD_CONFIG_NAME=$(SFD_CONFIG_NAME)'
+	@echo '    SFD_CONFIG_SKIPBUILD_FLAG=$(SFD_CONFIG_SKIPBUILD_FLAG)'
+	@echo '    SFD_CONFIGS_APPLICATIONS_DIRPATH=$(SFD_CONFIGS_APPLICATIONS_DIRPATH)'
 	@echo '    SFD_CONFIGS_SET_NAME=$(SFD_CONFIGS_SET_NAME)'
 	@echo
 
@@ -76,6 +80,7 @@ _sfd_list_targets ::
 
 define SFD_CONFIG_CONTENT
 apiVersion: skaffold/v1
+apiVersion: skaffold/v2beta5
 kind: Config
 metadata:
   name: getting-started-knative
@@ -93,7 +98,10 @@ export SFD_CONFIG_CONTENT
 
 _sfd_create_config:
 	@$(INFO) '$(SFD_UI_LABEL)Creating config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
-	mkdir -p $(SFD_CONFIG_DIRPATH) && echo "$${SFD_CONFIG_CONTENT}" >> $(SFD_CONFIG_FILENAME)
+	@$(WARN) 'This operation fails if not Dockerfile are found in the file subtree'; $(NORMAL)
+	@$(WARN) 'Beware: Ascertain that the config API-version is compatible with your version of the CLI'; $(NORMAL)
+	@# $(_SFD_CREATE_CONFIG_|)echo "$${SFD_CONFIG_CONTENT}" >> $(SFD_CONFIG_FILENAME)
+	$(_SFD_CREATE_CONFIG_|)skaffold init $(_SFD_SKIP_BUILD)
 
 _sfd_delete_config:
 	@$(INFO) '$(SFD_UI_LABEL)Deleting config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
