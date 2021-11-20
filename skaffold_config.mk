@@ -3,8 +3,8 @@ _SKAFFOLD_CONFIG_MK_VERSION= $(_SKAFFOLD_MK_VERSION)
 # SFD_CONFIG_APPLICATION_DIRPATH?= ./apps/my-app/
 # SFD_CONFIG_APPLICATION_NAME?= my-app
 SFD_CONFIG_DIRPATH?= ./
-SFD_CONFIG_FILENAME?= skaffold.yaml
-# SFD_CONFIG_FILEPATH?= ./skaffold.yaml
+SFD_CONFIG_FILENAME?= skaffold.yml
+# SFD_CONFIG_FILEPATH?= ./skaffold.yml
 # SFD_CONFIG_NAME?= my-name
 # SFD_CONFIGS_APPLICATIONS_DIRPATH?= ./apps/
 # SFD_CONFIGS_SET_NAME?= my-set
@@ -23,14 +23,14 @@ __SFD_FILENAME__CONFIG= $(if $(SFD_CONFIG_FILEPATH),--filename $(SFD_CONFIG_FILE
 # Customizations
 _SFD_CREATE_CONFIG_|?= $(_SFD_SHOW_CONFIG_|)
 _SFD_DELETE_CONFIG_|?= $(_SFD_CREATE_CONFIG_|)
-_SFD_EDIT_CONFIG_|?= $(_SFD_CREATE_CONFIG_|)
-_SFD_LIST_CONFIGS_|?= cd $(SFD_CONFIGS_APPLICATIONS_DIRPATH) &&
+_SFD_LIST_CONFIGS_|?= $(if $(SFD_CONFIGS_APPLICATIONS_DIRPATH),cd $(SFD_CONFIGS_APPLICATIONS_DIRPATH) && )#
 _SFD_LIST_CONFIGS_SET_|?= $(_SFD_LIST_CONFIGS_|)
 |_SFD_LIST_CONFIGS?=
 |_SFD_LIST_CONFIGS_SET?=
-_SFD_SHOW_CONFIG_|?= cd $(SFD_CONFIG_APPLICATION_DIRPATH) && #
+_SFD_SHOW_CONFIG_|?= $(if $(SFD_CONFIG_APPLICATION_DIRPATH),cd $(SFD_CONFIG_APPLICATION_DIRPATH) && )#
 _SFD_SHOW_CONFIG_CONTENT_|?= $(_SFD_SHOW_CONFIG_|)
 _SFD_SHOW_CONFIG_DESCRIPTION_|?= $(_SFD_SHOW_CONFIG_|)
+_SFD_WRITE_CONFIG_|?= $(_SFD_CREATE_CONFIG_|)
 
 # Macros
 
@@ -58,34 +58,46 @@ _sfd_list_targets ::
 	@echo 'SkaFfolD::Config ($(_SKAFFOLD_CONFIG_MK_VERSION)) targets:'
 	@echo '    _sfd_create_config             - Create a config'
 	@echo '    _sfd_delete_config             - Delete an existing config'
-	@echo '    _sfd_edit_config               - Edit a existing config'
 	@echo '    _sfd_list_configs              - List all configs'
 	@echo '    _sfd_list_configs_set          - List set of configs'
 	@echo '    _sfd_show_config               - Show everything related to a config'
 	@echo '    _sfd_show_config_content       - Show the content of a config'
 	@echo '    _sfd_show_config_description   - Show the description of a config'
+	@echo '    _sfd_write_config              - Write a config'
 	@echo
 
 #-----------------------------------------------------------------------
 # PRIVATE TARGETS
 #
 
-
 #-----------------------------------------------------------------------
 # PUBLIC TARGETS
 #
 
+define SFD_CONFIG_CONTENT
+apiVersion: skaffold/v1
+kind: Config
+metadata:
+  name: getting-started-knative
+build:
+  artifacts:
+  - image: dev.local/quarkus-quickstarts/getting-started-knative
+  local:
+    push: false
+deploy:
+  kubectl:
+    manifests:
+    - k8s/service.yaml
+endef
+export SFD_CONFIG_CONTENT
+
 _sfd_create_config:
 	@$(INFO) '$(SFD_UI_LABEL)Creating config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
-	# $(_SFD_CREATE_CONFIG_|)$(SKAFFOLD)
+	mkdir -p $(SFD_CONFIG_DIRPATH) && echo "$${SFD_CONFIG_CONTENT}" >> $(SFD_CONFIG_FILENAME)
 
 _sfd_delete_config:
 	@$(INFO) '$(SFD_UI_LABEL)Deleting config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
 	$(_SFD_DELETE_CONFIG_|)rm -rf $(SFD_CONFIG_FILEPATH)
-
-_sfd_edit_config:
-	@$(INFO) '$(SFD_UI_LABEL)Deleting config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
-	$(_SFD_EDIT_CONFIG_|)$(EDITOR) $(SFD_CONFIG_FILEPATH)
 
 _sfd_list_configs:
 	@$(INFO) '$(SFD_UI_LABEL)Listing ALL configs ...'; $(NORMAL)
@@ -105,3 +117,7 @@ _sfd_show_config_content:
 _sfd_show_config_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
 	$(_SFD_SHOW_CONFIG_DESCRIPTION_|)ls -al $(SFD_CONFIG_FILEPATH)
+
+_sfd_write_config:
+	@$(INFO) '$(SFD_UI_LABEL)Writing config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
+	$(_SFD_WRITE_CONFIG_|)$(WRITER) $(SFD_CONFIG_FILEPATH)
