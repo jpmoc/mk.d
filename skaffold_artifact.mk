@@ -20,27 +20,27 @@ SFD_ARTIFACTS_PROFILE_NAME?= $(SFD_PROFILE_NAME)
 SFD_ARTIFACTS_REPOSITORY_NAME?= $(SFD_REPOSITORY_NAME)
 SFD_ARTIFACTS_SET_NAME?= artifacts@$(SFD_ARTIFACTS_CONFIG_NAME)
 
-# Option parameters
+# Options
 __SFD_FILENAME__ARTIFACTS= $(if $(SFD_ARTIFACTS_CONFIG_FILEPATH),--filename $(SFD_ARTIFACTS_CONFIG_FILEPATH))
 __SFD_DEFAULT_REPO__ARTIFACTS= $(if $(SFD_ARTIFACTS_REPOSITORY_NAME),--default-repo $(SFD_ARTIFACTS_REPOSITORY_NAME))
 __SFD_PROFILE__ARTIFACTS= $(if $(SFD_ARTIFACTS_PROFILE_NAME),--profile $(SFD_ARTIFACTS_PROFILE_NAME))
 
-# UI & pipe parameters
+# Customizations
 _SFD_CREATE_ARTIFACTS_|?= cd $(SFD_ARTIFACTS_APPLICATION_DIRPATH) && #
 _SFD_DELETE_ARTIFACTS_|?= $(_SFD_CREATE_ARTIFACTS_|)
 |_SFD_CREATE_ARTIFACTS?= # > build_result.json
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_sfd_view_framework_macros ::
+_sfd_list_macros ::
 	@#echo 'SkaFfolD::Artifact ($(_SKAFFOLD_ARTIFACT_MK_VERSION)) macros:'
 	@#echo
 
-_sfd_view_framework_parameters ::
+_sfd_list_parameters ::
 	@echo 'SkaFfolD::Artifact ($(_SKAFFOLD_ARTIFACT_MK_VERSION)) parameters:'
 	@echo '    SFD_ARTIFACT_NAME=$(SFD_ARTIFACT_NAME)'
 	@echo '    SFD_ARTIFACTS_APPLICATION_DIRPATH=$(SFD_ARTIFACTS_APPLICATION_DIRPATH)'
@@ -53,14 +53,14 @@ _sfd_view_framework_parameters ::
 	@echo '    SFD_ARTIFACTS_SET_NAME=$(SFD_ARTIFACTS_SET_NAME)'
 	@echo
 
-_sfd_view_framework_targets ::
+_sfd_list_targets ::
 	@echo 'SkaFfolD::Artifact ($(_SKAFFOLD_ARTIFACT_MK_VERSION)) targets:'
 	@echo '    _sfd_create_artifacts               - Create one-or-more artifacts'
 	@echo '    _sfd_delete_artifacts               - Delete one-or-more artifacts'
+	@echo '    _sfd_list_artifacts                 - List artifacts'
+	@echo '    _sfd_list_artifacts_set             - List set of artifacts'
 	@echo '    _sfd_show_artifact                  - Show everything related to an artifact'
 	@echo '    _sfd_show_artifact_description      - Show the description of an artifact'
-	@echo '    _sfd_view_artifacts                 - View artifacts'
-	@echo '    _sfd_view_artifacts_set             - View set of artifacts'
 	@echo
 
 #-----------------------------------------------------------------------
@@ -85,16 +85,17 @@ _sfd_delete_artifacts:
 	@$(INFO) '$(SFD_UI_LABEL)Deleting one-or-more artifacts ...'; $(NORMAL)
 	# $(SKAFFOLD) delete
 
-_sfd_show_artifact :: _sfd_show_artifact_description
+_sfd_list_artifacts:
+	@$(INFO) '$(SFD_UI_LABEL)Listing ALL artifacts ...'; $(NORMAL)
+	# $(SKAFFOLD)
+
+_sfd_list_artifacts_set:
+	@$(INFO) '$(SFD_UI_LABEL)Listing artifacts-set "$(SFD_ARTIFACTS_SET_NAME)" ...'; $(NORMAL)
+	# $(SKAFFOLD)
+
+_SFD_SHOW_ARTIFACT_TARGETS?= _sfd_show_artifact_description
+_sfd_show_artifact: $(_SFD_SHOW_ARTIFACT_TARGETS)
 
 _sfd_show_artifact_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of artifact "$(SFD_ARTIFACT_NAME)" ...'; $(NORMAL)
-	# $(SKAFFOLD)
-
-_sfd_view_artifacts:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing artifacts ...'; $(NORMAL)
-	# $(SKAFFOLD)
-
-_sfd_view_artifacts_set:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing artifacts-set "$(SFD_ARTIFACTS_SET_NAME)" ...'; $(NORMAL)
 	# $(SKAFFOLD)

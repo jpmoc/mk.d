@@ -13,21 +13,21 @@ SFD_USERCONFIG_NAME?= $(SFD_USERCONFIG_FILENAME)
 SFD_USERCONFIGS_DIRPATH?= $(SFD_USERCONFIG_DIRPATH)
 SFD_USERCONFIGS_SET_NAME?= user-configs@$(SFD_USERCONFIGS_DIRPATH)
 
-# Option parameters
+# Options
 
-# UI & Pipe parameters
+# Customizations
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_sfd_view_framework_macros ::
+_sfd_list_macros ::
 	@#echo 'SkaFfolD::UserConfig ($(_SKAFFOLD_USERCONFIG_MK_VERSION)) macros:'
 	@#echo
 
-_sfd_view_framework_parameters ::
+_sfd_list_parameters ::
 	@echo 'SkaFfolD::UserConfig ($(_SKAFFOLD_USERCONFIG_MK_VERSION)) parameters:'
 	@echo '    SFD_USERCONFIG_DIRPATH=$(SFD_USERCONFIG_DIRPATH)'
 	@echo '    SFD_USERCONFIG_FILENAME=$(SFD_USERCONFIG_FILENAME)'
@@ -37,16 +37,16 @@ _sfd_view_framework_parameters ::
 	@echo '    SFD_USERCONFIGS_SET_NAME=$(SFD_USERCONFIGS_SET_NAME)'
 	@echo
 
-_sfd_view_framework_targets ::
+_sfd_list_targets ::
 	@echo 'SkaFfolD::UserConfig ($(_SKAFFOLD_USERCONFIG_MK_VERSION)) targets:'
 	@echo '    _sfd_create_userconfig             - Create a user-config'
 	@echo '    _sfd_delete_userconfig             - Delete an existing user-config'
 	@echo '    _sfd_edit_userconfig               - Edit a existing user-config'
+	@echo '    _sfd_list_userconfigs              - List ALL user-configs'
+	@echo '    _sfd_list_userconfigs_set          - List set of user-configs'
 	@echo '    _sfd_show_userconfig               - Show everything related to a user-config'
 	@echo '    _sfd_show_userconfig_content       - Show the content of a user-config'
 	@echo '    _sfd_show_userconfig_description   - Show the description of a user-config'
-	@echo '    _sfd_view_userconfigs              - View ALL user-configs'
-	@echo '    _sfd_view_userconfigs_set          - View set of user-configs'
 	@echo
 
 #-----------------------------------------------------------------------
@@ -80,10 +80,10 @@ _sfd_show_userconfig_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of user-config "$(SFD_USERCONFIG_NAME)" ...'; $(NORMAL)
 	ls -al $(SFD_USERCONFIG_FILEPATH)
 
-_sfd_view_userconfigs:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing ALL user-configs ...'; $(NORMAL)
-	# $(_SFD_VIEW_USERCONFIGS_|)
+_sfd_list_userconfigs:
+	@$(INFO) '$(SFD_UI_LABEL)Listing ALL user-configs ...'; $(NORMAL)
+	# $(_SFD_LIST_USERCONFIGS_|)
 
-_sfd_view_userconfigs_set:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing user-configs-set "$(SFD_USERCONFIGS_SET_NAME)" ...'; $(NORMAL)
-	# $(_SFD_VIEW_USERCONFIGS_SET_|)
+_sfd_list_userconfigs_set:
+	@$(INFO) '$(SFD_UI_LABEL)Listing user-configs-set "$(SFD_USERCONFIGS_SET_NAME)" ...'; $(NORMAL)
+	# $(_SFD_LIST_USERCONFIGS_SET_|)

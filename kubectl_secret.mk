@@ -99,6 +99,7 @@ _KCL_PATCH_SECRET_|?= #
 _KCL_UNAPPLY_SECRETS_|?= $(_KCL_APPLY_SECRETS_|)
 |_KCL_CREATE_SECRET?= # --dry-run -o yaml | kubectl apply -f -
 |_KCL_KUSTOMIZE_SECRET?= #
+|_KCL_SHOW_SECRET_DATA?= ; echo
 |_KCL_SHOW_SECRET_TYPE?= ; echo
 |_KCL_PATCH_SECRET?= #
 

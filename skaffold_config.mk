@@ -17,32 +17,32 @@ SFD_CONFIG_NAME?= $(if $(SFD_CONFIG_APPLICATION_NAME),$(SFD_CONFIG_APPLICATION_N
 SFD_CONFIGS_APPLICATIONS_DIRPATH?= $(SFD_APPLICATIONS_DIRPATH)
 SFD_CONFIGS_SET_NAME?= configs@$(SFD_APPLICATIONS_DIRPATH)
 
-# Option parameters
+# Options
 __SFD_FILENAME__CONFIG= $(if $(SFD_CONFIG_FILEPATH),--filename $(SFD_CONFIG_FILEPATH))
 
-# UI & Pipe parameters
+# Customizations
 _SFD_CREATE_CONFIG_|?= $(_SFD_SHOW_CONFIG_|)
 _SFD_DELETE_CONFIG_|?= $(_SFD_CREATE_CONFIG_|)
 _SFD_EDIT_CONFIG_|?= $(_SFD_CREATE_CONFIG_|)
+_SFD_LIST_CONFIGS_|?= cd $(SFD_CONFIGS_APPLICATIONS_DIRPATH) &&
+_SFD_LIST_CONFIGS_SET_|?= $(_SFD_LIST_CONFIGS_|)
+|_SFD_LIST_CONFIGS?=
+|_SFD_LIST_CONFIGS_SET?=
 _SFD_SHOW_CONFIG_|?= cd $(SFD_CONFIG_APPLICATION_DIRPATH) && #
 _SFD_SHOW_CONFIG_CONTENT_|?= $(_SFD_SHOW_CONFIG_|)
 _SFD_SHOW_CONFIG_DESCRIPTION_|?= $(_SFD_SHOW_CONFIG_|)
-_SFD_VIEW_CONFIGS_|?= cd $(SFD_CONFIGS_APPLICATIONS_DIRPATH) &&
-_SFD_VIEW_CONFIGS_SET_|?= $(_SFD_VIEW_CONFIGS_|)
-|_SFD_VIEW_CONFIGS?=
-|_SFD_VIEW_CONFIGS_SET?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_sfd_view_framework_macros ::
+_sfd_list_macros ::
 	@#echo 'SkaFfolD::Config ($(_SKAFFOLD_CONFIG_MK_VERSION)) macros:'
 	@#echo
 
-_sfd_view_framework_parameters ::
+_sfd_list_parameters ::
 	@echo 'SkaFfolD::Config ($(_SKAFFOLD_CONFIG_MK_VERSION)) parameters:'
 	@echo '    SFD_CONFIG_APPLICATION_DIRPATH=$(SFD_CONFIG_APPLICATION_DIRPATH)'
 	@echo '    SFD_CONFIG_APPLICATION_NAME=$(SFD_CONFIG_APPLICATION_NAME)'
@@ -54,16 +54,16 @@ _sfd_view_framework_parameters ::
 	@echo '    SFD_CONFIGS_SET_NAME=$(SFD_CONFIGS_SET_NAME)'
 	@echo
 
-_sfd_view_framework_targets ::
+_sfd_list_targets ::
 	@echo 'SkaFfolD::Config ($(_SKAFFOLD_CONFIG_MK_VERSION)) targets:'
 	@echo '    _sfd_create_config             - Create a config'
 	@echo '    _sfd_delete_config             - Delete an existing config'
 	@echo '    _sfd_edit_config               - Edit a existing config'
+	@echo '    _sfd_list_configs              - List all configs'
+	@echo '    _sfd_list_configs_set          - List set of configs'
 	@echo '    _sfd_show_config               - Show everything related to a config'
 	@echo '    _sfd_show_config_content       - Show the content of a config'
 	@echo '    _sfd_show_config_description   - Show the description of a config'
-	@echo '    _sfd_view_configs              - View ALL configs'
-	@echo '    _sfd_view_configs_set          - View set of configs'
 	@echo
 
 #-----------------------------------------------------------------------
@@ -87,7 +87,16 @@ _sfd_edit_config:
 	@$(INFO) '$(SFD_UI_LABEL)Deleting config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
 	$(_SFD_EDIT_CONFIG_|)$(EDITOR) $(SFD_CONFIG_FILEPATH)
 
-_sfd_show_config :: _sfd_show_config_content _sfd_show_config_description
+_sfd_list_configs:
+	@$(INFO) '$(SFD_UI_LABEL)Listing ALL configs ...'; $(NORMAL)
+	# $(_SFD_LIST_CONFIGS_|)
+
+_sfd_list_configs_set:
+	@$(INFO) '$(SFD_UI_LABEL)Listing configs-set "$(SFD_CONFIGS_SET_NAME)" ...'; $(NORMAL)
+	# $(_SFD_LIST_CONFIGS_SET_|)
+
+_SFD_SHOW_CONFIG_TARGETS?= _sfd_show_config_content _sfd_show_config_description
+_sfd_show_config: $(_SFD_SHOW_CONFIG_TARGETS)
 
 _sfd_show_config_content:
 	@$(INFO) '$(SFD_UI_LABEL)Showing content of config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
@@ -96,11 +105,3 @@ _sfd_show_config_content:
 _sfd_show_config_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of config "$(SFD_CONFIG_NAME)" ...'; $(NORMAL)
 	$(_SFD_SHOW_CONFIG_DESCRIPTION_|)ls -al $(SFD_CONFIG_FILEPATH)
-
-_sfd_view_configs:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing ALL configs ...'; $(NORMAL)
-	# $(_SFD_VIEW_CONFIGS_|)
-
-_sfd_view_configs_set:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing configs-set "$(SFD_CONFIGS_SET_NAME)" ...'; $(NORMAL)
-	# $(_SFD_VIEW_CONFIGS_SET_|)

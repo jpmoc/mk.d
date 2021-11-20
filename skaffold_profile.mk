@@ -24,34 +24,34 @@ SFD_PROFILES_CONFIG_FILEPATH?= $(SFD_PROFILE_CONFIG_FILEPATH)
 SFD_PROFILES_CONFIG_NAME?= $(SFD_PROFILE_CONFIG_NAME)
 SFD_PROFILES_SET_NAME?= profiles@$(SFD_PROFILES_CONFIG_NAME)
 
-# Option parameters
+# Options
 __SFD_FILENAME__PROFILE= $(if $(SFD_PROFILE_CONFIG_FILEPATH),--filename $(SFD_PROFILE_CONFIG_FILEPATH))
 __SFD_PROFILE= $(if $(SFD_PROFILE_NAME),--profile $(SFD_PROFILE_NAME))
 
-# UI & Pipe parameters
-SFD_UI_VIEW_PROFILES_SET_QUERYFILTER?=
+# Customizations
 _SFD_CREATE_PROFILE_|?= $(_SFD_SHOW_PROFILE_|)
 _SFD_DELETE_PROFILE_|?= $(_SFD_CREATE_PROFILE_|)
 _SFD_EDIT_PROFILE_|?= $(_SFD_CREATE_PROFILE_|)
+_SFD_LIST_PROFILES_SET_QUERYFILTER?=
+_SFD_LIST_PROFILES_|?= cd $(SFD_PROFILES_APPLICATION_DIRPATH) && #
+_SFD_LIST_PROFILES_SET_|?= $(_SFD_LIST_PROFILES_|)
+|_SFD_LIST_PROFILES?=
+|_SFD_LIST_PROFILES_SET?=
 _SFD_SHOW_PROFILE_|?= cd $(SFD_PROFILE_APPLICATION_DIRPATH) && #
 _SFD_SHOW_PROFILE_CONFIG_|?= $(_SFD_SHOW_PROFILE_|)
 _SFD_SHOW_PROFILE_DESCRIPTION_|?= $(_SFD_SHOW_PROFILE_|)
-_SFD_VIEW_PROFILES_|?= cd $(SFD_PROFILES_APPLICATION_DIRPATH) && #
-_SFD_VIEW_PROFILES_SET_|?= $(_SFD_VIEW_PROFILES_|)
-|_SFD_VIEW_PROFILES?=
-|_SFD_VIEW_PROFILES_SET?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_sfd_view_framework_macros ::
+_sfd_list_macros ::
 	@#echo 'SkaFfolD::Profile ($(_SKAFFOLD_PROFILE_MK_VERSION)) macros:'
 	@#echo
 
-_sfd_view_framework_parameters ::
+_sfd_list_parameters ::
 	@echo 'SkaFfolD::Profile ($(_SKAFFOLD_PROFILE_MK_VERSION)) parameters:'
 	@echo '    SFD_PROFILE_APPLICATION_DIRPATH=$(SFD_PROFILE_APPLICATION_DIRPATH)'
 	@echo '    SFD_PROFILE_CONFIG_DIRPATH=$(SFD_PROFILE_CONFIG_DIRPATH)'
@@ -65,15 +65,15 @@ _sfd_view_framework_parameters ::
 	@echo '    SFD_PROFILES_SET_NAME=$(SFD_PROFILES_SET_NAME)'
 	@echo
 
-_sfd_view_framework_targets ::
+_sfd_list_targets ::
 	@echo 'SkaFfolD::Profile ($(_SKAFFOLD_PROFILE_MK_VERSION)) targets:'
 	@echo '    _sfd_create_profile             - Create a profile'
 	@echo '    _sfd_delete_profile             - Delete an existing profile'
+	@echo '    _sfd_list_profiles              - List all profiles'
+	@echo '    _sfd_list_profiles_set          - List a set of profiles'
 	@echo '    _sfd_show_profile               - Show everything related to a profile'
 	@echo '    _sfd_show_profile_config        - Show the config of a profile'
 	@echo '    _sfd_show_profile_description   - Show the description of a profile'
-	@echo '    _sfd_view_profiles              - View ALL profiles'
-	@echo '    _sfd_view_profiles_set          - View a set of profiles'
 	@#echo '    _sfd_watch_profiles             - Watch ALL profiles'
 	@#echo '    _sfd_watch_profiles_set         - Watch a set of profiles'
 	@echo
@@ -95,7 +95,17 @@ _sfd_delete_profile:
 	@$(INFO) '$(SFD_UI_LABEL)Deleting profile "$(SFD_PROFILE_NAME)" ...'; $(NORMAL)
 	# $(_SFD_DELETE_PROFILE_|)
 
-_sfd_show_profile :: _sfd_show_profile_config _sfd_show_profile_description
+_sfd_list_profiles:
+	@$(INFO) '$(SFD_UI_LABEL)Listing ALL profiles ...'; $(NORMAL)
+	$(_SFD_LIST_PROFILES_|)yq eval '.profiles' $(SFD_PROFILES_CONFIG_FILEPATH)
+
+_sfd_list_profiles_set:
+	@$(INFO) '$(SFD_UI_LABEL)Listing profiles-set "$(SFD_PROFILES_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Profiles are grouped based on the provided config-file and query-filter''; $(NORMAL)'
+	$(_SFD_LIST_PROFILES_SET_|)yq eval '.profiles[$(_SFD_LIST_PROFILES_SET_QUERYFILTER)]' $(SFD_PROFILES_CONFIG_FILEPATH)
+
+_SFD_SHOW_PROFILE_TARGETS?= _sfd_show_profile_config _sfd_show_profile_description
+_sfd_show_profile: $(_SFD_SHOW_PROFILE_TARGETS)
 
 _sfd_show_profile_config:
 	@$(INFO) '$(SFD_UI_LABEL)Showing config of profile "$(SFD_PROFILE_NAME)" ...'; $(NORMAL)
@@ -104,12 +114,3 @@ _sfd_show_profile_config:
 _sfd_show_profile_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of profile "$(SFD_PROFILE_NAME)" ...'; $(NORMAL)
 	# $(_SFD_SHOW_PROFILE_DESCRIPTION_|)yq eval '.profiles' $(SFD_PROFILE_CONFIG_FILEPATH)
-
-_sfd_view_profiles:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing ALL profiles ...'; $(NORMAL)
-	$(_SFD_VIEW_PROFILES_|)yq eval '.profiles' $(SFD_PROFILES_CONFIG_FILEPATH)
-
-_sfd_view_profiles_set:
-	@$(INFO) '$(SFD_UI_LABEL)Viewing profiles-set "$(SFD_PROFILES_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Profiles are grouped based on the provided config-file and query-filter''; $(NORMAL)'
-	$(_SFD_VIEW_PROFILES_SET_|)yq eval '.profiles[$(SFD_UI_VIEW_PROFILES_SET_QUERYFILTER)]' $(SFD_PROFILES_CONFIG_FILEPATH)
