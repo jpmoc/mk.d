@@ -7,6 +7,7 @@ _MAVEN_ARTIFACT_MK_VERSION= $(_MAVEN_MK_VERSION)
 # MVN_ARTIFACT_NAME?= artifact-0.0.1-SNAPSHOT
 # MVN_ARTIFACT_PROJECT_NAME?= project
 MVN_ARTIFACT_TYPE?= jar
+# MVN_ARTIFACT_URL?= http://localhost:8080/my/path
 MVN_ARTIFACT_VERSION?= 0.0.1-SNAPSHOT
 # MVN_ARTIFACTS_DIRPATH?= ./target/
 # MVN_ARTIFACTS_PROJECT_DIRPATH?= ./
@@ -49,6 +50,7 @@ _mvn_list_parameters ::
 	@echo '    MVN_ARTIFACT_FILEPATH=$(MVN_ARTIFACT_FILEPATH)'
 	@echo '    MVN_ARTIFACT_NAME=$(MVN_ARTIFACT_NAME)'
 	@echo '    MVN_ARTIFACT_PROJECT_NAME=$(MVN_ARTIFACT_PROJECT_NAME)'
+	@echo '    MVN_ARTIFACT_URL=$(MVN_ARTIFACT_URL)'
 	@echo '    MVN_ARTIFACT_VERSION=$(MVN_ARTIFACT_VERSION)'
 	@echo '    MVN_ARTIFACTS_DIRPATH=$(MVN_ARTIFACTS_DIRPATH)'
 	@echo '    MVN_ARTIFACTS_PROJECT_DIRPATH=$(MVN_ARTIFACTS_PROJECT_DIRPATH)'
@@ -83,6 +85,11 @@ _mvn_build_artifacts:
 	@$(INFO) '$(MVN_UI_LABEL)Buildings one-or-more artifacts ...'; $(NORMAL)
 	@$(WARN) 'This operation first download missing dependencies from maven central in the local repository'; $(NORMAL)
 	$(MVN) clean package
+
+_mvn_curl_artifact:
+	@$(INFO) '$(MVN_UI_LABEL)Curl-ing artifact "$(MVN_ARTIFACT_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation fails if the artifact is not already running!'; $(NORMAL)
+	curl $(MVN_ARTIFACT_URL)
 
 _mvn_delete_artifact: _mvn_delete_artifacts
 _mvn_delete_artifacts: 
