@@ -99,6 +99,7 @@ _KCL_PATCH_SECRET_|?= #
 _KCL_UNAPPLY_SECRETS_|?= $(_KCL_APPLY_SECRETS_|)
 |_KCL_CREATE_SECRET?= # --dry-run -o yaml | kubectl apply -f -
 |_KCL_KUSTOMIZE_SECRET?= #
+|_KCL_SHOW_SECRET_TYPE?= ; echo
 |_KCL_PATCH_SECRET?= #
 
 # Macros
@@ -320,7 +321,7 @@ _kcl_show_secret_data:
 	@$(WARN) 'If the secret-type is generic/Opaque, the values in the returned key-value pairs are base64-encoded'; $(NORMAL)
 	@$(WARN) 'If the secret-type is service-account, the certificate of authority (ca-cert) and JWT (token) are base64-encoded'; $(NORMAL)
 	@$(WARN) 'If the secret-type is tls, the certificate (tls.crt), pairing private-key (tls.key), and optional CA (ca.crt) are base64-encoded'; $(NORMAL)
-	$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath='{.data}'
+	$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath='{.data}' $(|_KCL_SHOW_SECRET_DATA)
 
 _kcl_show_secret_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
@@ -340,21 +341,21 @@ _kcl_show_secret_type:
 	@$(INFO) '$(KCL_UI_LABEL)Showing content of secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'KCL_SECRET_TYPE=$(KCL_SECRET_TYPE)'; $(NORMAL)
 	$(if $(filter docker-registry, $(KCL_SECRET_TYPE)), \
-		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath='{.data.\.dockerconfigjson}' | base64 --decode \
+		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath='{.data.\.dockerconfigjson}' | base64 --decode $(|_KCL_SHOW_SECRET_TYPE) \
 	)
 	$(if $(filter generic, $(KCL_SECRET_TYPE)), \
 		$(foreach K, $(KCL_SECRET_KEYS), \
-			$(KUBECTL) get secret $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath='{.data.$(K)}' | base64 --decode \
+			$(KUBECTL) get secret $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath='{.data.$(K)}' | base64 --decode $(|_KCL_SHOW_SECRET_TYPE) \
 		) \
 	)
 	$(if $(filter tls, $(KCL_SECRET_TYPE)), \
-		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['ca\.crt']}" | base64 --decode | openssl x509 -text 2>/dev/null; echo;\
+		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['ca\.crt']}" | base64 --decode | openssl x509 -text 2>/dev/null $(|_KCL_SHOW_SECRET_TYPE) \
 	)
 	$(if $(filter tls, $(KCL_SECRET_TYPE)), \
-		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['tls\.crt']}" | base64 --decode | openssl x509 -text; echo;\
+		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['tls\.crt']}" | base64 --decode | openssl x509 -text $(|_KCL_SHOW_SECRET_TYPE) \
 	)
 	$(if $(filter tls, $(KCL_SECRET_TYPE)), \
-		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['tls\.key']}" | base64 --decode | head -3; echo '...'\
+		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output jsonpath="{.data['tls\.key']}" | base64 --decode | head -3; echo '...' $(|_KCL_SHOW_SECRET_TYPE) \
 	)
 
 _kcl_unannotate_secret:
