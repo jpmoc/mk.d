@@ -8,14 +8,13 @@ GPG_UI_LABEL?=[gpg] #
 
 # Customizations
 
-#--- Utilities
+# Macros
 
+# Utilities
 # __GPG_ENVIRONMENT+=
 # __GPG_OPTIONS+= $(if $(filter true, $(GPG_DEBUG)), --debug)
 GPG_BIN?= gpg
 GPG?= $(strip $(__GPG_ENVIRONMENT) $(GPG_ENVIRONMENT) $(GPG_BIN) $(__GPG_OPTIONS) $(GPG_OPTIONS))
-
-#--- Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -45,8 +44,8 @@ _gpg_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/gpg_file.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)gpg_file.mk
 
 
 #----------------------------------------------------------------------

@@ -140,66 +140,66 @@ _kcl_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/kubectl_api.mk
--include $(MK_DIR)/kubectl_certificatesigningrequest.mk
--include $(MK_DIR)/kubectl_certificate.mk
--include $(MK_DIR)/kubectl_cluster.mk
--include $(MK_DIR)/kubectl_clusterrole.mk
--include $(MK_DIR)/kubectl_clusterrolebinding.mk
--include $(MK_DIR)/kubectl_configmap.mk
--include $(MK_DIR)/kubectl_context.mk
--include $(MK_DIR)/kubectl_cronjob.mk
--include $(MK_DIR)/kubectl_customresourcedefinition.mk
--include $(MK_DIR)/kubectl_daemonset.mk
--include $(MK_DIR)/kubectl_deployment.mk
--include $(MK_DIR)/kubectl_endpoint.mk
--include $(MK_DIR)/kubectl_event.mk
--include $(MK_DIR)/kubectl_horizontalpodautoscaler.mk
--include $(MK_DIR)/kubectl_ingress.mk
--include $(MK_DIR)/kubectl_job.mk
--include $(MK_DIR)/kubectl_kubeconfig.mk
--include $(MK_DIR)/kubectl_kubesystem.mk
--include $(MK_DIR)/kubectl_kustomization.mk
--include $(MK_DIR)/kubectl_limitrange.mk
--include $(MK_DIR)/kubectl_manifest.mk
--include $(MK_DIR)/kubectl_mutatingwebhookconfiguration.mk
--include $(MK_DIR)/kubectl_namespace.mk
--include $(MK_DIR)/kubectl_networkpolicy.mk
--include $(MK_DIR)/kubectl_node.mk
--include $(MK_DIR)/kubectl_persistentvolume.mk
--include $(MK_DIR)/kubectl_persistentvolumeclaim.mk
--include $(MK_DIR)/kubectl_pod.mk
--include $(MK_DIR)/kubectl_poddisruptionbudget.mk
--include $(MK_DIR)/kubectl_podsecuritypolicy.mk
--include $(MK_DIR)/kubectl_priorityclass.mk
--include $(MK_DIR)/kubectl_quota.mk
--include $(MK_DIR)/kubectl_replicaset.mk
--include $(MK_DIR)/kubectl_role.mk
--include $(MK_DIR)/kubectl_rolebinding.mk
--include $(MK_DIR)/kubectl_rollout.mk
--include $(MK_DIR)/kubectl_secret.mk
--include $(MK_DIR)/kubectl_service.mk
--include $(MK_DIR)/kubectl_serviceaccount.mk
--include $(MK_DIR)/kubectl_stack.mk #!?!?
--include $(MK_DIR)/kubectl_statefulset.mk
--include $(MK_DIR)/kubectl_storageclass.mk
--include $(MK_DIR)/kubectl_thirdpartyresource.mk
--include $(MK_DIR)/kubectl_user.mk
--include $(MK_DIR)/kubectl_validatingwebhookconfiguration.mk
--include $(MK_DIR)/kubectl_verticalpodautoscaler.mk
--include $(MK_DIR)/kubectl_volumesnapshot.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)kubectl_api.mk
+-include $(MK_DIRPATH)kubectl_certificatesigningrequest.mk
+-include $(MK_DIRPATH)kubectl_certificate.mk
+-include $(MK_DIRPATH)kubectl_cluster.mk
+-include $(MK_DIRPATH)kubectl_clusterrole.mk
+-include $(MK_DIRPATH)kubectl_clusterrolebinding.mk
+-include $(MK_DIRPATH)kubectl_configmap.mk
+-include $(MK_DIRPATH)kubectl_context.mk
+-include $(MK_DIRPATH)kubectl_cronjob.mk
+-include $(MK_DIRPATH)kubectl_customresourcedefinition.mk
+-include $(MK_DIRPATH)kubectl_daemonset.mk
+-include $(MK_DIRPATH)kubectl_deployment.mk
+-include $(MK_DIRPATH)kubectl_endpoint.mk
+-include $(MK_DIRPATH)kubectl_event.mk
+-include $(MK_DIRPATH)kubectl_horizontalpodautoscaler.mk
+-include $(MK_DIRPATH)kubectl_ingress.mk
+-include $(MK_DIRPATH)kubectl_job.mk
+-include $(MK_DIRPATH)kubectl_kubeconfig.mk
+-include $(MK_DIRPATH)kubectl_kubesystem.mk
+-include $(MK_DIRPATH)kubectl_kustomization.mk
+-include $(MK_DIRPATH)kubectl_limitrange.mk
+-include $(MK_DIRPATH)kubectl_manifest.mk
+-include $(MK_DIRPATH)kubectl_mutatingwebhookconfiguration.mk
+-include $(MK_DIRPATH)kubectl_namespace.mk
+-include $(MK_DIRPATH)kubectl_networkpolicy.mk
+-include $(MK_DIRPATH)kubectl_node.mk
+-include $(MK_DIRPATH)kubectl_persistentvolume.mk
+-include $(MK_DIRPATH)kubectl_persistentvolumeclaim.mk
+-include $(MK_DIRPATH)kubectl_pod.mk
+-include $(MK_DIRPATH)kubectl_poddisruptionbudget.mk
+-include $(MK_DIRPATH)kubectl_podsecuritypolicy.mk
+-include $(MK_DIRPATH)kubectl_priorityclass.mk
+-include $(MK_DIRPATH)kubectl_quota.mk
+-include $(MK_DIRPATH)kubectl_replicaset.mk
+-include $(MK_DIRPATH)kubectl_role.mk
+-include $(MK_DIRPATH)kubectl_rolebinding.mk
+-include $(MK_DIRPATH)kubectl_rollout.mk
+-include $(MK_DIRPATH)kubectl_secret.mk
+-include $(MK_DIRPATH)kubectl_service.mk
+-include $(MK_DIRPATH)kubectl_serviceaccount.mk
+-include $(MK_DIRPATH)kubectl_stack.mk #!?!?
+-include $(MK_DIRPATH)kubectl_statefulset.mk
+-include $(MK_DIRPATH)kubectl_storageclass.mk
+-include $(MK_DIRPATH)kubectl_thirdpartyresource.mk
+-include $(MK_DIRPATH)kubectl_user.mk
+-include $(MK_DIRPATH)kubectl_validatingwebhookconfiguration.mk
+-include $(MK_DIRPATH)kubectl_verticalpodautoscaler.mk
+-include $(MK_DIRPATH)kubectl_volumesnapshot.mk
 
 # Plugins
--include $(MK_DIR)/kubectl_sniff.mk
+-include $(MK_DIRPATH)kubectl_sniff.mk
 
 # Utilities
--include $(MK_DIR)/kubectl_dnsclient.mk
+-include $(MK_DIRPATH)kubectl_dnsclient.mk
 
 # CRDS
--include $(MK_DIR)/kubectl_azureassignedidentity.mk
--include $(MK_DIR)/kubectl_azureidentity.mk
--include $(MK_DIR)/kubectl_azureidentitybinding.mk
+-include $(MK_DIRPATH)kubectl_azureassignedidentity.mk
+-include $(MK_DIRPATH)kubectl_azureidentity.mk
+-include $(MK_DIRPATH)kubectl_azureidentitybinding.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

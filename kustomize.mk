@@ -12,13 +12,13 @@ KZE_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
 
 # Customizations
 
-#--- Utilities
+# Macros
+
+# Utilities
 # __KUSTOMIZE_OPTIONS+= $(if $(KUSTOMIZE_VMODULE),--vmodule=$(KUSTOMIZE_VMODULE))#
 
 KUSTOMIZE_BIN?= kustomize
 KUSTOMIZE?= $(strip $(__KUSTOMIZE_ENVIRONMENT) $(KUSTOMIZE_ENVIRONMENT) $(KUSTOMIZE_BIN) $(__KUSTOMIZE_OPTIONS) $(KUSTOMIZE_OPTIONS))
-
-#--- MACROS
 
 #----------------------------------------------------------------------
 # USAGE
@@ -49,11 +49,11 @@ _kze_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/kustomize_kustomization.mk
--include $(MK_DIR)/kustomize_manifest.mk
--include $(MK_DIR)/kustomize_patch.mk
--include $(MK_DIR)/kustomize_resource.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)kustomize_kustomization.mk
+-include $(MK_DIRPATH)kustomize_manifest.mk
+-include $(MK_DIRPATH)kustomize_patch.mk
+-include $(MK_DIRPATH)kustomize_resource.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

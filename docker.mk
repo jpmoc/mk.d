@@ -91,15 +91,15 @@ _dkr_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?=.
--include $(MK_DIR)/docker_container.mk
--include $(MK_DIR)/docker_context.mk
--include $(MK_DIR)/docker_daemon.mk
--include $(MK_DIR)/docker_image.mk
--include $(MK_DIR)/docker_network.mk
--include $(MK_DIR)/docker_repository.mk
--include $(MK_DIR)/docker_registry.mk
--include $(MK_DIR)/docker_registryconfig.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)docker_container.mk
+-include $(MK_DIRPATH)docker_context.mk
+-include $(MK_DIRPATH)docker_daemon.mk
+-include $(MK_DIRPATH)docker_image.mk
+-include $(MK_DIRPATH)docker_network.mk
+-include $(MK_DIRPATH)docker_repository.mk
+-include $(MK_DIRPATH)docker_registry.mk
+-include $(MK_DIRPATH)docker_registryconfig.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

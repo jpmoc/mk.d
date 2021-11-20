@@ -23,20 +23,17 @@ HLM_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
 
 # Customizations
 
-#--- Utilities
+# Macros
+_hlm_get_helm_home= $(shell $(HELM) home)
 
+# Utilities
 # __HELM_ENVIRONMENT+= $(if $(HLM_HOME),HELM_HOME=$(HLM_HOME))
-
 __HELM_OPTIONS+= $(if $(filter true, $(HELM_DEBUG)),--debug)
 # __HELM_OPTIONS+= $(if $(HELM_HOME),--home $(HELM_HOME))
 __HELM_OPTIONS+= $(if $(HELM_KUBECONFIG_CONTEXT),--kube-context $(HELM_KUBECONFIG_CONTEXT))
 __HELM_OPTIONS+= $(if $(HELM_KUBECONFIG_FILEPATH),--kubeconfig=$(HELM_KUBECONFIG_FILEPATH))
-
 HELM_BIN?= helm$(if $(HELM_VERSION),-$(HELM_VERSION))
 HELM?= $(strip $(__HELM_ENVIRONMENT) $(HELM_ENVIRONMENT) $(HELM_BIN) $(__HELM_OPTIONS) $(HELM_OPTIONS))
-
-#--- Macros
-_hlm_get_helm_home= $(shell $(HELM) home)
 
 #----------------------------------------------------------------------
 # USAGE
@@ -73,15 +70,15 @@ _hlm_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/helm_chart.mk
--include $(MK_DIR)/helm_chartdependency.mk
--include $(MK_DIR)/helm_chartpackage.mk
--include $(MK_DIR)/helm_chartsource.mk
--include $(MK_DIR)/helm_manifest.mk
--include $(MK_DIR)/helm_plugin.mk
--include $(MK_DIR)/helm_release.mk
--include $(MK_DIR)/helm_repository.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)helm_chart.mk
+-include $(MK_DIRPATH)helm_chartdependency.mk
+-include $(MK_DIRPATH)helm_chartpackage.mk
+-include $(MK_DIRPATH)helm_chartsource.mk
+-include $(MK_DIRPATH)helm_manifest.mk
+-include $(MK_DIRPATH)helm_plugin.mk
+-include $(MK_DIRPATH)helm_release.mk
+-include $(MK_DIRPATH)helm_repository.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
