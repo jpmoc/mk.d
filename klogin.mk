@@ -53,7 +53,7 @@ _kln_list_parameters ::
 _list_targets :: _kln_list_targets
 _kln_list_targets ::
 	@echo 'KLogiN ($(_KLN_MK_VERSION)) targets:'
-	@echo '    _kln_update_kubeconfig         - Update the kubeconfig'
+	@echo '    _kln_refresh_kubeconfig         - Refresh the kubeconfig'
 	@echo '    _kln_view_versions             - View versions of dependencies'
 	@echo 
 
@@ -65,9 +65,14 @@ _kln_list_targets ::
 # PUBLIC TARGETS
 #
 
-_kln_update_kubeconfig:
-	@$(INFO) '$(PCL_UI_LABEL)Updating kubeconfig to access "$(KLN_CLUSTER_NAME)" ...'; $(NORMAL)
+_kln_create_kubeconfig: _kln_refresh_kubeconfig
+
+_kln_refresh_kubeconfig:
+	@$(INFO) '$(PCL_UI_LABEL)Refreshing kubeconfig to access "$(KLN_CLUSTER_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation generates a kubeconfig valid for only 24h'; $(NORMAL)
 	$(KLOGIN) $(__KLN_APISERVICE) $(__KLN_KUBECONFIG) $(__KLN_PASSWORD) $(__KLN_USER)
+
+_kln_update_kubeconfig: _kln_refresh_kubeconfig
 
 _view_versions :: _kln_view_versions
 _kln_view_versions:
