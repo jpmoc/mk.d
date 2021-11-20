@@ -68,7 +68,7 @@ KCL_SECRET_NAMES?= $(KCL_SECRET_NAME)
 KCL_SECRET_PRIVATEKEY_DIRPATH?= $(KCL_INPUTS_DIRPATH)
 KCL_SECRET_PRIVATEKEY_FILEPATH?= $(KCL_SECRET_PRIVATEKEY_DIRPATH)$(KCL_SECRET_PRIVATEKEY_FILENAME)
 KCL_SECRETS_NAMESPACE_NAME?= $(KCL_SECRET_NAMESPACE_NAME)
-KCL_SECRETS_SET_NAME?= secrets@$(KCL_SECRETS_FIELDSELECTOR)@$(KCL_SECRETS_SELECTOR)@$(KCL_SECRETS_NAMESPACE_NAME)
+KCL_SECRETS_SET_NAME?= secrets@$(KCL_SECRETS_NAMESPACE_NAME)
 
 # Options
 __KCL_CERT__SECRET= $(if $(KCL_SECRET_CERTIFICATE_FILEPATH),--cert $(KCL_SECRET_CERTIFICATE_FILEPATH))
@@ -227,7 +227,9 @@ _kcl_apply_secrets:
 
 _kcl_create_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Creating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
-	$(if $(filter generic, $(KCL_SECRET_TYPE)), $(KUBECTL) create secret generic $(__KCL_FROM_FILE__SECRET) $(__KCL_FROM_LITERAL__SECRET) $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME))
+	$(if $(filter generic, $(KCL_SECRET_TYPE)), \
+		$(KUBECTL) create secret generic $(__KCL_FROM_FILE__SECRET) $(__KCL_FROM_LITERAL__SECRET) $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) \
+	)
 	$(if $(filter tls, $(KCL_SECRET_TYPE)), \
 		cat $(KCL_SECRET_CERTIFICATE_FILEPATH); echo; \
 		cat $(KCL_SECRET_PRIVATEKEY_FILEPATH) | head -3; echo; \
@@ -314,7 +316,8 @@ _kcl_show_secret: $(_KCL_SHOW_SECRET_TARGETS)
 _kcl_show_secret_data:
 	@$(INFO) '$(KCL_UI_LABEL)Showing data secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation displays base64 encoded values. To decode: echo "<value>" | base64 --decode'; $(NORMAL)
-	@$(WARN) 'If the secret-type is generic/Opaque one, the values in the returned key-value pairs are base64-encoded'; $(NORMAL)
+	@$(WARN) 'If the secret-type is docker-registry, the returned .dockerconfigjson is a base64-encoded configuration file'; $(NORMAL)
+	@$(WARN) 'If the secret-type is generic/Opaque, the values in the returned key-value pairs are base64-encoded'; $(NORMAL)
 	@$(WARN) 'If the secret-type is service-account, the certificate of authority (ca-cert) and JWT (token) are base64-encoded'; $(NORMAL)
 	@$(WARN) 'If the secret-type is tls, the certificate (tls.crt), pairing private-key (tls.key), and optional CA (ca.crt) are base64-encoded'; $(NORMAL)
 	$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output json | jq --monochrome-output '.data'
@@ -322,6 +325,7 @@ _kcl_show_secret_data:
 _kcl_show_secret_description:
 	@$(INFO) '$(KCL_UI_LABEL)Showing description of secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'To display the full content of the secret, get the yaml formatted output!'; $(NORMAL)
+	@$(WARN) 'If the secret-type is docker-registry, returned is a docker configuration file with username and registry credentials'; $(NORMAL) 
 	@$(WARN) 'If the secret-type is generic/Opaque, returned are the keys of the key-value pairs'; $(NORMAL) 
 	@$(WARN) 'If the secret-type is service-account, returned is a base64-DECODED JSON Web Token (JWT)'; $(NORMAL)
 	@$(WARN) 'If the secret-type is tls, returned is the length of the content of tls.crt, tls.key, and optional ca.crt'; $(NORMAL)
@@ -335,6 +339,9 @@ _kcl_show_secret_state:
 _kcl_show_secret_type:
 	@$(INFO) '$(KCL_UI_LABEL)Showing content of secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'KCL_SECRET_TYPE=$(KCL_SECRET_TYPE)'; $(NORMAL)
+	$(if $(filter docker-registry, $(KCL_SECRET_TYPE)), \
+		$(KUBECTL) get secret  $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output json | jq --monochrome-output -r '.data."dockerconfigjson"' | base64 --decode; \
+	)
 	$(if $(filter generic, $(KCL_SECRET_TYPE)), \
 		$(foreach K, $(KCL_SECRET_KEYS), \
 			$(KUBECTL) get secret $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) --output json | jq -r '.data.$(K)' | base64 --decode; \

@@ -16,7 +16,7 @@ KLN_USER?= $(KLN_USER_SID)@$(KLN_USER_ADDOMAIN_NAME)
 # Options
 __KLN_APISERVICE= $(if $(KLN_APISERVICE_URL),--apiservice $(KLN_APISERVICE_URL))
 __KLN_KUBECONFIG= $(if $(KLN_KUBECONFIG_FILEPATH),--kubeconfig $(KLN_KUBECONFIG_FILEPATH))
-__KLN_USER= $(if $(KLN_USER),--user $(PCL_USER))
+__KLN_USER= $(if $(KLN_USER),--user $(KLN_USER))
 
 # Customizations
 
