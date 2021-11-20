@@ -88,3 +88,4 @@ _view_versions :: _mvn_view_versions
 _mvn_view_versions ::
 	@$(INFO) '$(MVN_UI_LABEL)Viewing versions of dependencies ...'; $(NORMAL)
 	$(MVN) --version
+	xml --version

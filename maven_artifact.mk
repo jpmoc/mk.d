@@ -106,7 +106,7 @@ _mvn_list_artifacts_set:
 
 _mvn_run_artifact:
 	@$(INFO) '$(MVN_UI_LABEL)Running artifact "$(MVN_ARTIFACT_NAME)" ...'; $(NORMAL)
-	java -jar $(MVN_ARTIFACT_FILEPATH)
+	$(JAVA) -jar $(MVN_ARTIFACT_FILEPATH)
 
 _MVN_SHOW_ARTIFACT_TARGETS?= _mvn_show_artifact_dependencies _mvn_show_artificat_description
 _mvn_show_artifact: $(_MVN_SHOW_ARTIFACT_TARGETS)
