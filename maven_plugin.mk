@@ -11,7 +11,7 @@ MVN_PLUGINS_REGEX?= .*
 # Derived parameters
 
 # Options
-__MVN_DEFINE__PLUGIN= $(foreach KV, $(MVN_PLUGIN_PROPERTIES_KEYVALUES), -D $(KV))
+__MVN_DEFINE__PLUGIN= $(foreach KV, $(MVN_PLUGIN_PROPERTIES_KEYVALUES), -D$(KV))
 
 # Customizations
 
