@@ -26,7 +26,7 @@ __SFD_DEFAULT_REPO__ARTIFACTS= $(if $(SFD_ARTIFACTS_REPOSITORY_NAME),--default-r
 __SFD_PROFILE__ARTIFACTS= $(if $(SFD_ARTIFACTS_PROFILE_NAME),--profile $(SFD_ARTIFACTS_PROFILE_NAME))
 
 # Customizations
-_SFD_CREATE_ARTIFACTS_|?= cd $(SFD_ARTIFACTS_APPLICATION_DIRPATH) && #
+_SFD_CREATE_ARTIFACTS_|?= $(if $(SFD_ARTIFACTS_APPLICATION_DIRPATH),cd $(SFD_ARTIFACTS_APPLICATION_DIRPATH) && )#
 _SFD_DELETE_ARTIFACTS_|?= $(_SFD_CREATE_ARTIFACTS_|)
 |_SFD_CREATE_ARTIFACTS?= # > build_result.json
 
@@ -74,7 +74,7 @@ _sfd_list_targets ::
 
 _sfd_build_artifact: _sfd_build_artifacts
 _sfd_build_artifacts:
-	@$(INFO) '$(SFD_UI_LABEL)Creating one-or-more artifacts ...'; $(NORMAL)
+	@$(INFO) '$(SFD_UI_LABEL)Creating/Building one-or-more artifacts ...'; $(NORMAL)
 	@$(WARN) 'This operation normally pushes the images to a docker registry'; $(NORMAL)
 	@$(WARN) 'If using local-docker ascertain you are already logged in'; $(NORMAL)
 	@$(WARN) 'If using minikube-kaniko ascertain the registry-config does not use helper-commands not available in kaniko'; $(NORMAL)
