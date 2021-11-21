@@ -16,6 +16,7 @@ KCL_SECRET_CACERT_FILENAME?= ca.crt
 # KCL_SECRET_DOCKER_SERVER?= https://index.docker.io/v1/
 # KCL_SECRET_DOCKER_USERNAME?= malliot
 # KCL_SECRET_DOWNLOAD_DIRPATH?= ./
+# KCL_SECRET_DRYRUN_MODE?= client
 # KCL_SECRET_FIELD_JSONPATH?= .spec
 # KCL_SECRET_FILE_DIRPATH?= ./in/
 # KCL_SECRET_FILE_FILENAME?= secret.txt
@@ -29,6 +30,7 @@ KCL_SECRET_CACERT_FILENAME?= ca.crt
 # KCL_SECRET_LITERALS_KEYVALUES= username=devuser ...
 # KCL_SECRET_NAME?= my-secret
 # KCL_SECRET_NAMESPACE_NAME?= default
+# KCL_SECRET_OUTPUT_FORMAT?= yaml
 # KCL_SECRET_PATCH?= "$(cat patch.yaml)"
 # KCL_SECRET_PATCH_DIRPATH?= ./in/
 # KCL_SECRET_PATCH_FILENAME?= patch.yaml
@@ -76,6 +78,7 @@ __KCL_DOCKER_EMAIL= $(if $(KCL_SECRET_DOCKER_EMAIL),--docker-email $(KCL_SECRET_
 __KCL_DOCKER_SERVER= $(if $(KCL_SECRET_DOCKER_SERVER),--docker-server $(KCL_SECRET_DOCKER_SERVER))
 __KCL_DOCKER_PASSWORD= $(if $(KCL_SECRET_DOCKER_PASSWORD),--docker-password $(KCL_SECRET_DOCKER_PASSWORD))
 __KCL_DOCKER_USERNAME= $(if $(KCL_SECRET_DOCKER_USERNAME),--docker-username $(KCL_SECRET_DOCKER_USERNAME))
+__KCL_DRY_RUN__SECRET= $(if $(KCL_SECRET_DRYRUN_MODE),--dry-run=$(KCL_SECRET_DRYRUN_MODE))
 __KCL_FILENAME__SECRETS+= $(if $(KCL_SECRETS_MANIFEST_FILEPATH),--filename $(KCL_SECRETS_MANIFEST_FILEPATH))
 __KCL_FILENAME__SECRETS+= $(if $(filter true,$(KCL_SECRETS_MANIFEST_STDINFLAG)),--filename -)
 __KCL_FILENAME__SECRETS+= $(if $(KCL_SECRETS_MANIFEST_URL),--filename $(KCL_SECRETS_MANIFEST_URL))
@@ -111,7 +114,7 @@ _kcl_get_secret_cacert_N= $(call _kcl_get_secret_cacert_NN, $(1), $(KCL_SECRET_N
 _kcl_get_secret_cacert_NN= $(call _kcl_get_secret_cacert_NNF, $(1), $(2), $(KCL_SECRET_CACERT_FILEPATH))
 _kcl_get_secret_cacert_NNF= $(shell $(KUBECTL) get secret --namespace $(2) $(1) --output jsonpath="{.data['ca\.crt']}" | base64 --decode > $(3); echo "@$(strip $(3))")
 
-# Used with service-account's secretes
+# Used with service-account's secrets
 _kcl_get_secret_jwt= $(call _kcl_get_secret_jwt_N, $(KCL_SECRET_NAME))
 _kcl_get_secret_jwt_N= $(call _kcl_get_secret_jwt_NN, $(1), $(KCL_SECRET_NAMESPACE_NAME))
 _kcl_get_secret_jwt_NN= $(shell $(KUBECTL) get secret --namespace $(2) $(1) --output jsonpath="{.data.token}" | base64 --decode)
@@ -142,6 +145,7 @@ _kcl_list_parameters ::
 	@echo '    KCL_SECRET_DOCKER_SERVER=$(KCL_SECRET_DOCKER_SERVER)'
 	@echo '    KCL_SECRET_DOCKER_USERNAME=$(KCL_SECRET_DOCKER_USERNAME)'
 	@echo '    KCL_SECRET_DOWNLOAD_DIRPATH=$(KCL_SECRET_DOWNLOAD_DIRPATH)'
+	@echo '    KCL_SECRET_DRYRUN_MODE=$(KCL_SECRET_DRYRUN_MODE)'
 	@echo '    KCL_SECRET_FIELD_JSONPATH=$(KCL_SECRET_FIELD_JSONPATH)'
 	@echo '    KCL_SECRET_FILE_DIRPATH=$(KCL_SECRET_FILE_DIRPATH)'
 	@echo '    KCL_SECRET_FILE_FILENAME=$(KCL_SECRET_FILE_FILENAME)'
@@ -155,6 +159,7 @@ _kcl_list_parameters ::
 	@echo '    KCL_SECRET_JWT=$(KCL_SECRET_JWT)'
 	@echo '    KCL_SECRET_NAME=$(KCL_SECRET_NAME)'
 	@echo '    KCL_SECRET_NAMESPACE_NAME=$(KCL_SECRET_NAMESPACE_NAME)'
+	@echo '    KCL_SECRET_OUTPUT_FORMAT=$(KCL_SECRET_OUTPUT_FORMAT)'
 	@echo '    KCL_SECRET_PATCH=$(KCL_SECRET_PATCH)'
 	@echo '    KCL_SECRET_PATCH_DIRPATH=$(KCL_SECRET_PATCH_DIRPATH)'
 	@echo '    KCL_SECRET_PATCH_FILENAME=$(KCL_SECRET_PATCH_FILENAME)'
@@ -230,15 +235,15 @@ _kcl_apply_secrets:
 _kcl_create_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Creating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	$(if $(filter generic, $(KCL_SECRET_TYPE)), \
-		$(KUBECTL) create secret generic $(__KCL_FROM_FILE__SECRET) $(__KCL_FROM_LITERAL__SECRET) $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) \
+		$(KUBECTL) create secret generic $(__KCL_DRY_RUN__SECRET) $(__KCL_FROM_FILE__SECRET) $(__KCL_FROM_LITERAL__SECRET) $(__KCL_NAMESPACE__SECRET) $(__KCL_OUTPUT__SECRET) $(KCL_SECRET_NAME) $(|_KCL_CREATE_SECRET) \
 	)
 	$(if $(filter tls, $(KCL_SECRET_TYPE)), \
 		cat $(KCL_SECRET_CERTIFICATE_FILEPATH); echo; \
 		cat $(KCL_SECRET_PRIVATEKEY_FILEPATH) | head -3; echo; \
-		$(KUBECTL) create secret tls $(__KCL_CERT__SECRET) $(__KCL_KEY__SECRET) $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) $(|_KCL_CREATE_SECRET) \
+		$(KUBECTL) create secret tls $(__KCL_CERT__SECRET) $(__KCL_DRY_RUN__SECRET) $(__KCL_KEY__SECRET) $(__KCL_NAMESPACE__SECRET) $(__KCL_OUTPUT__SECRET) $(KCL_SECRET_NAME) $(|_KCL_CREATE_SECRET) \
 	)
 	$(if $(filter docker-registry, $(KCL_SECRET_TYPE)), \
-		$(KUBECTL) create secret docker-registry $(__KCL_DOCKER_EMAIL) $(__KCL_DOCKER_PASSWORD) $(__KCL_DOCKER_SERVER) $(__KCL_DOCKER_USERNAME) $(__KCL_NAMESPACE__SECRET) $(KCL_SECRET_NAME) $(|_KCL_CREATE_SECRET) \
+		$(KUBECTL) create secret docker-registry $(__KCL_DOCKER_EMAIL) $(__KCL_DOCKER_PASSWORD) $(__KCL_DOCKER_SERVER) $(__KCL_DOCKER_USERNAME) $(__KCL_DRY_RUN__SECRET) $(__KCL_NAMESPACE__SECRET) $(__KCL_OUTPUT__SECRET) $(KCL_SECRET_NAME) $(|_KCL_CREATE_SECRET) \
 	)
 
 _kcl_delete_secret:
