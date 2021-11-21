@@ -228,8 +228,8 @@ _kcl_apply_secret: _kcl_apply_secrets
 _kcl_apply_secrets:
 	@$(INFO) '$(KCL_UI_LABEL)Applying manifest for one-or-more secrets ...'; $(NORMAL)
 	$(if $(KCL_SECRETS_MANIFEST_FILEPATH),cat $(KCL_SECRETS_MANIFEST_FILEPATH); echo)
-	$(if $(filter $(KCL_SECRETS_MANIFEST_STDINFLAG)),$(_KCL_APPLY_SECRETS_|)cat)
-	$(if $(KCL_SECRETS_MANIFEST_URL),curl -L $(KCL_SECRETS_MANIFEST_URL); echo)
+	$(if $(filter true,$(KCL_SECRETS_MANIFEST_STDINFLAG)),$(_KCL_APPLY_SECRETS_|)cat)
+	$(if $(KCL_SECRETS_MANIFEST_URL),curl --location --silent $(KCL_SECRETS_MANIFEST_URL); echo)
 	$(if $(KCL_SECRETS_MANIFESTS_DIRPATH),ls -al $(KCL_SECRETS_MANIFESTS_DIRPATH); echo)
 	$(_KCL_APPLY_SECRETS_|)$(KUBECTL) apply $(__KCL_FILENAME__SECRETS) $(__KCL_NAMESPACE__SECRETS)
 
