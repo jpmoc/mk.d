@@ -23,6 +23,7 @@ DATE_BIN?= date
 DATE?= $(strip $(__DATE_ENVIRONMENT) $(DATE_ENVIRONMENT) $(DATE_BIN) $(__DATE_OPTIONS) $(DATE_OPTIONS) )
 DIG?= dig
 ECHO?= /bin/echo
+READER?= cat
 WRITER?= vim
 MD5SUM?= openssl md5
 UNTAR?= tar -x

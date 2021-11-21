@@ -197,6 +197,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_list_secrets                   - List all secrets'
 	@echo '    _kcl_list_secrets_set               - List a set ofsecrets'
 	@echo '    _kcl_patch_secret                   - Patch a secret'
+	@echo '    _kcl_read_secrets                   - Read a manifest for one-or-more secret'
 	@echo '    _kcl_show_secret                    - Show everything related to a secret'
 	@echo '    _kcl_show_secret_description        - Show the description of a secret'
 	@echo '    _kcl_show_secret_endpoints          - Show the endpoints of a secret'
@@ -316,6 +317,11 @@ _kcl_list_secrets_set:
 _kcl_patch_secret:
 	@$(INFO) '$(KCL_UI_LABEL)Updating secret "$(KCL_SECRET_NAME)" ...'; $(NORMAL)
 	$(_KCL_PATCH_SECRET_|) $(KUBECTL) patch secret $(__KCL_NAMESPACE__SECRET) $(__KCL_PATCH__SECRET) $(__KCL_TYPE__SECRET) $(KCL_SECRET_NAME) $(|_KCL_PATCH_SECRET)
+
+_kcl_read_secret: _kcl_read_secrets
+_kcl_read_secrets:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest for one-or-more secrets ...'; $(NORMAL)
+	$(READER) $(KCL_SECRETS_MANIFEST_FILEPATH)
 
 _KCL_SHOW_SECRET_TARGETS?= _kcl_show_secret_data _kcl_show_secret_state _kcl_show_secret_type _kcl_show_secret_description
 _kcl_show_secret: $(_KCL_SHOW_SECRET_TARGETS)
