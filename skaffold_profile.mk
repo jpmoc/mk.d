@@ -114,4 +114,4 @@ _sfd_show_profile_config:
 
 _sfd_show_profile_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of profile "$(SFD_PROFILE_NAME)" ...'; $(NORMAL)
-	# $(_SFD_SHOW_PROFILE_DESCRIPTION_|)yq eval '.profiles' $(SFD_PROFILE_CONFIG_FILEPATH)
+	$(_SFD_SHOW_PROFILE_DESCRIPTION_|)yq eval '.profiles[]|select(.name=="$(SFD_PROFILE_NAME)")' $(SFD_PROFILE_CONFIG_FILEPATH)
