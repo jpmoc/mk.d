@@ -1,6 +1,5 @@
 _GIT_MK_VERSION= 0.99.0
 
-# GIT_PARAMETER?= value
 GIT_UI_LABEL?= [git] #
 
 # Derived parameters
@@ -9,11 +8,11 @@ GIT_UI_LABEL?= [git] #
 
 # Customizations
  
-#--- Utilities
+# Macros
+
+# Utilities
 GIT_BIN?= git
 GIT?= $(strip $(__GIT_ENVIRONMENT) $(GIT_ENVIRONMENT) $(GIT_BIN) $(__GIT_OPTIONS) $(GIT_OPTIONS))
-
-#--- MACROS
 
 #----------------------------------------------------------------------
 # USAGE
@@ -39,12 +38,12 @@ _git_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/git_branch.mk
--include $(MK_DIR)/git_commit.mk
--include $(MK_DIR)/git_config.mk
--include $(MK_DIR)/git_repository.mk
--include $(MK_DIR)/git_submodule.mk
+MK_DIRPATH?= .
+-include $(MK_DIRPATH)git_branch.mk
+-include $(MK_DIRPATH)git_commit.mk
+-include $(MK_DIRPATH)git_config.mk
+-include $(MK_DIRPATH)git_repository.mk
+-include $(MK_DIRPATH)git_submodule.mk
 
 #-----------------------------------------------------------------------
 # PUBLIC TARGETS

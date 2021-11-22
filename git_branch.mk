@@ -19,8 +19,8 @@ __GIT_ONELINE?= $(if $(filter true, $(GIT_BRANCH_ONELINE_FLAG)),--oneline)
 
 # Customizations
 |_GIT_SHOW_BRANCH_HEAD?= | head -10
-|_GIT_SHOW_BRANCH_HISTORY?= | cat
-|_GIT_LIST_BRANCHES?= | cat
+|_GIT_SHOW_BRANCH_HISTORY?= | cat# Required to unblock flow
+|_GIT_LIST_BRANCHES?= | cat# Required to unblock flow
 |_GIT_LIST_BRANCHES_SET?= | grep $(GIT_BRANCHES_REGEX)
  
 # Macros
