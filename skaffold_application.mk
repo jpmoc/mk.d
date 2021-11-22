@@ -54,7 +54,7 @@ _SFD_LIST_APPLICATIONS_|?= cd $(SFD_APPLICATIONS_DIRPATH) && #
 _SFD_LIST_APPLICATIONS_SET_|?= $(_SFD_LIST_APPLICATIONS_|)
 _|_SFD_LIST_APPLICATIONS?=
 _|_SFD_LIST_APPLICATIONS_SET?= $(_|_SFD_LIST_APPLICATIONS)
-_SFD_SHOW_APPLICATION_|?= cd $(SFD_APPLICATION_DIRPATH) && #
+_SFD_SHOW_APPLICATION_|?= $(if $(SFD_APPLICATION_DIRPATH),cd $(SFD_APPLICATION_DIRPATH) && )#
 _SFD_SHOW_APPLICATION_CONFIG_|?= $(_SFD_SHOW_APPLICATION_|)
 
 # Macros
@@ -159,6 +159,8 @@ _sfd_show_application_config:
 
 _sfd_show_application_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of application "$(SFD_APPLICATION_NAME)" ...'; $(NORMAL)
+
+_sfd_undeploy_application: _sfd_delete_application
 
 _sfd_watch_applications:
 	@$(INFO) '$(SFD_UI_LABEL)Watching ALL applications ...'; $(NORMAL)
