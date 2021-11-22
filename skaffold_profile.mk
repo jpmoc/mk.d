@@ -73,7 +73,7 @@ _sfd_list_targets ::
 	@echo '    _sfd_list_profiles              - List all profiles'
 	@echo '    _sfd_list_profiles_set          - List a set of profiles'
 	@echo '    _sfd_show_profile               - Show everything related to a profile'
-	@echo '    _sfd_show_profile_config        - Show the config of a profile'
+	@echo '    _sfd_show_profile_patch         - Show the patch of a profile'
 	@echo '    _sfd_show_profile_description   - Show the description of a profile'
 	@#echo '    _sfd_watch_profiles             - Watch ALL profiles'
 	@#echo '    _sfd_watch_profiles_set         - Watch a set of profiles'
@@ -105,13 +105,13 @@ _sfd_list_profiles_set:
 	@$(WARN) 'Profiles are grouped based on the provided config-file and query-filter''; $(NORMAL)'
 	$(_SFD_LIST_PROFILES_SET_|)yq eval '.profiles[$(_SFD_LIST_PROFILES_SET_QUERYFILTER)]' $(SFD_PROFILES_CONFIG_FILEPATH)
 
-_SFD_SHOW_PROFILE_TARGETS?= _sfd_show_profile_config _sfd_show_profile_description
+_SFD_SHOW_PROFILE_TARGETS?= _sfd_show_profile_patch _sfd_show_profile_description
 _sfd_show_profile: $(_SFD_SHOW_PROFILE_TARGETS)
 
-_sfd_show_profile_config:
+_sfd_show_profile_patch:
 	@$(INFO) '$(SFD_UI_LABEL)Showing config of profile "$(SFD_PROFILE_NAME)" ...'; $(NORMAL)
-	$(_SFD_SHOW_PROFILE_CONFIG_|)$(SKAFFOLD) diagnose $(__SFD_FILENAME__PROFILE) $(__SFD_PROFILE)
+	$(_SFD_SHOW_PROFILE_DESCRIPTION_|)yq eval '.profiles[]|select(.name=="$(SFD_PROFILE_NAME)")' $(SFD_PROFILE_CONFIG_FILEPATH)
 
 _sfd_show_profile_description:
 	@$(INFO) '$(SFD_UI_LABEL)Showing description of profile "$(SFD_PROFILE_NAME)" ...'; $(NORMAL)
-	$(_SFD_SHOW_PROFILE_DESCRIPTION_|)yq eval '.profiles[]|select(.name=="$(SFD_PROFILE_NAME)")' $(SFD_PROFILE_CONFIG_FILEPATH)
+	$(_SFD_SHOW_PROFILE_CONFIG_|)$(SKAFFOLD) diagnose $(__SFD_FILENAME__PROFILE) $(__SFD_PROFILE)
