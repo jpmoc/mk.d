@@ -1,5 +1,6 @@
 _GIT_COMMIT_MK_VERSION=  $(_GIT_MK_VERSION)
 
+GIT_COMMIT_ALL_FLAG?= false
 GIT_COMMIT_FORCE_FLAG?= false
 # GIT_COMMIT_HASH?= 9cc8969200a413b2a03d70faa3adf24acb033350
 # GIT_COMMIT_HASH_OR_SHORTHASH?=
@@ -13,7 +14,7 @@ GIT_COMMIT_NAME?= ticket-0000
 GIT_COMMIT_HASH_OR_SHORTHASH?= $(if $(GIT_COMMIT_HASH),$(GIT_COMMIT_HASH),$(GIT_COMMIT_SHORTHASH))
 
 # Options
-__GIT_ALL=
+__GIT_ALL= $(if $(filter true,$(GIT_COMMIT_ALL_FLAG)),--all)
 __GIT_EDIT=
 __GIT_FORCE__COMMIT= $(if $(filter true,$(GIT_COMMIT_FORCE_FLAG)),--force)
 __GIT_MESSAGE= $(if $(GIT_COMMIT_MESSAGE),--message $(GIT_COMMIT_MESSAGE))
@@ -76,7 +77,7 @@ _git_amend_commit:
 
 _git_create_commit:
 	@$(INFO) '$(GIT_UI_LABEL)Creating commit "$(GIT_COMMIT_NAME)" ...'; $(NORMAL)
-	$(GIT) commit --add $(__GIT_MESSAGE) 
+	$(GIT) commit $(__GIT_ALL) $(__GIT_MESSAGE) 
 
 _git_delete_commit: 
 	@$(INFO) '$(GIT_UI_LABEL)Deleting commit "$(GIT_COMMIT_NAME)" ...'; $(NORMAL)
