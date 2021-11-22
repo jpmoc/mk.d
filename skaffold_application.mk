@@ -155,6 +155,7 @@ _sfd_show_application: $(_SFD_SHOW_APPLICATION_TARGETS)
 
 _sfd_show_application_config:
 	@$(INFO) '$(SFD_UI_LABEL)Showing config of application "$(SFD_APPLICATION_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'This operation returns the effective skaffold configuration'; $(NORMAL)
 	$(_SFD_SHOW_APPLICATION_CONFIG_|)$(SKAFFOLD) diagnose $(__SFD_FILENAME__APPLICATION) $(__SFD_PROFILE__APPLICATION)
 
 _sfd_show_application_description:
