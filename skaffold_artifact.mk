@@ -82,10 +82,10 @@ _sfd_list_targets ::
 _sfd_build_artifact: _sfd_build_artifacts
 _sfd_build_artifacts:
 	@$(INFO) '$(SFD_UI_LABEL)Creating/Building one-or-more artifacts ...'; $(NORMAL)
-	@$(WARN) 'This operation normally pushes the images to a docker registry'; $(NORMAL)
-	@$(WARN) 'If using local-docker ascertain you are already logged in'; $(NORMAL)
-	@$(WARN) 'If using minikube-kaniko ascertain the registry-config does not use helper-commands not available in kaniko'; $(NORMAL)
-	$(_SFD_CREATE_ARTIFACTS_|)$(SKAFFOLD) build $(__SFD_DEFAULT_REPO__ARTIFACTS) $(__SFD_FILENAME__ARTIFACTS) $(__SFD_NAMESPACE__ARTIFACTS) $(__SFD_PROFILE__ARTIFACTS)$(|_SFD_CREATE_ARTIFACTS)
+	@$(WARN) 'This operation normally pushes the resulting images to a docker registry'; $(NORMAL)
+	@$(WARN) 'If using local-docker credentials ascertain you are already logged in'; $(NORMAL)
+	@$(WARN) 'If using remote-docker credentials as with kaniko ascertain they are also valid'; $(NORMAL)
+	$(_SFD_CREATE_ARTIFACTS_|)$(SKAFFOLD) build $(__SFD_DEFAULT_REPO__ARTIFACTS) $(__SFD_FILENAME__ARTIFACTS) $(__SFD_KUBECONFIG__ARTIFACTS) $(__SFD_NAMESPACE__ARTIFACTS) $(__SFD_PROFILE__ARTIFACTS)$(|_SFD_CREATE_ARTIFACTS)
 
 _sfd_delete_artifact: _sfd_delete_artifacts
 _sfd_delete_artifacts:
