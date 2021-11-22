@@ -6,7 +6,9 @@ _GIT_REPOSITORY_MK_VERSION=$(_GIT_MK_VERSION)
 # GIT_REPOSITORY_SSHREMOTE_URL?= ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/MyRepo
 # GIT_REPOSITORY_NAME?= MyRepo
 # GIT_REPOSITORIES_HTTPREMOTE_PREFIX?= https://git-codecommit.us-west-2.amazonaws.com/v1/repos/
+# GIT_REPOSITORIES_REGEX?=
 # GIT_REPOSITORIES_REMOTE_PREFIX?= https://git-codecommit.us-west-2.amazonaws.com/v1/repos/
+GIT_REPOSITORIES_SET_NAME?= remotes
 # GIT_REPOSITORIES_SSHREMOTE_PREFIX?= ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/
 
 # Derived variables
@@ -17,6 +19,7 @@ GIT_REPOSITORY_REMOTE_URL?= $(if $(GIT_REPOSITORY_SSHREMOTE_URL),$(GIT_REPOSITOR
 # Options
 
 # Customizations
+|_GIT_LIST_REPOSITORIES_SET?= | grep $(GIT_REPOSITORIES_REGEX)
  
 # Macros
 _git_get_repository_dirpath=$(shell git rev-parse --show-toplevel)
@@ -38,7 +41,9 @@ _git_list_parameters ::
 	@echo '    GIT_REPOSITORY_REMOTE_URL=$(GIT_REPOSITORY_PREMOTE_URL)'
 	@echo '    GIT_REPOSITORY_SSHREMOTE_URL=$(GIT_REPOSITORY_SSHPREMOTE_URL)'
 	@echo '    GIT_REPOSITORIES_HTTPREMOTE_PREFIX=$(GIT_REPOSITORIES_HTTPREMOTE_PREFIX)'
+	@echo '    GIT_REPOSITORIES_REGEX=$(GIT_REPOSITORIES_REGEX)'
 	@echo '    GIT_REPOSITORIES_REMOTE_PREFIX=$(GIT_REPOSITORIES_REMOTE_PREFIX)'
+	@echo '    GIT_REPOSITORIES_SET_NAME=$(GIT_REPOSITORIES_SET_NAME)'
 	@echo '    GIT_REPOSITORIES_SSHREMOTE_PREFIX=$(GIT_REPOSITORIES_SSHREMOTE_PREFIX)'
 	@echo
 
@@ -60,3 +65,13 @@ _git_create_repository:
 	@$(INFO) '$(GIT_UI_LABEL)Create a repository "$(GIT_REPOSITORY_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation automatically create an empty master branch'; $(NORMAL)
 	$(GIT) init
+
+_git_delete_repository:
+
+_git_list_repositories:
+	@$(INFO) '$(GIT_UI_LABEL)Listing ALL repositories ...'; $(NORMAL)
+	git remote --verbose
+
+_git_list_repositories_set:
+	@$(INFO) '$(GIT_UI_LABEL)Listing repositories-set "$(GIT_REPOSITORIES_SET_NAME)" ...'; $(NORMAL)
+	git remote --verbose $(|_GIT_LIST_REPOSITORIES_SET)
