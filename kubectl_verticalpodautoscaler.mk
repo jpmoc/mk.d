@@ -50,6 +50,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_verticalpodautoscaler                   - Label a vertical-pod-autoscaler'
 	@echo '    _kcl_list_verticalpodautoscalers                   - List all vertical-pod-autoscalers'
 	@echo '    _kcl_list_verticalpodautoscalers_set               - List set of vertical-pod-autoscalers'
+	@echo '    _kcl_read_verticalpodautoscalers                   - Read a manifest for one-or-more vertical-pod-autoscalers'
 	@echo '    _kcl_show_verticalpodautoscaler                    - Show everything related to a vertical-pod-autoscaler'
 	@echo '    _kcl_show_verticalpodautoscaler_description        - Show the description of a vertical-pod-autoscaler'
 	@echo '    _kcl_show_verticalpodautoscaler_state              - Show the state of a vertical-pod-autoscaler'
@@ -104,6 +105,12 @@ _kcl_list_verticalpodautoscalers_set:
 
 _kcl_patch_verticalpodautoscaler:
 	@$(INFO) '$(KCL_UI_LABEL)Patching vertical-pod-autoscaler "$(KCL_VERTICALPODAUTOSCALER_NAME)" ...'; $(NORMAL)
+	# $(KUBECTL) patch ...
+
+_kcl_read_verticalpodautoscaler: _kcl_read_verticalpodautoscalers
+_kcl_read_verticalpodautoscalers:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest for one-or-more vertical-pod-autoscalers ...'; $(NORMAL)
+	$(READER) $(KCL_VERTICALPODAUTOSCALERS_MANIFEST_FILEPATH)
 
 _KCL_SHOW_VERTICALPODAUTOSCALER_TARGETS?= _kcl_show_verticalpodautoscaler_state _kcl_show_verticalpodautoscaler_description
 _kcl_show_verticalpodautoscaler: $(_KCL_SHOW_VERTICALPODAUTOSCALER_TARGETS)

@@ -109,6 +109,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_list_serviceaccounts                       - List all service-accounts'
 	@echo '    _kcl_list_serviceaccounts_set                   - List a set of service-accounts'
 	@echo '    _kcl_patch_serviceaccount                       - Patch a service-account'
+	@echo '    _kcl_read_serviceaccounts                       - Read a manifest for one-or-more service-accounts'
 	@echo '    _kcl_show_serviceaccount                        - Show everything related to a service-account'
 	@echo '    _kcl_show_serviceaccount_clusterrolebindings    - Show cluster-role-bindings referring to a service-account'
 	@echo '    _kcl_show_serviceaccount_description            - Show description of a service-account'
@@ -121,7 +122,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_unlabel_serviceaccount                     - Un-label a service-accounts'
 	@echo '    _kcl_watch_serviceaccounts                      - Watch all service-accounts'
 	@echo '    _kcl_watch_serviceaccounts_set                  - Watch a set of service-accounts'
-	@echo '    _kcl_write_serviceaccounts                      - Write manifest for one-or-more service-accounts'
+	@echo '    _kcl_write_serviceaccounts                      - Write a manifest for one-or-more service-accounts'
 	@echo
 
 #----------------------------------------------------------------------
@@ -191,6 +192,11 @@ _kcl_list_serviceaccounts_set:
 _kcl_patch_serviceaccount:
 	@$(INFO) '$(KCL_UI_LABEL)Patching service-account "$(KCL_SERVICEACCOUNT_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) patch serviceaccount $(__KCL_PATCH__SERVICEACCOUNT) $(KCL_SERVICEACCOUNT_NAME)
+
+_kcl_read_serviceaccount: _kcl_read_serviceaccounts
+_kcl_read_serviceaccounts:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest for one-or-more service-accounts ...'; $(NORMAL)
+	$(READER) $(KCL_SERVICEACCOUNTS_MANIFEST_FILEPATH)
 
 _KCL_SHOW_SERVICEACCOUNT_TARGETS?= _kcl_show_serviceaccount_clusterrolebindings _kcl_show_serviceaccount_pods _kcl_show_serviceaccount_rbacrules _kcl_show_serviceaccount_rolebindings _kcl_show_serviceaccount_secret _kcl_show_serviceaccount_description
 _kcl_show_serviceaccount: $(_KCL_SHOW_SERVICEACCOUNT_TARGETS)

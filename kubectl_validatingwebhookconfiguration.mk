@@ -137,6 +137,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_list_validatingwebhookconfigs_set               - List a set of validating-webhook-configs'
 	@echo '    _kcl_patch_validatingwebhookconfig                   - Patch a validating-webhook-config'
 	@echo '    _kcl_portforward_validatingwebhookconfig             - Port-forward local ports to a validating-webhook-config'
+	@echo '    _kcl_read_validatingwebhookconfigs                   - Read a manifest for one-or-more validating-webhook-configs'
 	@echo '    _kcl_show_validatingwebhookconfig                    - Show everything related to a validating-webhook-config'
 	@echo '    _kcl_show_validatingwebhookconfig_description        - Show the description of a validating-webhook-config'
 	@echo '    _kcl_show_validatingwebhookconfig_object             - Show the object of a validating-webhook-config'
@@ -148,7 +149,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_unlabel_validatingwebhookconfig                 - Un-label manifest for a validating-webhook-config'
 	@echo '    _kcl_watch_validatingwebhookconfigs                  - Watching validating-webhook-configs'
 	@echo '    _kcl_watch_validatingwebhookconfigs_set              - Watching a set of validating-webhook-configs'
-	@echo '    _kcl_write_validatingwebhookconfigs                  - Writing manifest for one-or-more validating-webhook-configs'
+	@echo '    _kcl_write_validatingwebhookconfigs                  - Write a manifest for one-or-more validating-webhook-configs'
 	@echo
 
 #----------------------------------------------------------------------
@@ -209,6 +210,11 @@ _kcl_list_validatingwebhookconfigs_set:
 _kcl_patch_validatingwebhookconfig:
 	@$(INFO) '$(KCL_UI_LABEL)Patching validating-webhook-config "$(KCL_VALIDATINGWEBHOOKCONFIG_NAME)" ...'; $(NORMAL)
 	# $(KUBECTL) patch ...
+
+_kcl_read_validatingwebhookconfig: _kcl_read_validatingwebhookconfigs
+_kcl_read_validatingwebhookconfigs:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest for one-or-more validating-webhook-configs ...'; $(NORMAL)
+	$(READER) $(KCL_VALIDATINGWEBHOOKCONFIGS_MANIFEST_FILEPATH)
 
 _KCL_SHOW_VALIDATINGWEBHOOKCONFIG_TARGETS?= _kcl_show_validatingwebhookconfig_deployments _kcl_show_validatingwebhookconfig_object _kcl_show_validatingwebhookconfig_pods _kcl_show_validatingwebhookconfig_replicasets _kcl_show_validatingwebhookconfig_services _kcl_show_validatingwebhookconfig_description
 _kcl_show_validatingwebhookconfig: $(_KCL_SHOW_VALIDATINGWEBHOOKCONFIG_TARGETS)

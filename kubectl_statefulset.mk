@@ -93,6 +93,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_list_statefulsets_set              - List a set of stateful-sets'
 	@echo '    _kcl_pause_statefulset                  - Pause rollout of a stateful-set'
 	@echo '    _kcl_patch_statefulset                  - Patch a stateful-set'
+	@echo '    _kcl_read_statefulsets                  - Read a manifest for one-or-more stateful-sets'
 	@echo '    _kcl_restart_statefulset                - Restart rollout of a stateful-set'
 	@echo '    _kcl_resume_statefulset                 - Resume rollout of a stateful-set'
 	@echo '    _kcl_rollback_statefulset               - Rollback rollout of a stateful-set'
@@ -106,7 +107,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_unlabel_statefulset                - Un-label a stateful-set'
 	@echo '    _kcl_watch_statefulsets                 - Watch all stateful-sets'
 	@echo '    _kcl_watch_statefulsets_set             - Watch a set of stateful-sets'
-	@echo '    _kcl_write_statefulsets                 - Write manifest for one-or-more stateful-sets'
+	@echo '    _kcl_write_statefulsets                 - Write a manifest for one-or-more stateful-sets'
 	@echo
 
 #----------------------------------------------------------------------
@@ -172,6 +173,11 @@ _kcl_patch_statefulset:
 _kcl_pause_statefulset:
 	@$(INFO) '$(KCL_UI_LABEL)Pausing rollout of stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)
 	$(KUBECTL) rollout pause statefulset $(__KCL_NAMESPACE__STATEFULSET) $(KCL_STATEFULSET_NAME)
+
+_kcl_read_statefulset: _kcl_read_statefulsets
+_kcl_read_statefulsets:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest for one-or-more stateful-sets ...'; $(NORMAL)
+	$(READER) $(KCL_STATEFULSETS_MANIFEST_FILEPATH)
 
 _kcl_restart_statefulset:
 	@$(INFO) '$(KCL_UI_LABEL)Restarting rollout of stateful-set "$(KCL_STATEFULSET_NAME)" ...'; $(NORMAL)

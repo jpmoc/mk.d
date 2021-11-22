@@ -102,6 +102,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_explode_manifest                 - Explode a mutli-document manifest into many single-document ones'
 	@echo '    _kcl_list_manifests                   - List all manifests'
 	@echo '    _kcl_list_manifests_set               - List set of manifests'
+	@echo '    _kcl_read_manifest                    - Read a manifest'
 	@echo '    _kcl_show_manifest                    - Show everything related to a manifest'
 	@echo '    _kcl_show_manifest_content            - Show the content of a manifest'
 	@echo '    _kcl_show_manifest_description        - Show the description of a manifest'
@@ -161,6 +162,19 @@ _kcl_explode_manifest:
 	@$(WARN) 'This operation breaks a multi-document manifest into many single-document ones'; $(NORMAL)
 	$(_KCL_EXPLODE_MANIFEST_|)k8split $(__KCL_OUTDIR__MANIFEST) $(KCL_MANIFEST_FILEPATH)
 
+_kcl_list_manifests:
+	@$(INFO) '$(KCL_UI_LABEL)Listing ALL manifests ...'; $(NORMAL)
+	$(_KCL_LIST_MANIFESTS_|)ls -al ??*
+
+_kcl_list_manifests_set:
+	@$(INFO) '$(KCL_UI_LABEL)Listing manifests-set "$(KCL_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Manifests are grouped based on regex and pipe-filter'; $(NORMAL)
+	$(_KCL_LIST_MANIFESTS_SET_|)ls -al $(KCL_MANIFESTS_REGEX) $(|_KCL_LIST_MANIFESTS_SET)
+
+_kcl_read_manifest:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest "$(KCL_MANIFEST_NAME)" ...'; $(NORMAL)
+	$(READER) $(KCL_MANIFEST_FILEPATH)
+
 _kcl_show_manifest: _kcl_show_manifest_content _kcl_show_manifest_md5sum _kcl_show_manifest_description
 
 _kcl_show_manifest_content:
@@ -192,15 +206,6 @@ _kcl_unapply_manifests:
 	# $(_KCL_UNAPPLY_MANIFEST_|)cat
 	# ls -al $(KCL_MANIFESTS_DIRPATH)
 	$(_KCL_UNAPPLY_MANIFESTS_|)$(KUBECTL) delete $(__KCL_FILENAME__MANIFESTS) $(__KCL_NAMESPACE__MANIFESTS) $(__KCL_SELECTOR__MANIFESTS)
-
-_kcl_list_manifests:
-	@$(INFO) '$(KCL_UI_LABEL)Listing ALL manifests ...'; $(NORMAL)
-	$(_KCL_LIST_MANIFESTS_|)ls -al ??*
-
-_kcl_list_manifests_set:
-	@$(INFO) '$(KCL_UI_LABEL)Listing manifests-set "$(KCL_MANIFESTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Manifests are grouped based on regex and pipe-filter'; $(NORMAL)
-	$(_KCL_LIST_MANIFESTS_SET_|)ls -al $(KCL_MANIFESTS_REGEX) $(|_KCL_LIST_MANIFESTS_SET)
 
 _kcl_watch_manifests:
 	@$(INFO) '$(KCL_UI_LABEL)Watching ALL manifests ...'; $(NORMAL)

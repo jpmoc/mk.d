@@ -170,7 +170,7 @@ _kcl_list_parameters ::
 _kcl_list_targets ::
 	@echo 'KubeCtL::Service ($(_KUBECTL_SERVICE_MK_VERSION)) targets:'
 	@echo '    _kcl_annotate_service                - Annotate a service'
-	@echo '    _kcl_apply_services                  - Apply manifest for one-or-more services'
+	@echo '    _kcl_apply_services                  - Apply a manifest for one-or-more services'
 	@echo '    _kcl_create_service                  - Create a new service'
 	@echo '    _kcl_curl_service                    - Curl a service'
 	@echo '    _kcl_delete_service                  - Delete an existing service'
@@ -184,6 +184,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_list_services_set               - List a set of services'
 	@echo '    _kcl_patch_service                   - Patch a service'
 	@echo '    _kcl_portforward_service             - Forward local ports to an endpoint-pod of a service'
+	@echo '    _kcl_read_services                   - Read a manifest for one-or-more services'
 	@echo '    _kcl_show_service                    - Show everything related to a service'
 	@echo '    _kcl_show_service_description        - Show the description of a service'
 	@echo '    _kcl_show_service_endpoints          - Show the endpoints of a service'
@@ -197,7 +198,7 @@ _kcl_list_targets ::
 	@echo '    _kcl_unlabel_service                 - Un-label a service'
 	@echo '    _kcl_watch_services                  - Watch services'
 	@echo '    _kcl_watch_services_set              - Watch a set of services'
-	@echo '    _kcl_write_services                  - Write services'
+	@echo '    _kcl_write_services                  - Write a manifest for one-or-more services'
 	@echo
 
 #----------------------------------------------------------------------
@@ -283,6 +284,11 @@ _kcl_portforward_service:
 	@$(WARN) 'This operation binds ports to 127.0.0.1 (host-port:container-port) but does NOT allow for bind addresses'; $(NORMAL)
 	@$(WARN) 'If connection is idle, the port-forward will time out after a few minutes'; $(NORMAL)
 	$(_KCL_PORTFORWARD_SERVICE_|)$(KUBECTL) port-forward $(__KCL_ADDRESS__SERVICE) $(__KCL_NAMESPACE__SERVICE) $(__KCL_POD_RUNNING_TIMEOUT__SERVICE) service/$(KCL_SERVICE_NAME) $(KCL_SERVICE_PORTFORWARD_PORTMAPPINGS) $(|_KCL_PORTFORWARD_SERVICE)
+
+_kcl_read_service: _kcl_read_services
+_kcl_read_services:
+	@$(INFO) '$(KCL_UI_LABEL)Reading a manifest for one-or-more services ...'; $(NORMAL)
+	$(READER) $(KCL_SERVICES_MANIFEST_FILEPATH)
 
 _KCL_SHOW_SERVICE_TARGETS?= _kcl_show_service_dnsname _kcl_show_service_endpoints _kcl_show_service_envvars _kcl_show_service_object _kcl_show_service_pods _kcl_show_service_state _kcl_show_service_description
 _kcl_show_service: $(_KCL_SHOW_SERVICE_TARGETS)

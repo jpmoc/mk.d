@@ -60,12 +60,13 @@ _kcl_list_targets ::
 	@echo '    _kcl_label_storageclass                  - Label a storage-class'
 	@echo '    _kcl_list_storageclasses                 - List all storage-classes'
 	@echo '    _kcl_list_storageclasses_set             - List a set of storage-classes'
+	@echo '    _kcl_read_storageclasses                 - Read a manifest for one-or-more storage-classes'
 	@echo '    _kcl_unannotate_storageclass             - Un-annotate a storage-class'
 	@echo '    _kcl_unapply_storageclasses              - Un-apply a manifest for one-or-more storage-classes'
 	@echo '    _kcl_unlabel_storageclass                - Un-label a storage-class'
 	@echo '    _kcl_watch_storageclasses                - Watch all storage-classes'
 	@echo '    _kcl_watch_storageclasses_set            - Watch a set of storage-classes'
-	@echo '    _kcl_write_storageclasses                - Write manifest for one-or-more storage-classes'
+	@echo '    _kcl_write_storageclasses                - Write a manifest for one-or-more storage-classes'
 	@echo
 
 #----------------------------------------------------------------------
@@ -106,6 +107,11 @@ _kcl_list_storageclasses_set:
 	@$(WARN) 'Storage-classes are NOT namespaced!'; $(NORMAL)
 	@$(WARN) 'Storage-classes are grouped based on selector, ...'; $(NORMAL)
 	$(KUBECTL) get storageclasses $(__KCL_SELECTOR_STORAGECLASSES)
+
+_kcl_read_storageclass: _kcl_read_storageclasses
+_kcl_read_storageclasses:
+	@$(INFO) '$(KCL_UI_LABEL)Reading manifest for one-or-more storage-classes ...'; $(NORMAL)
+	$(READER) $(KCL_STORAGECLASSES_MANIFEST_FILEPATH)
 
 _KCL_SHOW_STORAGECLASS_TARGETS?= _kcl_show_storageclass_description
 _kcl_show_storageclass: $(_KCL_SHOW_STORAGECLASS_TARGETS)
