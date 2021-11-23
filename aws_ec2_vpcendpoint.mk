@@ -48,7 +48,7 @@ _EC2_LIST_VPCENDPOINTSERVICES_SET_FIELDS?=
 _EC2_LIST_VPCENDPOINTSERVICES_SET_QUERYFILTER?=
 # _EC2_SHOW_VPCENDPOINTSERVICE_QUERYFILTER?= ?ServiceName=='$(strip $(EC2_VPCENDPOINTSERVICE_NAME))'
 
-#--- MACROS
+# Macros
 # _ec2_get_vpcendpoint_id= $(call _ec2_get_vpcendpointservice_id_N, $(EC2_VPCENDPOINTSERVICE_NAME))
 # _ec2_get_vpcendpoint_id_N= $(shell $(AWS) ec2 describe-vpc-endpoint-services --filter Name=service-name,Values=$(strip $(1)) --query "ServiceDetails[].ServiceId" --output text)
 

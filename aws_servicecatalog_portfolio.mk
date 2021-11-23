@@ -14,7 +14,7 @@ SCG_PORTFOLIO_PRINCIPAL_TYPE?= IAM
 SCG_PORTFOLIO_PRINCIPALS_ARN?= arn:aws:catalog:$(AWS_REGION_ID):$(AWS_ACCOUNT_ID):portfolio/$(SCG_PORTFOLIO_ID)
 SCG_PORTFOLIO_PRINCIPALS_ARNS?= $(SCG_PORTFOLIO_PRINCIPAL_ARN)
 
-# Options parameters
+# Options
 __SCG_DESCRIPTION_PORTFOLIO?= $(if $(SCG_PORTFOLIO_DESCRIPTION),--description $(SCG_PORTFOLIO_DESCRIPTION))
 __SCG_DISPLAY_NAME?= $(if $(SCG_PORTFOLIO_NAME),--display-name $(SCG_PORTFOLIO_NAME))
 __SCG_ID_PORTFOLIO?= $(if $(SCG_PORTFOLIO_ID),--id $(SCG_PORTFOLIO_ID))
@@ -24,12 +24,10 @@ __SCG_PRINCIPAL_TYPE?= $(if $(SCG_PORTFOLIO_PRINCIPAL_TYPE),--principal-type $(S
 __SCG_PROVIDER_NAME?= $(if $(SCG_PORTFOLIO_PROVIDER),--provider-name '$(SCG_PORTFOLIO_PROVIDER)')
 __SCG_TAGS_PORTFOLIO?= $(if $(SCG_PORTFOLIO_TAGS),--tags $(SCG_PORTFOLIO_TAGS))
 
-# UI parameters
-SCG_UI_VIEW_PORTFOLIOS_FIELDS?= .{Id:Id,DisplayName:DisplayName,ProviderName:ProviderName,description:Description}
+# Customizations
+_SCG_LIST_PORTFOLIOS_FIELDS?= .{Id:Id,DisplayName:DisplayName,ProviderName:ProviderName,description:Description}
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 _scg_get_portfolio_id= $(call _scg_get_portfolio_id_N, $(SCG_PORTFOLIO_NAME))
 _scg_get_portfolio_id_N= $(shell $(AWS) servicecatalog list-portfolios --query "PortfolioDetails[?DisplayName=='$(strip $(1))'].Id" --output text)
 
@@ -37,12 +35,12 @@ _scg_get_portfolio_id_N= $(shell $(AWS) servicecatalog list-portfolios --query "
 # USAGE
 #
 
-_scg_view_framework_macros ::
+_scg_list_macros ::
 	@echo 'AWS::ServiceCataloG::Portfolio ($(_AWS_SERVICECATALOG_PORTFOLIO_MK_VERSION)) macros:'
 	@echo '    _scg_get_portfolio_id_{|N}                 - Get portfolio ID (portfolioName)'
 	@echo
 
-_scg_view_framework_parameters ::
+_scg_list_parameters ::
 	@echo 'AWS::ServiceCataloG::Portfolio ($(_AWS_SERVICECATALOG_PORTFOLIO_MK_VERSION)) parameters:'
 	@echo '    SCG_PORTFOLIO_DESCRIPTION=$(SCG_PORTFOLIO_DESCRIPTION)'
 	@echo '    SCG_PORTFOLIO_ID=$(SCG_PORTFOLIO_ID)'
@@ -53,17 +51,17 @@ _scg_view_framework_parameters ::
 	@echo '    SCG_PORTFOLIO_TAGS_KEYVALUES=$(SCG_PORTFOLIO_TAGS_KEYVALUES)'
 	@echo
 
-_scg_view_framework_targets ::
+_scg_list_targets ::
 	@echo 'AWS::ServiceCataloG::Portfolio ($(_AWS_SERVICECATALOG_PORTFOLIO_MK_VERSION)) targets:'
 	@echo '    _scg_add_portfolio_principal               - Associate a principal to portfolio'
 	@echo '    _scg_create_portfolio                      - Create a new portfolio'
 	@echo '    _scg_delete_portfolio                      - Delete a portfolio'
+	@echo '    _scg_list_portfolios                       - List all portfolios'
+	@echo '    _scg_list_portfolios_set                   - List a set of portfolios'
 	@echo '    _scg_show_portfolio                        - Show details of a portfolio'
 	@echo '    _scg_show_portfolio_constraints            - Show constraints of a portfolio'
 	@echo '    _scg_show_portfolio_principals             - Show principals of a portfolio'
 	@echo '    _scg_tag_portfolio                         - Tag a portfolio'
-	@echo '    _scg_view_portfolios                       - View all portfolios'
-	@echo '    _scg_view_portfolios_set                   - View a set of portfolios'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -91,7 +89,15 @@ _scg_remove_portfolio_principal:
 	@$(INFO) '$(SCG_UI_LABEL)Diassociate principal from portfolio "$(SCG_PORTFOLIO_NAME)" ...'; $(NORMAL)
 	$(AWS) servicecatalog disassociate-principal-from-portfolio $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PORTFOLIO_ID) $(__SCG_PRINCIPAL_ARN)
 
-_scg_show_portfolio: _scg_show_portfolio_constraints _scg_show_portfolio_principals _scg_show_portfolio_description
+_scg_list_portfolios:
+	@$(INFO) '$(SCG_UI_LABEL)Listing available portfolios ...'; $(NORMAL)
+	$(AWS) servicecatalog list-portfolios $(__SCG_ACCEPT_LANGUAGE) --query "PortfolioDetails[]$(_SCG_LIST_PORTFOLIOS_FIELDS)"
+
+_scg_list_portfolios_set:
+	@$(INFO) '$(SCG_UI_LABEL)Listing portfolios-set "SCG_PORTFOLIOS_SET_NAME)" ...'; $(NORMAL)
+
+_SCG_SHOW_PORTFOLIO_TARGETS?= _scg_show_portfolio_constraints _scg_show_portfolio_principals _scg_show_portfolio_description
+_scg_show_portfolio: $(_SCG_SHOW_PORTFOLIO_TARGETS)
 
 _scg_show_portfolio_constraints:
 	@$(INFO) '$(SCG_UI_LABEL)Showing configured constraints in portfolio "$(SCG_PORTFOLIO_NAME)" ...'; $(NORMAL)
@@ -108,10 +114,3 @@ _scg_show_portfolio_principals:
 
 _scg_tag_portfolio:
 	@$(INFO) '$(SCG_UI_LABEL)Tagging portfolio "$(SCG_PORTFOLIO_NAME)" ...'; $(NORMAL)
-
-_scg_view_portfolios:
-	@$(INFO) '$(SCG_UI_LABEL)Viewing available portfolios ...'; $(NORMAL)
-	$(AWS) servicecatalog list-portfolios $(__SCG_ACCEPT_LANGUAGE) --query "PortfolioDetails[]$(SCG_UI_VIEW_PORTFOLIOS_FIELDS)"
-
-_scg_view_portfolios_set:
-	@$(INFO) '$(SCG_UI_LABEL)Viewing portfolios-set "SCG_PORTFOLIOS_SET_NAME)" ...'; $(NORMAL)

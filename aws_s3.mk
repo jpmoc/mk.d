@@ -35,10 +35,10 @@ _s3_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/aws_s3_bucket.mk
--include $(MK_DIR)/aws_s3_folder.mk
--include $(MK_DIR)/aws_s3_object.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)aws_s3_bucket.mk
+-include $(MK_DIRPATH)aws_s3_folder.mk
+-include $(MK_DIRPATH)aws_s3_object.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

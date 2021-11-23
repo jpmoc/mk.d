@@ -12,9 +12,9 @@ EC2_UI_LABEL?= $(AWS_UI_LABEL)
 # Customizations
 _EC2_VIEW_LIMITS_FIELDS?= .[AttributeName,AttributeValues[0].AttributeValue]
 
-#--- Utilities
+# Utilities
 
-#--- Macros
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -42,22 +42,22 @@ _ec2_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?=.
--include $(MK_DIR)/aws_ec2_availabilityzone.mk
--include $(MK_DIR)/aws_ec2_image.mk
--include $(MK_DIR)/aws_ec2_instance.mk
--include $(MK_DIR)/aws_ec2_keypair.mk
--include $(MK_DIR)/aws_ec2_natgateway.mk
--include $(MK_DIR)/aws_ec2_networkinterface.mk
--include $(MK_DIR)/aws_ec2_securitygroup.mk
--include $(MK_DIR)/aws_ec2_securitygroupegress.mk
--include $(MK_DIR)/aws_ec2_securitygroupingress.mk
--include $(MK_DIR)/aws_ec2_snapshot.mk
--include $(MK_DIR)/aws_ec2_subnet.mk
--include $(MK_DIR)/aws_ec2_vpc.mk
--include $(MK_DIR)/aws_ec2_vpcendpoint.mk
--include $(MK_DIR)/aws_ec2_vpcendpointservice.mk
--include $(MK_DIR)/aws_ec2_vpcpeering.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)aws_ec2_availabilityzone.mk
+-include $(MK_DIRPATH)aws_ec2_image.mk
+-include $(MK_DIRPATH)aws_ec2_instance.mk
+-include $(MK_DIRPATH)aws_ec2_keypair.mk
+-include $(MK_DIRPATH)aws_ec2_natgateway.mk
+-include $(MK_DIRPATH)aws_ec2_networkinterface.mk
+-include $(MK_DIRPATH)aws_ec2_securitygroup.mk
+-include $(MK_DIRPATH)aws_ec2_securitygroupegress.mk
+-include $(MK_DIRPATH)aws_ec2_securitygroupingress.mk
+-include $(MK_DIRPATH)aws_ec2_snapshot.mk
+-include $(MK_DIRPATH)aws_ec2_subnet.mk
+-include $(MK_DIRPATH)aws_ec2_vpc.mk
+-include $(MK_DIRPATH)aws_ec2_vpcendpoint.mk
+-include $(MK_DIRPATH)aws_ec2_vpcendpointservice.mk
+-include $(MK_DIRPATH)aws_ec2_vpcpeering.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

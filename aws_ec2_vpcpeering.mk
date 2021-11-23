@@ -26,7 +26,7 @@ __EC2_TAGS_VPCPEERING= $(if $(EC2_VPCPEERING_TAGS), --tags $(EC2_VPCPEERING_TAGS
 _EC2_LIST_PEERINGS_FIELDS?= .{Name:Tags[?Key=='Name'].Value | [0],ConnectionId:VpcPeeringConnectionId,_RequesterVpc:RequesterVpcInfo.VpcId,_RequesterOwnerId:RequesterVpcInfo.OwnerId,_RequesterCidrBlock:RequesterVpcInfo.CidrBlock,_AccepterVpc:AccepterVpcInfo.VpcId,_AccepterOwnerId:AccepterVpcInfo.OwnerId,_Status:Status.Code}
 # _EC2_LIST_PEERINGS_FIELDS?= .{Name:Tags[?Key=='Name'].Value | [0],VpcPeeringConnectionId:VpcPeeringConnectionId,_RequesterVpc:RequesterVpcInfo.VpcId,_RequesterOwnerId:RequesterVpcInfo.OwnerId,_RequesterCidrBlock:RequesterVpcInfo.CidrBlock,_AccepterVpc:AccepterVpcInfo.VpcId,_AccepterOwnerId:AccepterVpcInfo.OwnerId,_Status:Status.Code}
 
-#--- MACROS
+# Macros
 
 # Given 2 VPCs give me the ID of the peering connection
 _ec2_get_vpcpeering_id=$(call _ec2_get_vpcpeering_id_A, $(EC2_PEER_VPC_ID))

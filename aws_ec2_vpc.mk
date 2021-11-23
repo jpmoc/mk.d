@@ -30,7 +30,7 @@ _EC2_LIST_VPCS_FIELDS?= .{Name:Tags[?Key=='Name']|[0].Value || '',VpcId:VpcId,st
 _EC2_LIST_VPCS_SET_FIELDS?= $(_EC2_LIST_VPCS_FIELDS)
 _EC2_LIST_VPCS_SET_QUERYFILTER?=
 
-#--- MACROS
+# Macros
 _ec2_get_defaultvpc_id= $(shell $(AWS) ec2 describe-vpcs  --query "Vpcs[?IsDefault==\`true\`].VpcId" --output text)
 
 _ec2_get_vpc_id= $(call _ec2_get_vpc_id_N, $(EC2_VPC_NAME))

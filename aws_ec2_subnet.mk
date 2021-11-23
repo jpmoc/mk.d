@@ -31,7 +31,7 @@ _EC2_LIST_SUBNETS_FIELDS?= .{Name:Tags[?Key=='Name']|[0].Value||'',SubnetId:Subn
 _EC2_LIST_SUBNETS_SET_FIELDS?= $(_EC2_LIST_SUBNETS_FIELDS)
 _EC2_LIST_SUBNETS_SET_QUERYFILTER?=
 
-#--- MACROS
+# Macros
 
 _ec2_get_defaultsubnet_id= $(call _ec2_get_defaultsubnet_id_Z, $(EC2_SUBNET_AVAILABILITY_ZONE))
 _ec2_get_defaultsubnet_id_Z= $(shell $(AWS) ec2 describe-subnets --filters Name=default-for-az,Values=true Name=availability-zone,Values=$(strip $(1)) --query 'Subnets[].SubnetId' --output text)

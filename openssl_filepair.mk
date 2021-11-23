@@ -16,11 +16,9 @@ OSL_FILEPAIR_DIRPATH?= $(OSL_INPUTS_DIRPATH)
 OSL_FILEPAIR_ENCRYPTED_DIRPATH?= $(OSL_FILEPATH_DIRPATH)
 OSL_FILEPAIR_ENCRYPTED_FILEPATH?= $(OSL_FILEPAIR_ENCRYPTED_DIRPATH)$(OSL_FILEPATH_ENCRYPTED_FILENAME)
 
-# Option parameters
+# Options
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # INTERFACE

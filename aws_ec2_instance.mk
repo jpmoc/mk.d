@@ -88,7 +88,7 @@ _EC2_LIST_INSTANCES_SET_FIELDS?= $(_EC2_LIST_INSTANCES_FIELDS)
 _EC2_SHOW_INSTANCE_TAGS_FIELDS?= .Tags[]
 _EC2_TERMINATE_INSTANCES_FIELDS?= .{InstanceId:InstanceId,PreviousState:PreviousState.Name,CurrentState:CurrentState.Name}
 
-#--- MACROS
+# Macros
 _ec2_get_instance_ids= $(call _ec2_get_instance_ids_V, $(EC2_INSTANCE_NAME))
 _ec2_get_instance_ids_V= $(call _ec2_get_instance_ids_VF, $(1), tag:Name)
 _ec2_get_instance_ids_VF= $(call _ec2_get_instance_ids_VFS, $(1), $(2), running$(COMMA)stopped)

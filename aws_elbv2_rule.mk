@@ -40,7 +40,7 @@ _ELB2_LIST_RULES_FIELDS?= .{RuleArn:RuleArn,priority:Priority,isDefault:IsDefaul
 _ELB2_LIST_RULES_SET_FIELDS?= $(ELB2_UI_LIST_RULES_FIELDS)
 _ELB2_LIST_RULES_SET_QUERYFILTER?=
 
-#--- MACROS
+# Macros
 _elb2_get_rule_arn=
 
 #----------------------------------------------------------------------

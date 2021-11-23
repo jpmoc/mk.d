@@ -72,10 +72,7 @@ _ELB2_LIST_LOADBALANCERS_SET_FIELDS?= $(_ELB2_LIST_LOADBALANCERS_FIELDS)
 _ELB2_LIST_LOADBALANCERS_SET_QUERYFILTER?=
 _ELB2_SHOW_LOADBALANCER_LISTENERS_FIELDS?= # .{ListenerArn:ListenerArn,port:Port,protocol:Protocol}
 
-#--- Utilities
-
-#--- MACROS
-
+# Macros
 _elb2_get_loadbalancer_arn= $(call _elb2_get_loadbalancer_arn_N, $(ELB2_LOADBALANCER_NAME))
 _elb2_get_loadbalancer_arn_N= $(shell $(AWS) elbv2 describe-load-balancers --names $(1) --query "LoadBalancers[].LoadBalancerArn" --output text) 
 # _elb2_get_loadbalancer_arn_N= $(shell $(AWS) elbv2 describe-load-balancers --names $(1) --query "LoadBalancers[].LoadBalancerArn" --output text 2>/dev/null) 

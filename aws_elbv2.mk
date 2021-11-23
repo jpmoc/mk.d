@@ -14,9 +14,9 @@ ELB2_REGION_ID?= $(AWS_REGION_ID)
 
 # Customizations
 
-#--- Utilities
+# Utilities
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -44,12 +44,12 @@ _elb2_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/aws_elbv2_listener.mk
--include $(MK_DIR)/aws_elbv2_loadbalancer.mk
--include $(MK_DIR)/aws_elbv2_rule.mk
--include $(MK_DIR)/aws_elbv2_targetgroup.mk
--include $(MK_DIR)/aws_elbv2_target.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)aws_elbv2_listener.mk
+-include $(MK_DIRPATH)aws_elbv2_loadbalancer.mk
+-include $(MK_DIRPATH)aws_elbv2_rule.mk
+-include $(MK_DIRPATH)aws_elbv2_targetgroup.mk
+-include $(MK_DIRPATH)aws_elbv2_target.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

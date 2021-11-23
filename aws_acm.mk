@@ -11,9 +11,9 @@ ACM_UI_LABEL?= $(AWS_UI_LABEL)#
 
 # Customizations
 
-#--- Utilities
+# Utilities
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -41,10 +41,10 @@ _acm_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
--include $(MK_DIR)/aws_acm_certificate.mk
--include $(MK_DIR)/aws_acm_certificateauthority.mk
--include $(MK_DIR)/aws_acm_certificateauthorityauditreport.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)aws_acm_certificate.mk
+-include $(MK_DIRPATH)aws_acm_certificateauthority.mk
+-include $(MK_DIRPATH)aws_acm_certificateauthorityauditreport.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

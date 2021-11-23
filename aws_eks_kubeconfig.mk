@@ -22,26 +22,24 @@ EKS_KUBECONFIG_NAME?= $(EKS_KUBECONFIG_FILENAME)
 EKS_KUBECONFIGS_DIRPATH?= $(EKS_KUBECONFIG_DIRPATH)
 EKS_KUBECONFIGS_SET_NAME?= kubeconfigs@$(EKS_KUBECONFIGS_DIRPATH)@$(EKS_KUBECONFIGS_REGEX)
 
-# Option parameters
+# Options
 __EKS_CLUSTER__KUBECONFIG= --cluster=$(EKS_KUBECONFIG_CLUSTER_NAME)
 __EKS_KUBECONFIG= --kubeconfig=$(EKS_KUBECONFIG_FILEPATH)
 __EKS_NAME__KUBECONFIG= --name=$(EKS_KUBECONFIG_CLUSTER_NAME)
 
-# UI parameters
+# Customizations
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_eks_view_framework_macros ::
-	@echo 'AWS::EKS::Kubeconfig ($(_AWS_EKS_KUBECONFIG_MK_VERSION)) macros:'
-	@echo
+_eks_list_macros ::
+	@#echo 'AWS::EKS::Kubeconfig ($(_AWS_EKS_KUBECONFIG_MK_VERSION)) macros:'
+	@#echo
 
-_eks_view_framework_parameters ::
+_eks_list_parameters ::
 	@echo 'AWS::EKS::Kubeconfig ($(_AWS_EKS_KUBECONFIG_MK_VERSION)) parameters:'
 	@echo '    EKS_KUBECONFIG_CLUSTER_NAME=$(EKS_KUBECONFIG_CLUSTER_NAME)'
 	@echo '    EKS_KUBECONFIG_CONTEXT_NAME=$(EKS_KUBECONFIG_CONTEXT_NAME)'
@@ -56,15 +54,17 @@ _eks_view_framework_parameters ::
 	@echo '    EKS_KUBECONFIGS_SET_NAME=$(EKS_KUBECONFIGS_SET_NAME)'
 	@echo
 
-_eks_view_framework_targets ::
+_eks_list_targets ::
 	@echo 'AWS::EKS::Kubeconfig ($(_AWS_EKS_KUBECONFIG_MK_VERSION)) targets:'
 	@echo '    create_kubeconfig             - Create the kubeconfig for a cluster'
+	@echo '    list_kubeconfigs              - List ALL kubeconfigs'
+	@echo '    list_kubeconfigs_set          - List a set of kubeconfigs'
+	@echo '    read_kubeconfig               - Read a kubeconfig'
 	@echo '    show_kubeconfig               - Show everything related to a kubeconfig'
 	@echo '    show_kubeconfig_content       - Show content of to a kubeconfig'
 	@echo '    show_kubeconfig_description   - Show description of to a kubeconfig'
 	@echo '    update_kubeconfig             - Update the kubeconfig for a cluster'
-	@echo '    view_kubeconfigs              - View ALL kubeconfigs'
-	@echo '    view_kubeconfigs_set          - View a set of kubeconfigs'
+	@echo '    write_kubeconfig              - Write a kubeconfig'
 	@echo
 
 #----------------------------------------------------------------------
@@ -113,6 +113,17 @@ _eks_create_kubeconfig:
 	mkdir -p $(EKS_KUBECONFIG_DIRPATH)
 	echo "$${EKS_KUBECONFIG_CONTENT}" > $(EKS_KUBECONFIG_FILEPATH)
 
+_eks_list_kubeconfigs:
+	@$(INFO) '$(EKS_UI_LABEL)Listing ALL kubeconfigs ...'; $(NORMAL)
+	ls -al $(EKS_KUBECONFIGS_DIRPATH)
+
+_eks_list_kubeconfigs_set:
+	@$(INFO) '$(EKS_UI_LABEL)Listing kubeconfigs-set "$(EKS_KUBECONFIGS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Kubeconfigs are grouped based on the provided dirpath and regex'; $(NORMAL)
+	ls -al $(EKS_KUBECONFIGS_DIRPATH)$(EKS_KUBECONFIGS_REGEX)
+
+_eks_read_kubeconfig: _eks_show_kubeconfig_content
+
 _eks_show_kubeconfig: _eks_show_kubeconfig_content _eks_show_kubeconfig_description
 
 _eks_show_kubeconfig_content:
@@ -127,11 +138,6 @@ _eks_update_kubeconfig:
 	@$(INFO) '$(EKS_UI_LABEL)Updating kubeconfig "$(EKS_KUBECONFIG_NAME)" ...'; $(NORMAL)
 	$(AWS) eks update-kubeconfig $(__EKS_KUBECONFIG) $(__EKS_NAME__KUBECONFIG)
 
-_eks_view_kubeconfigs:
-	@$(INFO) '$(EKS_UI_LABEL)Viewing ALL kubeconfigs ...'; $(NORMAL)
-	ls -al $(EKS_KUBECONFIGS_DIRPATH)
-
-_eks_view_kubeconfigs_set:
-	@$(INFO) '$(EKS_UI_LABEL)Viewing kubeconfigs-set "$(EKS_KUBECONFIGS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Kubeconfigs are grouped based on the provided dirpath and regex'; $(NORMAL)
-	ls -al $(EKS_KUBECONFIGS_DIRPATH)$(EKS_KUBECONFIGS_REGEX)
+_eks_write_kubeconfig:
+	@$(INFO) '$(EKS_UI_LABEL)Write content of kubeconfig "$(EKS_KUBECONFIG_NAME)" ...'; $(NORMAL)
+	$(WRITER) $(EKS_KUBECONFIG_FILEPATH)

@@ -29,7 +29,7 @@ ELB2_TARGETGROUPS_ARNS?= $(ELB2_TARGETGROUP_ARN)
 ELB2_TARGETGROUPS_LOADBALANCER_ARN?= $(ELB2_TARGETGROUP_LOADBALANCER_ARN)
 ELB2_TARGETGROUPS_NAMES?= $(ELB2_TARGETGROUP_NAME)
 
-# Option parameters
+# Options
 __ELB2_HEALTH_CHECK_ENABLED= $(if $(filter false, $(ELB2_TARGETGROUP_HEALTHCHECK_FLAG)),--no-health-check-enabled,--health-check-enabled) # Enabled by default
 __ELB2_HEALTH_CHECK_INTERVAL_SECONDS= $(if $(ELB2_TARGETGROUP_HEALTHCHECK_INTERVAL),--health-check-interval-seconds $(ELB2_TARGETGROUP_HEALTHCHECK_INTERVAL))
 __ELB2_HEALTH_CHECK_PATH= $(if $(ELB2_TARGETGROUP_HEALTHCHECK_PATH),--health-check-path $(ELB2_TARGETGROUP_HEALTHCHECK_PATH))
@@ -58,8 +58,7 @@ _ELB2_LIST_TARGETGROUPS_SET_FIELDS?= $(_ELB2_LIST_TARGETGROUPS_FIELDS)
 _ELB2_LIST_TARGETGROUPS_SET_QUERYFILTER?=
 _ELB2_SHOW_TARGETGROUP_HEALTH_FIELDS?=
 
-#--- MACROS
-
+# Macros
 _elb2_get_targetgroup_arn= $(call _elb2_get_targetgroup_arn_N, $(ELB2_TARGETGROUP_NAME))
 _elb2_get_targetgroup_arn_N= $(shell $(AWS) elbv2 describe-target-groups --names $(1) --query "TargetGroups[].TargetGroupArn" --output text) 
 

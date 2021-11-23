@@ -13,7 +13,7 @@ __EC2_NAT_GATEWAY_IDS= $(if $(EC2_NATGATEWAYS_IDS), --nat-gateway-ids $(EC2_NATG
 # Customizations
 _EC2_LIST_NATGATEWAYS_FIELDS?= .{NatGatewayId:NatGatewayId,_SubnetId:SubnetId,_VpcId:VpcId,_State:State,_PublicIp:NatGatewayAddresses[0].PublicIp,NameTag:Tags[?Key=='Name'] | [0].Value}
 
-#--- MACROS
+# Macros
 _ec2_get_natgateway_id=$(call _ec2_get_natgateway_id_N, $(EC2_NATGATEWAY_NAME))
 _ec2_get_natgateway_id_N=$(shell $(AWS) ec2 describe-nat-gateways --filter "Name=tag:Name,Values=$(strip $(1))" --query "NatGateways[].NatGatewayId" --output text)
 

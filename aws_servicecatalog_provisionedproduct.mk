@@ -35,7 +35,7 @@ SCG_PROVISIONEDPRODUCT_PROVISIONINGARTIFACT_NAME?= $(SCG_PROVISIONINGARTIFACT_NA
 SCG_PROVISIONEDPRODUCT_PARAMETERS_DIRPATH?= $(SCG_INPUTS_DIRPATH)
 SCG_PROVISIONEDPRODUCT_PARAMETERS_FILEPATH?= $(if $(SCG_PROVISIONEDPRODUCT_PARAMETERS_FILENAME),$(SCG_PROVISIONEDPRODUCT_PARAMETERS_DIRPATH)$(SCG_PROVISIONEDPRODUCT_PARAMETERS_FILENAME))
 
-# Options parameters
+# Options
 __SCG_ACCESS_LEVEL_FILTER=
 __SCG_FILTERS__PROVISIONEDPRODUCTS=
 __SCG_ID__PROVISIONEDPRODUCT= $(if $(SCG_PROVISIONEDPRODUCT_ID),--id $(SCG_PROVISIONEDPRODUCT_ID))
@@ -60,21 +60,19 @@ __SCG_SORT_BY__PROVISIONEDPRODUCT=
 __SCG_SORT_ORDER__PROVISIONEDPRODUCT=
 __SCG_TAGS__PROVISIONEDPRODUCT?= $(if $(SCG_PROVISIONEDPRODUCT_TAGS_KEYVALUES),--tags $(SCG_PROVISIONEDPRODUCT_TAGS_KEYVALUES))
 
-# UI parameters
-SCG_UI_SHOW_PROVISIONEDPRODUCT_DESCRIPTION_FIELDS?= .{Status:Status,Name:Name,LastRecordId:LastRecordId,Arn:Arn,CreatedTime:CreatedTime,Type:Type,Id:Id,IdempotencyToken:IdempotencyToken}
-SCG_UI_SHOW_PROVISIONEDPRODUCT_OUTPUTS_FIELDS?= .{OutputKey:OutputKey,OutputValue:OutputValue}
-SCG_UI_SHOW_PROVISIONEDPRODUCT_OUTPUTS_SLICE?=
-SCG_UI_SHOW_PROVISIONEDPRODUCT_STACKS_FIELDS?=
-SCG_UI_SHOW_PROVISIONEDPRODUCT_STATUS_FIELDS?= .{Status:Status,StatusMessage:StatusMessage}
-SCG_UI_VIEW_PROVISIONEDPRODUCTS_FIELDS?= .{Name:Name,status:Status,type:Type,Id:Id,userArn:UserArn}
-SCG_UI_VIEW_PROVISIONEDPRODUCTS_SET_FIELDS?= $(SCG_UI_VIEW_PROVISIONEDPRODUCTS_FIELDS)
-SCG_UI_VIEW_PROVISIONEDPRODUCTS_SET_SLICE?=
-
-#--- Pipe
+# Customizations
+_SCG_LIST_PROVISIONEDPRODUCTS_FIELDS?= .{Name:Name,status:Status,type:Type,Id:Id,userArn:UserArn}
+_SCG_LIST_PROVISIONEDPRODUCTS_SET_FIELDS?= $(_SCG_LIST_PROVISIONEDPRODUCTS_FIELDS)
+_SCG_LIST_PROVISIONEDPRODUCTS_SET_QUERYFILTER?=
+_SCG_SHOW_PROVISIONEDPRODUCT_DESCRIPTION_FIELDS?= .{Status:Status,Name:Name,LastRecordId:LastRecordId,Arn:Arn,CreatedTime:CreatedTime,Type:Type,Id:Id,IdempotencyToken:IdempotencyToken}
+_SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_FIELDS?= .{OutputKey:OutputKey,OutputValue:OutputValue}
+_SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_QUERYFILTER?=
+_SCG_SHOW_PROVISIONEDPRODUCT_STACKS_FIELDS?=
+_SCG_SHOW_PROVISIONEDPRODUCT_STATUS_FIELDS?= .{Status:Status,StatusMessage:StatusMessage}
 _SCG_SHOW_PROVISIONEDPRODUCT_DESCRIPTION_|?= -#
 _SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_|?= -#
 
-#--- MACROS
+# Macros
 _scg_get_provisionedproduct_id= $(call _scg_get_provisionedproduct_id_N, $(SCG_PROVISIONEDPRODUCT_NAME))
 _scg_get_provisionedproduct_id_N= $(shell $(AWS) servicecatalog search-provisioned-products $(__SCG_ACCEPT_LANGUAGE) --query "ProvisionedProducts[?Name=='$(strip $(1))'].Id" --output text)
 
@@ -86,13 +84,13 @@ _scg_get_provisionedproduct_output_value_KN= $(shell $(AWS) servicecatalog get-p
 # USAGE
 #
 
-_scg_view_framework_macros ::
+_scg_list_macros ::
 	@echo 'AWS::ServiceCataloG::ProvisionedProduct ($(_AWS_SERVICECATALOG_PROVISIONEDPRODUCT_MK_VERSION)) macros:'
 	@echo '    _scg_get_provisionedproduct_id_{|N}                      - Get the ID of a provisioning product (Name)'
 	@echo '    _scg_get_provisionedproduct_output_{|K|KN}               - Get an output of a provisioning product (Key,Name)'
 	@echo
 
-_scg_view_framework_parameters ::
+_scg_list_parameters ::
 	@echo 'AWS::ServiceCataloG::ProvisionedProduct ($(_AWS_SERVICECATALOG_PROVISIONEDPRODUCT_MK_VERSION)) parameters:'
 	@echo '    SCG_PROVISIONEDPRODUCT_ARN=$(SCG_PROVISIONEDPRODUCT_ARN)'
 	@echo '    SCG_PROVISIONEDPRODUCT_ID=$(SCG_PROVISIONEDPRODUCT_ID)'
@@ -120,19 +118,19 @@ _scg_view_framework_parameters ::
 	@echo '    SCG_PROVISIONEDPRODUCTS_SET_NAME=$(SCG_PROVISIONEDPRODUCTS_SET_NAME)'
 	@echo
 
-_scg_view_framework_targets ::
+_scg_list_targets ::
 	@echo 'AWS::ServiceCataloG::ProvisionedProduct ($(_AWS_SERVICECATALOG_PROVISIONEDPRODUCT_MK_VERSION)) targets:'
 	@echo '    _scg_create_provisionedproduct                           - Create a provisioned-product'
 	@echo '    _scg_delete_provisionedproduct                           - Delete a provisioned-product'
-	@echo '    _scg_edit_provisionedproduct_parameters                  - Edit parameters for a provisioned-product'
+	@echo '    _scg_list_provisionedproducts                            - List all provisioned-products'
+	@echo '    _scg_list_provisionedproducts_set                        - List a set of provisioned-product'
 	@echo '    _scg_show_provisionedproduct                             - Show everything related to a provisioned-product'
 	@echo '    _scg_show_provisionedproduct_description                 - Show description of a provisioned-product'
 	@echo '    _scg_show_provisionedproduct_input                       - Show inputs of a provisioned-product'
 	@echo '    _scg_show_provisionedproduct_outputs                     - Show outputs of a provisioned-product'
 	@echo '    _scg_show_provisionedproduct_status                      - Show status of a provisioned-product'
 	@echo '    _scg_update_provisionedproduct                           - Update a provisioned-product'
-	@echo '    _scg_view_provisionedproducts                            - View all provisioned-products'
-	@echo '    _scg_view_provisionedproducts_set                        - View a set of provisioned-product'
+	@echo '    _scg_write_provisionedproduct_parameters                 - Write parameters for a provisioned-product'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -158,15 +156,21 @@ _scg_delete_provisionedproduct:
 	$(AWS)  servicecatalog terminate-provisioned-product $(__SCG_ACCEPT_LANGUAGE) $(__SCG_IGNORE_ERROR) $(__SCG_RETAIN_PHYSICAL_RESOURCES) \
 	$(if $(SCG_PROVISIONEDPRODUCT_ID),$(__SCG_PROVISIONED_PRODUCT_ID),$(__SCG_PROVISIONED_PRODUCT_NAME))
 
-_scg_edit_provisionedproduct_parameters:
-	@$(INFO) '$(SCG_UI_LABEL)Editing parameters for provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
-	$(EDITOR) $(SCG_PROVISIONEDPRODUCT_PARAMETERS_FILEPATH)
+_scg_list_provisionedproducts:
+	@$(INFO) '$(SCG_UI_LABEL)Listing ALL provisioned-products ...'; $(NORMAL)
+	$(AWS) servicecatalog search-provisioned-products $(__SCG_ACCEPT_LANGUAGE) $(__SCG_ACCESS_LEVEL_FILTER) $(__SCG_FILTERS__PROVISIONEDPRODUCTS) $(__SCG_SORT_BY__PROVISIONEDPRODUCT) $(__SCG_SORT_ORDER__PROVISIONEDPRODUCT) --query "ProvisionedProducts[]$(_SCG_LIST_PROVISIONEDPRODUCTS_FIELDS)"
 
-_scg_show_provisionedproduct: _scg_show_provisionedproduct_inputs _scg_show_provisionedproduct_outputs _scg_show_provisionedproduct_stacks _scg_show_provisionedproduct_status _scg_show_provisionedproduct_description
+_scg_list_provisionedproducts_set:
+	@$(INFO) '$(SCG_UI_LABEL)Listing provisioned-products-set "$(SCG_PROVISIONEDPRODUCTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Provisioned-products are grouped based on provided filter, slice'; $(NORMAL)
+	$(AWS) servicecatalog search-provisioned-products $(__SCG_ACCEPT_LANGUAGE) $(__SCG_ACCESS_LEVEL_FILTER) $(__SCG_FILTERS__PROVISIONEDPRODUCTS) $(__SCG_SORT_BY__PROVISIONEDPRODUCT) $(__SCG_SORT_ORDER__PROVISIONEDPRODUCT) --query "ProvisionedProducts[$(_SCG_LIST_PROVISIONEDPRODUCTS_SET_QUERYFILTER)]$(_SCG_LIST_PROVISIONEDPRODUCTS_SET_FIELDS)"
+
+_SCG_SHOW_PROVISIONEDPRODUCT_TARGETS?= _scg_show_provisionedproduct_inputs _scg_show_provisionedproduct_outputs _scg_show_provisionedproduct_stacks _scg_show_provisionedproduct_status _scg_show_provisionedproduct_description
+_scg_show_provisionedproduct: $(_SCG_SHOW_PROVISIONEDPRODUCT_TARGETS)
 
 _scg_show_provisionedproduct_description:
 	@$(INFO) '$(SCG_UI_LABEL)Showing description provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
-	$(+SCG_SHOW_PROVISIONEDPRODUCT_DESCRIPTION_|)$(AWS) servicecatalog describe-provisioned-product $(__SCG_ACCEPT_LANGUAGE) --query "ProvisionedProductDetail$(SCG_UI_SHOW_PROVISIONEDPRODUCT_FIELDS)" \
+	$(+SCG_SHOW_PROVISIONEDPRODUCT_DESCRIPTION_|)$(AWS) servicecatalog describe-provisioned-product $(__SCG_ACCEPT_LANGUAGE) --query "ProvisionedProductDetail$(_SCG_SHOW_PROVISIONEDPRODUCT_FIELDS)" \
 	$(if $(SCG_PROVISIONEDPRODUCT_ID),$(__SCG_ID__PROVISIONEDPRODUCT),$(__SCG_NAME__PROVISIONEDPRODUCT))
 
 _scg_show_provisionedproduct_inputs:
@@ -179,32 +183,23 @@ _scg_show_provisionedproduct_inputs:
 
 _scg_show_provisionedproduct_outputs:
 	@$(INFO) '$(SCG_UI_LABEL)Showing outputs of provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
-	$(_SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_|)$(AWS) servicecatalog get-provisioned-product-outputs $(SCG_ACCEPT_LANGUAGE) $(__SCG_OUTPUT_KEYS) --query "Outputs[$(SCG_UI_SHOW_PROVISIONEDPRODUCT_OUTPUTS_SLICE)]$(SCG_UI_SHOW_PROVISIONEDPRODUCT_OUTPUTS_FIELDS)" --output json \
+	$(_SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_|)$(AWS) servicecatalog get-provisioned-product-outputs $(SCG_ACCEPT_LANGUAGE) $(__SCG_OUTPUT_KEYS) --query "Outputs[$(_SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_QUERYFILTER)]$(_SCG_SHOW_PROVISIONEDPRODUCT_OUTPUTS_FIELDS)" --output json \
 	$(if $(SCG_PROVISIONEDPRODUCT_ID),$(__SCG_PROVISIONED_PRODUCT_ID),$(__SCG_PROVISIONED_PRODUCT_NAME))
 
 _scg_show_provisionedproduct_stacks:
 	@$(INFO) '$(SCG_UI_LABEL)Showing cloudformation-stacks of provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
 	-@$(if $(SCG_PROVISIONEDPRODUCT_ID),,$(WARN) "SCG_PROVISIONEDPRODUCT_ID is not set")
 	-$(if $(SCG_PROVISIONEDPRODUCT_ID), \
-		$(AWS) servicecatalog list-stack-instances-for-provisioned-product $(SCG_ACCEPT_LANGUAGE) $(__SCG_PROVISIONED_PRODUCT_ID) # --query "Stacks[$(SCG_UI_SHOW_PROVISIONEDPRODUCT_STACKS_SLICE)]$(SCG_UI_SHOW_PROVISIONEDPRODUCT_STACKS_FIELDS)")
+		$(AWS) servicecatalog list-stack-instances-for-provisioned-product $(SCG_ACCEPT_LANGUAGE) $(__SCG_PROVISIONED_PRODUCT_ID) # --query "Stacks[$(_SCG_SHOW_PROVISIONEDPRODUCT_STACKS_QUERYFILTER)]$(_SCG_SHOW_PROVISIONEDPRODUCT_STACKS_FIELDS)")
 
 
 _scg_show_provisionedproduct_status:
 	@$(INFO) '$(SCG_UI_LABEL)Showing status of provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
-	-$(AWS)  servicecatalog describe-provisioned-product $(__SCG_ACCEPT_LANGUAGE) --query "ProvisionedProductDetail$(SCG_UI_SHOW_PROVISIONEDPRODUCT_STATUS)" --output json \
+	-$(AWS)  servicecatalog describe-provisioned-product $(__SCG_ACCEPT_LANGUAGE) --query "ProvisionedProductDetail$(_SCG_SHOW_PROVISIONEDPRODUCT_STATUS)" --output json \
 	$(if $(SCG_PROVISIONEDPRODUCT_ID),$(__SCG_ID__PROVISIONEDPRODUCT),$(__SCG_NAME__PROVISIONEDPRODUCT))
 
 _scg_update_provisionedproduct:
 	@$(INFO) '$(SCG_UI_LABEL)Updating provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
-
-_scg_view_provisionedproducts:
-	@$(INFO) '$(SCG_UI_LABEL)Viewing ALL provisioned-products ...'; $(NORMAL)
-	$(AWS) servicecatalog search-provisioned-products $(__SCG_ACCEPT_LANGUAGE) $(__SCG_ACCESS_LEVEL_FILTER) $(__SCG_FILTERS__PROVISIONEDPRODUCTS) $(__SCG_SORT_BY__PROVISIONEDPRODUCT) $(__SCG_SORT_ORDER__PROVISIONEDPRODUCT) --query "ProvisionedProducts[]$(SCG_UI_VIEW_PROVISIONEDPRODUCTS_FIELDS)"
-
-_scg_view_provisionedproducts_set:
-	@$(INFO) '$(SCG_UI_LABEL)Viewing provisioned-products-set "$(SCG_PROVISIONEDPRODUCTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Provisioned-products are grouped based on provided filter, slice'; $(NORMAL)
-	$(AWS) servicecatalog search-provisioned-products $(__SCG_ACCEPT_LANGUAGE) $(__SCG_ACCESS_LEVEL_FILTER) $(__SCG_FILTERS__PROVISIONEDPRODUCTS) $(__SCG_SORT_BY__PROVISIONEDPRODUCT) $(__SCG_SORT_ORDER__PROVISIONEDPRODUCT) --query "ProvisionedProducts[$(SCG_UI_VIEW_PROVISIONEDPRODUCTS_SET_SLICE)]$(SCG_UI_VIEW_PROVISIONEDPRODUCTS_SET_FIELDS)"
 
 _scg_waitfor_provisionedproduct:
 	@$(INFO) '$(SCG_UI_LABEL)Waiting for provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
@@ -212,3 +207,7 @@ _scg_waitfor_provisionedproduct:
 		_STATUS=`$(AWS) servicecatalog search-provisioned-products --accept-language en --query "ProvisionedProducts[?Name=='$(SCG_PROVISIONEDPRODUCT_NAME)'].Status" --output text 2>/dev/null`; \
 		$(ECHO) -n "." ; sleep 1; \
 	done; $(ECHO) $$_STATUS ; $(WARN) 'Provisioning of provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" completed'; $(NORMAL)
+
+_scg_write_provisionedproduct_parameters:
+	@$(INFO) '$(SCG_UI_LABEL)Writing parameters for provisioned-product "$(SCG_PROVISIONEDPRODUCT_NAME)" ...'; $(NORMAL)
+	$(WRITER) $(SCG_PROVISIONEDPRODUCT_PARAMETERS_FILEPATH)

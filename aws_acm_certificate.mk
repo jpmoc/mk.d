@@ -48,7 +48,7 @@ _ACM_LIST_CERTIFICATES_FIELDS?=
 _ACM_LIST_CERTIFICATES_SET_FIELDS?= $(_ACM_LIST_CERTIFICATES_FIELDS)
 _ACM_LIST_CERTIFICATES_SET_SLICE?=
 
-#--- MACROS
+# Macros
 _acm_get_certificate_arn= $(call _acm_get_certificate_arn_N, $(ACM_CERTIFICATE_DOMAIN_NAME))
 _acm_get_certificate_arn_N= $(shell $(AWS) acm list-certificates --query "CertificateSummaryList[?DomainName=='$(strip $(1))'].CertificateArn" --output text)
 

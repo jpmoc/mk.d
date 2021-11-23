@@ -17,16 +17,15 @@ OSL_PUBLICKEY_PRIVATEKEY_FILEPATH?= $(OSL_PRIVATEKEY_FILEPATH)
 OSL_PUBLICKEYS_DIRPATH?= $(OSL_PUBLICKEY_DIRPATH)
 OSL_PUBLICKEYS_SET_NAME?= public-keys@$(OSL_PUBLICKEYS_REGEX)@$(OSL_PUBLICKEYS_DIRPATH)
 
-# Option parameters
+# Options
 __OSL_IN__PUBLICKEY?= $(if $(OSL_PUBLICKEY_PRIVATEKEY_FILEPATH),-in $(OSL_PUBLICKEY_PRIVATEKEY_FILEPATH))
 __OSL_OUT__PUBLICKEY?= $(if $(OSL_PUBLICKEY_FILEPATH),-out $(OSL_PUBLICKEY_FILEPATH))
 
-# Pipe parameters
+# Customizations
 |_OSL_SHOW_PUBLICKEY_CONTENT?= | head -5; echo '...'
 |_OSL_SHOW_PUBLICKEY_MODULUS?= | sed 's/^Modulus=//'
 
-#--- MACROS
-
+# Macros
 _osl_get_publickey_modulus= $(call _osl_get_publickey_modulus_F, $(OSL_PUBLICKEY_FILEPATH))
 _osl_get_publickey_modulus_F= $(shell $(OPENSSL) rsa -in $(1) -modulus -noout -pubin | sed 's/^Modulus=//')
 

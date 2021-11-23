@@ -22,7 +22,7 @@ OSL_PRIVATEKEY_NAME?= $(patsubst %.pem,%,$(OSL_PRIVATEKEY_FILENAME))
 OSL_PRIVATEKEY_PASSPHRASE?= $(if $(OSL_PRIVATEKEY_PASSPHRASE_FILEPATH),file:$(OSL_PRIVATEKEY_PASSPHRASE_FILEPATH))$(if $(OSL_PRIVATEKEY_PASSPHRASE_STRING),pass:$(OSL_PRIVATEKEY_PASSPHRASE_STRING))
 OSL_PRIVATEKEYS_DIRPATH?= $(OSL_PRIVATEKEY_DIRPATH)
 
-# Option parameters
+# Options
 __OSL_AES128= $(if $(filter aes128, $(OSL_PRIVATEKEY_CIPHER_ALGORITHM)),-aes128)
 __OSL_AES256= $(if $(filter aes256, $(OSL_PRIVATEKEY_CIPHER_ALGORITHM)),-aes256)
 __OSL_IN__PRIVATEKEY= $(if $(OSL_PRIVATEKEY_FILEPATH),-in $(OSL_PRIVATEKEY_FILEPATH))
@@ -30,15 +30,13 @@ __OSL_OUT__PRIVATEKEY= $(if $(OSL_PRIVATEKEY_FILEPATH),-out $(OSL_PRIVATEKEY_FIL
 __OSL_PASSIN__PRIVATEKEY= $(if $(OSL_PRIVATEKEY_PASSPHRASE),-passin $(OSL_PRIVATEKEY_PASSPHRASE))
 __OSL_PASSOUT__PRIVATEKEY= $(if $(OSL_PRIVATEKEY_PASSPHRASE),-passout pass:$(OSL_PRIVATEKEY_PASSPHRASE))
 
-#--- Utilities
-
+#Customizations
 |_OSL_CHECK_PRIVATEKEY_INTEGRITY?= | head -1; echo '...'
 |_OSL_SHOW_PRIVATEKEY_COMPONENTS?= | head -5; echo '...'
 |_OSL_SHOW_PRIVATEKEY_MODULUS?= | sed 's/^Modulus=//'
 |_OSL_SHOW_PRIVATEKEY_RAWCONTENT?= | head -5; echo '...'
 
-#--- MACROS
-
+# Macros
 _osl_get_privatekey_modulus= $(call _osl_get_privatekey_modulus_F, $(OSL_PRIVATEKEY_FILEPATH))
 _osl_get_privatekey_modulus_F= $(call _osl_get_privatekey_modulus_FP, $(1), $(OSL_PRIVATEKEY_PASSPHRASE))
 _osl_get_privatekey_modulus_FP= $(shell openssl rsa -modulus -noout -in $(1) -passin $(2) | sed 's/Modulus=//')

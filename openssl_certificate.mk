@@ -39,7 +39,7 @@ OSL_CERTIFICATE_ROOTCERTIFICATEPRIVATEKEY_FILEPATH?= $(OSL_ROOTCERTIFICATE_PRIVA
 OSL_CERTIFICATES_DIRPATH?= $(OSL_CERTIFICATE_DIRPATH)
 OSL_CERTIFICATES_SET_NAME?= certificates@$(OSL_CERTIFICATES_REGEX)
 
-# Option parameters
+# Options
 __OSL_BATCH=
 __OSL_CA__CERTIFICATE= $(if $(OSL_CERTIFICATE_ROOTCERTIFICATE_FILEPATH),-CA $(OSL_CERTIFICATE_ROOTCERTIFICATE_FILEPATH))
 __OSL_CAFILE__CERTIFICATE= $(if $(OSL_CERTIFICATE_CACHAIN_FILEPATH),-CAfile $(OSL_CERTIFICATE_CACHAIN_FILEPATH))
@@ -60,20 +60,20 @@ __OSL_RAND=
 # __OSL_SERVERNAME= $(if $(OSL_REMOTE_HOST), -servername $(OSL_REMOTE_HOST))
 __OSL_SET_SERIAL= $(if $(OSL_CERTIFICATE_SERIAL),-set_serial $(OSL_CERTIFCATE_SERIAL))
 
-# Pipe parameters
+# Customizations
 _OSL_CREATE_CERTIFICATE_|?= touch ~/.rnd &&# 
 |_OSL_SHOW_CERTIFICATE_CONFIG?= | head -5; echo '...'
 |_OSL_SHOW_CERTIFICATE_ENDCODEDCONTENT?= | head -5; echo '...'
 |_OSL_SHOW_CERTIFICATE_MODULUS?= | sed 's/^Modulus=//'
 |_OSL_SHOW_CERTIFICATE_PUBLICKEY?= # | tee $(OSL_CERTIFICATE_PUBLICKEY_FILEPATH)
 
-#--- MACROS
-
+# Macros
 _osl_get_certificate_modulus= $(call _osl_get_certificate_modulus_F, $(OSL_CERTIFICATE_FILEPATH))
 _osl_get_certificate_modulus_F= $(shell openssl x509 -in $(1) -modulus -noout | sed 's/^Modulus=//')
 
 _osl_get_certificate_publickey= $(call _osl_get_certificate_publickey_F, $(OSL_CERTIFICATE_FILEPATH))
 _osl_get_certificate_publickey_F= $(shell openssl x509 -in $(1) -pubkey -noout )
+
 #----------------------------------------------------------------------
 # INTERFACE
 #

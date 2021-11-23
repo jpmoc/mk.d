@@ -13,8 +13,7 @@ _AWS_EC2_AVAILABILITYZONE_MK_VERSION= $(_AWS_EC2_MK_VERSION)
 _EC2_LIST_AVAILABILITYZONES_FIELDS?= .{ZoneId:ZoneId,ZoneName:ZoneName,state:State}
 _EC2_LIST_AVAILABILITYZONES_SET_FIELDS?= $(EC2_LIST_AVAILABILITYZONES_FIELDS)
 
-#--- MACROS
-
+# Macros
 _ec2_get_availabilityzones_names= $(strip $(shell $(AWS) ec2 describe-availability-zones --query "AvailabilityZones[].ZoneName" --output text))
 
 #----------------------------------------------------------------------

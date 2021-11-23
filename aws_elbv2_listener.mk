@@ -57,8 +57,7 @@ _ELB2_LIST_LISTENERS_FIELDS?= .{ListenerArn:ListenerArn,port:Port,protocol:Proto
 _ELB2_LIST_LISTENERS_SET_FIELDS?= $(_ELB2_LIST_LISTENERS_FIELDS)
 _ELB2_LIST_LISTENERS_SET_QUERYFILTER?=
 
-#--- MACROS
-
+# Macros
 _elb2_get_listener_arn= $(call _elb2_get_listener_arn_A, $(ELB2_LISTENER_LOADBALANCER_ARN))
 _elb2_get_listener_arn_A= $(call _elb2_get_listener_arn_AP, $(1), $(ELB2_LISTENER_PORT))
 _elb2_get_listener_arn_AP= $(shell $(AWS) elbv2 describe-listeners --load-balancer-arn $(1) --query 'Listeners[?Port==`$(strip $(2))`].ListenerArn' --output text) 

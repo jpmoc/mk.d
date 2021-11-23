@@ -48,7 +48,7 @@ _ACM_LIST_CERTIFICATEAUTHORITIES_FIELDS?= .{status:Status,Arn:Arn,subject: Certi
 _ACM_LIST_CERTIFICATEAUTHORITIES_SET_FIELDS?= $(_ACM_LIST_CERTIFICATEAUTHORITIES_FIELDS)
 _ACM_LIST_CERTIFICATEAUTHORITIES_SET_SLICE?= 0:5
 
-#--- MACROS
+# Macros
 ACM_GET_CERTIFICATEAUTHORITY_ARN_SLICE?= $(_ACM_LIST_CERTIFICATEAUTHORITIES_SET_SLICE)
 _acm_get_certificateauthority_arn= $(call _acm_get_certificateauthority_arn_N, $(ACM_GET_CERTIFICATEAUTHORITY_ARN_SLICE))
 _acm_get_certificateauthority_arn_N= $(shell $(AWS) acm-pca list-certificate-authorities --query "CertificateAuthorities[$(strip $(1))].Arn" --output text)

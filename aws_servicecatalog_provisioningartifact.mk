@@ -24,7 +24,7 @@ SCG_PROVISIONINGARTIFACT_PRODUCTLAUNCHPATH_NAME?= $(SCG_PRODUCT_LAUNCHPATH_NAME)
 SCG_PROVISIONINGARTIFACTS_PRODUCT_ID?= $(SCG_PROVISIONINGARTIFACT_PRODUCT_ID)
 SCG_PROVISIONINGARTIFACTS_SET_NAME?= artifacts@$(SCG_PROVISIONINGARTIFACT_PRODUCT_NAME)@$(SCG_PROVISIONINGARTIFACT_PRODUCT_ID)
 
-# Options parameters
+# Options
 __SCG_ACTIVE= $(if $(filter false, $(SCG_PROVISIONARTIFACT_ENABLE_FALG)),--no-active,--active)
 __SCG_DESCRIPTION__ARTIFACT= $(if $(SCG_PROVISIONINGARTIFACT_DESCRIPTION),--description '$(SCG_PROVISIONINGARTIFACT_DESCRIPTION)')
 __SCG_NAME__PROVISIONINGARTIFACT= $(if $(SCG_PROVISIONINGARTIFACT_NAME),--name $(SCG_PROVISIONINGARTIFACT_NAME))
@@ -39,31 +39,29 @@ __SCG_PROVISIONING_ARTIFACT_ID= $(if $(SCG_PROVISIONINGARTIFACT_ID),--provisioni
 __SCG_PROVISIONING_ARTIFACT_NAME= $(if $(SCG_PROVISIONINGARTIFACT_NAME),--provisioning-artifact-name $(SCG_PROVISIONINGARTIFACT_NAME))
 __SCG_PROVISIONING_ARTIFACT_PARAMETERS= $(if $(SCG_PROVISIONINGARTIFACT_PARAMETERS),--provisioning-artifact-parameters $(SCG_PROVISIONINGARTIFACT_PARAMETERS))
 
-# UI parameters
-SCG_UI_SHOW_PROVISIONINGARTIFACT_CONSTRAINTSUMMARIES_FIELDS?=
-SCG_UI_SHOW_PROVISIONINGARTIFACT_OUTPUTS_FIELDS?=
-SCG_UI_SHOW_PROVISIONINGARTIFACT_PARAMETERS_FIELDS?= .{ParameterKey:ParameterKey,ParameterType:ParameterType,defaultValue:DefaultValue,description:Description}
-SCG_UI_SHOW_PROVISIONINGARTIFACT_TAGOPTIONS_FIELDS?=
-SCG_UI_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_FIELDS?=
-SCG_UI_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_SLICE?= ?Type!='metadata'
-SCG_UI_VIEW_PROVISIONINGARTIFACTS_FIELDS?= .{Id:Id,Name:Name,description:Description,type:Type,active:Active,createdTime:CreatedTime}
-SCG_UI_VIEW_PROVISIONINGARTIFACTS_SET_FIELDS?= $(SCG_UI_VIEW_PROVISIONINGARTIFACTS_FIELDS)
-SCG_UI_VIEW_PROVISIONINGARTIFACTS_SET_SLICE?=
+# Customizations
+_SCG_SHOW_PROVISIONINGARTIFACT_CONSTRAINTSUMMARIES_FIELDS?=
+_SCG_SHOW_PROVISIONINGARTIFACT_OUTPUTS_FIELDS?=
+_SCG_SHOW_PROVISIONINGARTIFACT_PARAMETERS_FIELDS?= .{ParameterKey:ParameterKey,ParameterType:ParameterType,defaultValue:DefaultValue,description:Description}
+_SCG_SHOW_PROVISIONINGARTIFACT_TAGOPTIONS_FIELDS?=
+_SCG_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_FIELDS?=
+_SCG_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_QUERYFILTER?= ?Type!='metadata'
+_SCG_LIST_PROVISIONINGARTIFACTS_FIELDS?= .{Id:Id,Name:Name,description:Description,type:Type,active:Active,createdTime:CreatedTime}
+_SCG_LIST_PROVISIONINGARTIFACTS_SET_FIELDS?= $(_SCG_LIST_PROVISIONINGARTIFACTS_FIELDS)
+_SCG_LIST_PROVISIONINGARTIFACTS_SET_QUERYFILTER?=
 |_SCG_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS?= | jq '.'
 
-#--- Utilities
-
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
 #
 
-_scg_view_framework_macros ::
-	@echo 'AWS::ServiceCataloG::ProvisioningArtifact ($(_AWS_SERVICECATALOG_PRODUCT_MK_VERSION)) macros:'
-	@echo
+_scg_list_macros ::
+	@#echo 'AWS::ServiceCataloG::ProvisioningArtifact ($(_AWS_SERVICECATALOG_PRODUCT_MK_VERSION)) macros:'
+	@#echo
 
-_scg_view_framework_parameters ::
+_scg_list_parameters ::
 	@echo 'AWS::ServiceCataloG::ProvisioningArtifact ($(_AWS_SERVICECATALOG_PRODUCT_MK_VERSION)) parameters:'
 	@echo '    SCG_PROVISIONINGARTIFACT_DESCRIPTION=$(SCG_PROVISIONINGARTIFACT_DESCRIPTION)'
 	@echo '    SCG_PROVISIONONGARTIFACT_ENABLE_FLAG=$(SCG_PROVISIONINGARTIFACT_ENABLE_FLAG)'
@@ -81,11 +79,12 @@ _scg_view_framework_parameters ::
 	@echo '    SCG_PROVISIONINGARTIFACTS_SET_NAME=$(SCG_PROVISIONINGARTIFACTS_SET_NAME)'
 	@echo
 
-_scg_view_framework_targets ::
+_scg_list_targets ::
 	@echo 'AWS::ServiceCataloG::ProvisioningArtifact ($(_AWS_SERVICECATALOG_PRODUCT_MK_VERSION)) targets:'
 	@echo '    _scg_create_provisioningartifact                   - Create a provisioning-artifact'
 	@echo '    _scg_delete_provisioningartifact                   - Delete a provisioning-artifact'
-	@echo '    _scg_edit_provisioningartifact_parameters          - Edit parameters for a provisioning-artifact'
+	@echo '    _scg_list_provisioningartifacts                    - List all provisioning-artifacts'
+	@echo '    _scg_list_provisioningartifacts_set                - List a set of provisioning-artifacts'
 	@echo '    _scg_show_provisioningartifact                     - Show everything related to a provisioining-artifacts'
 	@echo '    _scg_show_provisioningartifact_constraintsummaries - Show the constaint-summaries of a provisioining-artifacts'
 	@echo '    _scg_show_provisioningartifact_description         - Show the description of a provisioining-artifacts'
@@ -95,8 +94,7 @@ _scg_view_framework_targets ::
 	@echo '    _scg_show_provisioningartifact_template            - Show the template of a provisioning-artifact'
 	@echo '    _scg_show_provisioningartifact_usageinstructions   - Show the usage-instructions of a provisioning-artifact'
 	@echo '    _scg_update_provisioningartifact                   - Update a provisioining-artifact'
-	@echo '    _scg_view_provisioningartifacts                    - View all provisioning-artifacts'
-	@echo '    _scg_view_provisioningartifacts_set                - View a set of provisioning-artifacts'
+	@echo '    _scg_write_provisioningartifact_parameters         - Write parameters for a provisioning-artifact'
 	@echo 
 
 #----------------------------------------------------------------------
@@ -116,15 +114,22 @@ _scg_delete_provisioningartifact:
 	@$(WARN) 'A product must have at least 1 provisioning-artifact. You cannot delete all of them from a product.'; $(NORMAL)
 	$(AWS) servicecatalog delete-provisioning-artifact $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PRODUCT_ID__PROVISIONINGARTIFACT) $(__SCG_PROVISIONING_ARTIFACT_ID)
 
-_scg_edit_provisioningartifact:
-	@$(INFO) '$(SCG_UI_LABEL)Editing parameters for provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
-	$(EDITOR) $(SCG_PROVISIONINGARTIFACT_PARAMETERS_FILEPATH)
+_scg_list_provisioningartifacts::
+	@$(INFO) '$(SCG_UI_LABEL)Listing ALL provisioning-artifacts ...'; $(NORMAL)
+	@$(WARN) 'Provisioning-artifacts are grouped based on the provided product-id'; $(NORMAL)
+	$(AWS) servicecatalog list-provisioning-artifacts $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PRODUCT_ID__PROVISIONINGARTIFACTS) --query "ProvisioningArtifactDetails[]$(_SCG_LIST_PROVISIONINGARTIFACTS_FIELDS)"
 
-_scg_show_provisioningartifact: _scg_show_provisioningartifact_constraintsummaries _scg_show_provisioningartifact_outputs _scg_show_provisioningartifact_parameters _scg_show_provisioningartifact_tagoptions _scg_show_provisioningartifact_template _scg_show_provisioningartifact_usageinstructions _scg_show_provisioningartifact_description
+_scg_list_provisioningartifacts_set::
+	@$(INFO) '$(SCG_UI_LABEL)Listing provisioning-artifacts-set "$(SCG_PROVISIONINGARTIFACTS_SET_NAME)" ...'; $(NORMAL)
+	@$(WARN) 'Provisioning-artifacts are grouped based on the provided product-id and slice'; $(NORMAL)
+	$(AWS) servicecatalog list-provisioning-artifacts $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PRODUCT_ID__PROVISIONINGARTIFACTS) --query "ProvisioningArtifactDetails[$(_SCG_LIST_PROVISIONINGARTIFACTS_SET_QUERYFILTER)]$(_SCG_LIST_PROVISIONINGARTIFACTS_SET_FIELDS)"
+
+_SCG_SHOW_PROVISIONINGARTIFACT_TARGETS?= _scg_show_provisioningartifact_constraintsummaries _scg_show_provisioningartifact_outputs _scg_show_provisioningartifact_parameters _scg_show_provisioningartifact_tagoptions _scg_show_provisioningartifact_template _scg_show_provisioningartifact_usageinstructions _scg_show_provisioningartifact_description
+_scg_show_provisioningartifact: $(_SCG_SHOW_PROVISIONINGARTIFACT_TARGETS)
 
 _scg_show_provisioningartifact_constraintsummaries:
 	@$(INFO) '$(SCG_UI_LABEL)Showing the constraint-summaries of provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
-	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PATH_ID__PROVISIONINGARTIFACT) --query "ConstraintSummaries[]$(SCG_UI_SHOW_PROVISIONINGARTIFACT_CONSTRAINTSUMMARIES_FIELDS)" \
+	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PATH_ID__PROVISIONINGARTIFACT) --query "ConstraintSummaries[]$(_SCG_SHOW_PROVISIONINGARTIFACT_CONSTRAINTSUMMARIES_FIELDS)" \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCTLAUNCHPATH_ID),$(__SCG_PATH_ID__PROVISIONINGARTIFACT),$(__SCG_PATH_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCT_ID),$(__SCG_PRODUCT_ID__PROVISIONINGARTIFACT),$(__SCG_PRODUCT_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_NAME))
@@ -145,7 +150,7 @@ _scg_show_provisioningartifact_outputs:
 _scg_show_provisioningartifact_parameters:
 	@$(INFO) '$(SCG_UI_LABEL)Showing the parameters of provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'To provision a product using this artificat, you will have to provide a value to all those parameters'; $(NORMAL)
-	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) --query "ProvisioningArtifactParameters[]$(SCG_UI_SHOW_PROVISIONINGARTIFACT_PARAMETERS_FIELDS)" \
+	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) --query "ProvisioningArtifactParameters[]$(_SCG_SHOW_PROVISIONINGARTIFACT_PARAMETERS_FIELDS)" \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCTLAUNCHPATH_ID),$(__SCG_PATH_ID__PROVISIONINGARTIFACT),$(__SCG_PATH_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCT_ID),$(__SCG_PRODUCT_ID__PROVISIONINGARTIFACT),$(__SCG_PRODUCT_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_NAME))
@@ -153,7 +158,7 @@ _scg_show_provisioningartifact_parameters:
 _scg_show_provisioningartifact_tagoptions:
 	@$(INFO) '$(SCG_UI_LABEL)Showing tag-options of provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
 	@$(WARN) 'This operation returns the possible values for the REQUIRED tags'; $(NORMAL)
-	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) --query "TagOptions[]$(SCG_UI_SHOW_PROVISIONINGARTIFACT_TAGOPTIONS_FIELDS)" \
+	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) --query "TagOptions[]$(_SCG_SHOW_PROVISIONINGARTIFACT_TAGOPTIONS_FIELDS)" \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCTLAUNCHPATH_ID),$(__SCG_PATH_ID__PROVISIONINGARTIFACT),$(__SCG_PATH_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCT_ID),$(__SCG_PRODUCT_ID__PROVISIONINGARTIFACT),$(__SCG_PRODUCT_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_NAME))
@@ -164,7 +169,7 @@ _scg_show_provisioningartifact_template:
 
 _scg_show_provisioningartifact_usageinstructions:
 	@$(INFO) '$(SCG_UI_LABEL)Showing usage-instructions of provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
-	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) --query "UsageInstructions[$(SCG_UI_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_SLICE)]$(SCG_UI_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_FIELDS)"
+	-$(AWS) servicecatalog describe-provisioning-parameters $(__SCG_ACCEPT_LANGUAGE) --query "UsageInstructions[$(_SCG_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_QUERYFILTER)]$(_SCG_SHOW_PROVISIONINGARTIFACT_USAGEINSTRUCTIONS_FIELDS)"
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCTLAUNCHPATH_ID),$(__SCG_PATH_ID__PROVISIONINGARTIFACT),$(__SCG_PATH_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_PRODUCT_ID),$(__SCG_PRODUCT_ID__PROVISIONINGARTIFACT),$(__SCG_PRODUCT_NAME__PROVISIONINGARTIFACT)) \
 		$(if $(SCG_PROVISIONINGARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_ID),$(__SCG_PROVISIONING_ARTIFACT_NAME))
@@ -178,12 +183,6 @@ _scg_update_provisioningartifact:
 	@$(INFO) '$(SCG_UI_LABEL)Updating provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
 	$(AWS)  servicecatalog update-provisioning-artifact $(__SCG_ACCEPT_LANGUAGE) $(__SCG_ACTIVE) $(__SCG_DESCRIPTION__ARTIFACT) $(__SCG_NAME__ARTIFACT) $(__SCG_PRODUCT_ID__PROVISIONINGARTIFACT) $(__SCG_PROVISIONING_ARTIFACT_ID)
 
-_scg_view_provisioningartifacts::
-	@$(INFO) '$(SCG_UI_LABEL)Viewing ALL provisioning-artifacts ...'; $(NORMAL)
-	@$(WARN) 'Provisioning-artifacts are grouped based on the provided product-id'; $(NORMAL)
-	$(AWS) servicecatalog list-provisioning-artifacts $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PRODUCT_ID__PROVISIONINGARTIFACTS) --query "ProvisioningArtifactDetails[]$(SCG_UI_VIEW_PROVISIONINGARTIFACTS_FIELDS)"
-
-_scg_view_provisioningartifacts_set::
-	@$(INFO) '$(SCG_UI_LABEL)Viewing provisioning-artifacts-set "$(SCG_PROVISIONINGARTIFACTS_SET_NAME)" ...'; $(NORMAL)
-	@$(WARN) 'Provisioning-artifacts are grouped based on the provided product-id and slice'; $(NORMAL)
-	$(AWS) servicecatalog list-provisioning-artifacts $(__SCG_ACCEPT_LANGUAGE) $(__SCG_PRODUCT_ID__PROVISIONINGARTIFACTS) --query "ProvisioningArtifactDetails[$(SCG_UI_VIEW_PROVISIONINGARTIFACTS_SET_SLICE)]$(SCG_UI_VIEW_PROVISIONINGARTIFACTS_SET_FIELDS)"
+_scg_write_provisioningartifact:
+	@$(INFO) '$(SCG_UI_LABEL)Editing parameters for provisioning-artifact "$(SCG_PROVISIONINGARTIFACT_NAME)" ...'; $(NORMAL)
+	$(WRITER) $(SCG_PROVISIONINGARTIFACT_PARAMETERS_FILEPATH)

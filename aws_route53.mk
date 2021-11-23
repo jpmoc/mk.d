@@ -13,9 +13,9 @@ R53_UI_LABEL?= $(AWS_UI_LABEL)
 
 # Customizations
 
-#--- Utilities
+# Utilities
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
@@ -43,11 +43,11 @@ _r53_list_targets ::
 # PRIVATE TARGETS
 #
 
-MK_DIR?= .
-# -include $(MK_DIR)/aws_route53_healthcheck.mk
--include $(MK_DIR)/aws_route53_hostedzone.mk
-# -include $(MK_DIR)/aws_route53_trafficpolicy.mk
--include $(MK_DIR)/aws_route53_record.mk
+MK_DIRPATH?= ./
+# -include $(MK_DIRPATH)aws_route53_healthcheck.mk
+-include $(MK_DIRPATH)aws_route53_hostedzone.mk
+# -include $(MK_DIRPATH)aws_route53_trafficpolicy.mk
+-include $(MK_DIRPATH)aws_route53_record.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS

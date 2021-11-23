@@ -2,21 +2,21 @@ _OPENSSL_MK_VERSION= 0.99.0
 
 # OSL_INPUTS_DIRPATH?= ./in/
 # OSL_OUTPUTS_DIRPATH?= ./out/
-
-# Derived parameters
-OSL_INPUTS_DIRPATH?= $(CMN_INPUTS_DIRPATH)
-OSL_OUTPUTS_DIRPATH?= $(CMN_OUTPUTS_DIRPATH)
-
-# Option parameters
-
-# UI
 OSL_UI_LABEL?= [openssl] #
 
-#--- Utilities
+# Derived parameters
+OSL_INPUTS_DIRPATH?= $(INPUTS_DIRPATH)
+OSL_OUTPUTS_DIRPATH?= $(OUTPUTS_DIRPATH)
+
+# Options
+
+# Customizations
+
+# Utilities
 
 OPENSSL= $(strip $(__SSL_ENVIRONMENT) $(SSL_ENVIRONMENT) openssl $(__SSL_OPTIONS) $(SSL_OPTIONS) )
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # INTERFACE
@@ -44,15 +44,15 @@ _osl_list_targets ::
 # PRIVATE TARGETS 
 #
 
-MK_DIR?= .
--include $(MK_DIR)/openssl_certificatesigningrequest.mk
--include $(MK_DIR)/openssl_certificatesigningrequestconfig.mk
--include $(MK_DIR)/openssl_certificate.mk
--include $(MK_DIR)/openssl_filepair.mk
--include $(MK_DIR)/openssl_privatekey.mk
--include $(MK_DIR)/openssl_publickey.mk
--include $(MK_DIR)/openssl_remotecertificate.mk
--include $(MK_DIR)/openssl_rootcertificate.mk
+MK_DIRPATH?= ./
+-include $(MK_DIRPATH)openssl_certificatesigningrequest.mk
+-include $(MK_DIRPATH)openssl_certificatesigningrequestconfig.mk
+-include $(MK_DIRPATH)openssl_certificate.mk
+-include $(MK_DIRPATH)openssl_filepair.mk
+-include $(MK_DIRPATH)openssl_privatekey.mk
+-include $(MK_DIRPATH)openssl_publickey.mk
+-include $(MK_DIRPATH)openssl_remotecertificate.mk
+-include $(MK_DIRPATH)openssl_rootcertificate.mk
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS 

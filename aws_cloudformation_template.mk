@@ -13,14 +13,16 @@ CFN_PROJECT_DIRPATH?= $(subst $(SPACE),/,$(strip $(CFN_ROOT_DIRPATH) $(CFN_PROJE
 CFN_TEMPLATE_FILEPATHS?= $(CFN_TEMPLATE_FILEPATH)
 CFN_TEMPLATES_SET_NAME?= $(CFN_STACK_NAME)
 
-# Option parameters
+# Options
 __CFN_TEMPLATE_BODY= $(if $(CFN_TEMPLATE_FILEPATH), --template-body file://$(CFN_TEMPLATE_FILEPATH))
 
-#--- Utilities
+# Customizations
+
+# Utilities
 CLOUDFORMER_BIN?= cloudformer
 CLOUDFORMER?= $(__CLOUDFORMER_ENVIRONMENT) $(CLOUDFORMER_ENVIRONMENT) $(CLOUDFORMER_BIN) $(__CLOUDFORMER_OPTIONS) $(CLOUDFORMER_OPTIONS)
 
-#--- Macros
+# Macros
 _cfn_get_template_filepaths=$(shell $(CLOUDFORMER) --get-template-filepaths)
 _cfn_get_root_template_filepath=$(shell $(CLOUDFORMER) --get-root-template-filepath)
 
@@ -28,13 +30,13 @@ _cfn_get_root_template_filepath=$(shell $(CLOUDFORMER) --get-root-template-filep
 # USAGE
 #
 
-_cfn_view_framework_macros ::
+_cfn_list_macros ::
 	@echo 'AWS::CloudFormatioN::Template ($(_AWS_CLOUDFORMATION_TEMPLATE_MK_VERSION)) macros:'
 	@echo '    _cfn_get_template_filepaths       - Get a list of file-paths to all templates'
 	@echo '    _cfn_get_root_template_filepath   - Get the file-path to the root template'
 	@echo
 
-_cfn_view_framework_parameters ::
+_cfn_list_parameters ::
 	@echo 'AWS::CloudFormatioN::Template ($(_AWS_CLOUDFORMATION_TEMPLATE_MK_VERSION)) parameters:'
 	@echo '    CFN_ROOT_DIRPATH=$(CFN_ROOT_DIRPATH)'
 	@echo '    CFN_PROJECT_DIRPATH=$(CFN_PROJECT_DIRPATH)'
@@ -44,7 +46,7 @@ _cfn_view_framework_parameters ::
 	@echo '    CLOUDFORMER=$(CLOUDFORMER)'
 	@echo
 
-_cfn_view_framework_targets ::
+_cfn_list_targets ::
 	@echo 'AWS::CloudFormatioN::Template ($(_AWS_CLOUDFORMATION_TEMPLATE_MK_VERSION)) targets:'
 	@echo '    _cfn_build_template               - Build a template'
 	@echo '    _cfn_build_templates_set          - Build a templates-set'
@@ -69,7 +71,7 @@ __cfn_show_template_content_info:
 	@$(INFO) 'Showing content of local template ...'; $(NORMAL)
 
 __cfn_estimate_cost_info:
-	@$(INFO) '$(AWS_UI_LABEL)Estimating cost of deployment ...'; $(NORMAL)
+	@$(INFO) '$(CFN_UI_LABEL)Estimating cost of deployment ...'; $(NORMAL)
 	@$(WARN) 'Size of auto-scaling groups is set at their desired value'; $(NORMAL)
 	@$(WARN) 'Nested templates are not included in the estimate'; $(NORMAL)
 
@@ -83,7 +85,7 @@ __cfn_validate_template:
 	sleep 2
 
 __cfn_validate_template_info:
-	@$(INFO) '$(AWS_UI_LABEL)Validating template ...'; $(NORMAL)
+	@$(INFO) '$(CFN_UI_LABEL)Validating template ...'; $(NORMAL)
 
 #----------------------------------------------------------------------
 # PUBLIC TARGETS
@@ -127,7 +129,7 @@ _cfn_show_templates_set_content:
 	)
 
 _cfn_validate_templates_set:
-	@$(INFO) '$(AWS_UI_LABEL)Validating templates-set "$(CFN_TEMPLATES_SET_NAME)" ...'; $(NORMAL)
+	@$(INFO) '$(CFN_UI_LABEL)Validating templates-set "$(CFN_TEMPLATES_SET_NAME)" ...'; $(NORMAL)
 	@$(foreach T, $(CFN_TEMPLATE_FILEPATHS), \
 		$(MAKE) --no-print-directory CFN_TEMPLATE_FILEPATH=$(T) __cfn_validate_template; \
 	)

@@ -43,7 +43,7 @@ _ELB2_LIST_TARGETS_FIELDS?= # .{TargetGroupName:TargetGroupName,protocol:Protoco
 _ELB2_LIST_TARGETS_SET_FIELDS?= $(_ELB2_LIST_TARGETGROUPS_FIELDS)
 _ELB2_LIST_TARGETS_SET_QUERYFILTER?=
 
-#--- MACROS
+# Macros
 
 #----------------------------------------------------------------------
 # USAGE
